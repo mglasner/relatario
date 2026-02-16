@@ -329,6 +329,104 @@ h1 {
     background-color: rgba(107, 181, 252, 0.15);
 }
 
+/* --- Sección de villanos --- */
+
+.titulo-villanos {
+    color: #e94560;
+    font-size: 1.4rem;
+    margin-top: 40px;
+    margin-bottom: 5px;
+    text-shadow: 0 0 10px rgba(233, 69, 96, 0.4);
+}
+
+.villanos {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 15px 0;
+    flex-wrap: wrap;
+}
+
+.villano {
+    background-color: #16213e;
+    border: 3px solid #333;
+    border-radius: 15px;
+    padding: 20px;
+    width: 200px;
+    cursor: default;
+    opacity: 0.75;
+    transition: opacity 0.3s;
+}
+
+.villano:hover {
+    opacity: 1;
+}
+
+.villano h3 {
+    color: #999;
+    margin: 5px 0;
+    font-size: 1.3rem;
+}
+
+.villano .descripcion {
+    font-size: 0.85rem;
+    color: #777;
+}
+
+.avatar-emoji {
+    font-size: 4rem;
+    display: block;
+    line-height: 1;
+}
+
+/* Siniestra — rojo/negro */
+.villano-siniestra {
+    border-color: #4a0a0a;
+    background-color: #1a0808;
+}
+
+.villano-siniestra h3 {
+    color: #ff4444;
+}
+
+.villano-siniestra .avatar img {
+    border-color: #8b0000;
+    box-shadow: 0 0 10px rgba(255, 50, 50, 0.4);
+}
+
+.villano-siniestra .barra-vida-relleno {
+    background: linear-gradient(90deg, #8b0000, #ff4444);
+}
+
+.villano-siniestra .ataque-dano {
+    color: #ff4444;
+    background-color: rgba(255, 68, 68, 0.15);
+}
+
+/* Trasgo — negro/gris */
+.villano-trasgo {
+    border-color: #333;
+    background-color: #111118;
+}
+
+.villano-trasgo h3 {
+    color: #888;
+}
+
+.villano-trasgo .avatar img {
+    border-color: #555;
+    box-shadow: 0 0 8px rgba(150, 150, 150, 0.3);
+}
+
+.villano-trasgo .barra-vida-relleno {
+    background: linear-gradient(90deg, #444, #888);
+}
+
+.villano-trasgo .ataque-dano {
+    color: #999;
+    background-color: rgba(150, 150, 150, 0.15);
+}
+
 /* --- Botón de jugar --- */
 
 #btn-jugar {

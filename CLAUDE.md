@@ -15,6 +15,7 @@ la-casa-del-terror/
 ├── js/
 │   ├── entidades.js          # Clases base: Entidad, Personaje, Enemigo
 │   ├── personajes.js         # Definición de personajes jugables (datos/stats)
+│   ├── enemigos.js           # Definición de enemigos (datos/stats)
 │   └── juego.js              # Lógica del juego, UI y game loop
 ├── index.html                # Estructura de las pantallas del juego
 ├── estilos.css               # Estilos visuales y animaciones

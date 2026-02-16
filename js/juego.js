@@ -1,9 +1,10 @@
 // Código de La Casa del Terror
 import { PERSONAJES } from "./personajes.js";
+import { ENEMIGOS } from "./enemigos.js";
 
 console.log("¡La Casa del Terror está cargando!");
 
-// --- Llenar tarjetas de personajes desde el modelo ---
+// --- Llenar tarjetas desde el modelo ---
 
 function crearElemento(tag, clase, texto) {
     var el = document.createElement(tag);
@@ -12,23 +13,18 @@ function crearElemento(tag, clase, texto) {
     return el;
 }
 
-document.querySelectorAll(".personaje").forEach(function (tarjeta) {
-    var nombre = tarjeta.dataset.nombre;
-    var datos = PERSONAJES[nombre];
-    if (!datos) return;
-
-    // Descripción
+// Llena la sección de stats (vida + ataques) de una tarjeta
+function llenarStats(tarjeta, datos) {
     tarjeta.querySelector(".descripcion").textContent = datos.descripcion;
 
-    // Contenedor de stats
     var stats = tarjeta.querySelector(".stats");
 
-    // Barra de vida
+    // Barra de vida (escala: 150 = 100%)
     var statVida = crearElemento("div", "stat-vida");
     statVida.appendChild(crearElemento("span", "stat-label", "Vida"));
     var barraFondo = crearElemento("div", "barra-vida-fondo");
     var barraRelleno = crearElemento("div", "barra-vida-relleno");
-    barraRelleno.style.width = (datos.vidaMax / 1.2) + "%";
+    barraRelleno.style.width = Math.round(datos.vidaMax / 1.5) + "%";
     barraFondo.appendChild(barraRelleno);
     statVida.appendChild(barraFondo);
     statVida.appendChild(crearElemento("span", "stat-valor", datos.vidaMax.toString()));
@@ -44,6 +40,18 @@ document.querySelectorAll(".personaje").forEach(function (tarjeta) {
         statAtaques.appendChild(ataqueDiv);
     });
     stats.appendChild(statAtaques);
+}
+
+// Tarjetas de personajes
+document.querySelectorAll(".personaje").forEach(function (tarjeta) {
+    var datos = PERSONAJES[tarjeta.dataset.nombre];
+    if (datos) llenarStats(tarjeta, datos);
+});
+
+// Tarjetas de villanos
+document.querySelectorAll(".villano").forEach(function (tarjeta) {
+    var datos = ENEMIGOS[tarjeta.dataset.nombre];
+    if (datos) llenarStats(tarjeta, datos);
 });
 
 // --- Selección de personaje ---

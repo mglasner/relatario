@@ -32,11 +32,12 @@ class Personaje extends Entidad {
     }
 }
 
-// Enemigo con ataques
+// Enemigo con ataques y descripción
 class Enemigo extends Entidad {
-    constructor(nombre, vidaMax, ataques) {
+    constructor(nombre, vidaMax, ataques, descripcion) {
         super(nombre, vidaMax);
         this.ataques = ataques;
+        this.descripcion = descripcion || "";
     }
 }
 
