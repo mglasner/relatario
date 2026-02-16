@@ -13,7 +13,7 @@ const MARGEN_COLISION = 2;
 const TOLERANCIA_ESQUINA = 8;
 
 // Dimensiones del laberinto (deben ser impares para el algoritmo de generación)
-const FILAS = 21;
+const FILAS = 17;
 const COLS = 17;
 const ATAJOS = 8; // Paredes extra que se abren para crear caminos alternativos
 const COOLDOWN_TRAMPA = 1000; // ms entre golpes de la misma trampa
@@ -51,7 +51,7 @@ function generarMapa() {
     }
 
     // Las celdas lógicas están en posiciones impares del grid
-    // Para un grid de 21x17, hay 10x8 = 80 celdas lógicas
+    // Para un grid de 17x17, hay 8x8 = 64 celdas lógicas
     var filasLogicas = (FILAS - 1) / 2;
     var colsLogicas = (COLS - 1) / 2;
 
