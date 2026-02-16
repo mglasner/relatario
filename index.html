@@ -8,8 +8,40 @@
 </head>
 <body>
     <div id="juego">
-        <h1>🏚️ La Casa del Terror 👻</h1>
-        <p>¡Bienvenidos! El juego está en construcción...</p>
+        <!-- Pantalla de selección de personaje -->
+        <div id="seleccion-personaje">
+            <h1>🏚️ La Casa del Terror 👻</h1>
+            <p>Elige tu personaje para entrar a la casa...</p>
+
+            <div class="personajes">
+                <div class="personaje" data-nombre="Luna">
+                    <div class="avatar">🧙‍♀️</div>
+                    <h3>Luna</h3>
+                    <p class="descripcion">Valiente y curiosa. No le teme a la oscuridad.</p>
+                </div>
+
+                <div class="personaje" data-nombre="Valentina">
+                    <div class="avatar">🦸‍♀️</div>
+                    <h3>Valentina</h3>
+                    <p class="descripcion">Rápida y astuta. Siempre encuentra la salida.</p>
+                </div>
+
+                <div class="personaje" data-nombre="Marco">
+                    <div class="avatar">🧑‍🚀</div>
+                    <h3>Marco</h3>
+                    <p class="descripcion">Fuerte y leal. Protege a sus amigos.</p>
+                </div>
+            </div>
+
+            <button id="btn-jugar" disabled>Elige un personaje para continuar</button>
+        </div>
+
+        <!-- Pantalla de bienvenida (oculta al inicio) -->
+        <div id="pantalla-juego" class="oculto">
+            <h1>🏚️ La Casa del Terror 👻</h1>
+            <p id="mensaje-bienvenida"></p>
+            <button id="btn-volver">← Volver a elegir personaje</button>
+        </div>
     </div>
 
     <script src="juego.js"></script>
