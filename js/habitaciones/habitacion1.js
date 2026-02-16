@@ -1,5 +1,6 @@
 // Habitación 1 — El Laberinto
 // El jugador debe encontrar la llave y volver a la salida
+// El laberinto se genera aleatoriamente cada vez
 
 // --- Constantes ---
 
@@ -7,35 +8,171 @@ const TAM_CELDA = 30;
 const TAM_JUGADOR = 22;
 const VELOCIDAD = 3;
 const MARGEN_COLISION = 2;
-const TOLERANCIA_ESQUINA = 8; // px de ayuda para doblar en esquinas
+const TOLERANCIA_ESQUINA = 8;
 
-// Grid del laberinto: 1 = pared, 0 = camino, 2 = llave, 3 = entrada/salida
-// 15 filas x 13 columnas
-const MAPA = [
-    [1,1,1,1,1,1,1,1,1,1,1,1,1],
-    [1,0,0,0,1,0,0,0,1,0,0,2,1],
-    [1,0,1,0,1,0,1,0,0,0,1,0,1],
-    [1,0,1,0,0,0,1,1,1,0,1,0,1],
-    [1,0,1,1,1,0,0,0,1,0,1,0,1],
-    [1,0,0,0,1,1,1,0,1,0,0,0,1],
-    [1,1,1,0,0,0,0,0,0,0,0,0,1],
-    [1,0,0,0,1,0,1,1,1,0,0,0,1],
-    [1,0,1,1,1,0,0,0,1,1,1,0,1],
-    [1,0,1,0,0,0,1,0,0,0,1,0,1],
-    [1,0,1,0,1,1,1,1,1,0,0,0,1],
-    [1,0,0,0,0,0,1,0,1,0,1,0,1],
-    [1,0,1,1,1,1,1,0,0,0,1,0,1],
-    [1,3,0,0,0,0,0,0,1,0,0,0,1],
-    [1,1,1,1,1,1,1,1,1,1,1,1,1],
-];
+// Dimensiones del laberinto (deben ser impares para el algoritmo de generación)
+const FILAS = 21;
+const COLS = 17;
+const ATAJOS = 8; // Paredes extra que se abren para crear caminos alternativos
 
-// Posición de la llave y la entrada (en celdas)
-const LLAVE_FILA = 1;
-const LLAVE_COL = 11;
-const ENTRADA_FILA = 13;
-const ENTRADA_COL = 1;
+// --- Generación aleatoria del laberinto ---
+
+// Mezcla un array in-place (Fisher-Yates)
+function mezclar(arr) {
+    for (var i = arr.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+    return arr;
+}
+
+// Genera un laberinto usando Recursive Backtracking (DFS)
+// Produce un laberinto "perfecto" (un solo camino entre dos puntos)
+// luego abre algunos atajos para crear rutas alternativas
+function generarMapa() {
+    // Inicializar todo como paredes
+    var mapa = [];
+    for (var f = 0; f < FILAS; f++) {
+        mapa[f] = [];
+        for (var c = 0; c < COLS; c++) {
+            mapa[f][c] = 1;
+        }
+    }
+
+    // Las celdas lógicas están en posiciones impares del grid
+    // Para un grid de 21x17, hay 10x8 = 80 celdas lógicas
+    var filasLogicas = (FILAS - 1) / 2;
+    var colsLogicas = (COLS - 1) / 2;
+
+    var visitado = [];
+    for (var f = 0; f < filasLogicas; f++) {
+        visitado[f] = [];
+        for (var c = 0; c < colsLogicas; c++) {
+            visitado[f][c] = false;
+        }
+    }
+
+    // Direcciones: arriba, derecha, abajo, izquierda
+    var dirs = [[-1, 0], [0, 1], [1, 0], [0, -1]];
+
+    // DFS iterativo con stack (evita desbordamiento de pila)
+    var stack = [[0, 0]];
+    visitado[0][0] = true;
+    mapa[1][1] = 0; // Abrir la primera celda lógica (arriba-izquierda)
+
+    while (stack.length > 0) {
+        var actual = stack[stack.length - 1];
+        var f = actual[0], c = actual[1];
+
+        // Buscar vecinos no visitados
+        var vecinos = [];
+        for (var d = 0; d < dirs.length; d++) {
+            var nf = f + dirs[d][0];
+            var nc = c + dirs[d][1];
+            if (nf >= 0 && nf < filasLogicas && nc >= 0 && nc < colsLogicas && !visitado[nf][nc]) {
+                vecinos.push([nf, nc, d]);
+            }
+        }
+
+        if (vecinos.length > 0) {
+            // Elegir vecino aleatorio
+            var elegido = vecinos[Math.floor(Math.random() * vecinos.length)];
+            var nf = elegido[0], nc = elegido[1];
+
+            // Abrir la pared entre las dos celdas
+            mapa[f * 2 + 1 + dirs[elegido[2]][0]][c * 2 + 1 + dirs[elegido[2]][1]] = 0;
+            // Abrir la celda destino
+            mapa[nf * 2 + 1][nc * 2 + 1] = 0;
+
+            visitado[nf][nc] = true;
+            stack.push([nf, nc]);
+        } else {
+            stack.pop(); // Backtrack: volver a la celda anterior
+        }
+    }
+
+    // Abrir atajos para que el laberinto sea menos frustrante
+    abrirAtajos(mapa);
+
+    return mapa;
+}
+
+// Elimina algunas paredes internas para crear rutas alternativas
+function abrirAtajos(mapa) {
+    var paredes = [];
+
+    for (var f = 1; f < FILAS - 1; f++) {
+        for (var c = 1; c < COLS - 1; c++) {
+            if (mapa[f][c] !== 1) continue;
+
+            // Pared horizontal (entre celdas de la misma fila)
+            if (f % 2 === 1 && c % 2 === 0 && mapa[f][c - 1] === 0 && mapa[f][c + 1] === 0) {
+                paredes.push([f, c]);
+            }
+            // Pared vertical (entre celdas de la misma columna)
+            if (f % 2 === 0 && c % 2 === 1 && mapa[f - 1][c] === 0 && mapa[f + 1][c] === 0) {
+                paredes.push([f, c]);
+            }
+        }
+    }
+
+    mezclar(paredes);
+    var cantidad = Math.min(ATAJOS, paredes.length);
+    for (var i = 0; i < cantidad; i++) {
+        mapa[paredes[i][0]][paredes[i][1]] = 0;
+    }
+}
+
+// Busca la celda más lejana desde un punto usando BFS
+// Solo considera celdas lógicas (posiciones impares) como candidatas
+function encontrarPuntoLejano(mapa, inicioF, inicioC) {
+    var cola = [[inicioF, inicioC, 0]];
+    var idx = 0;
+    var visitadoBFS = [];
+    for (var f = 0; f < FILAS; f++) {
+        visitadoBFS[f] = [];
+        for (var c = 0; c < COLS; c++) {
+            visitadoBFS[f][c] = false;
+        }
+    }
+    visitadoBFS[inicioF][inicioC] = true;
+
+    var masLejano = [inicioF, inicioC];
+    var maxDist = 0;
+    var dirs = [[-1, 0], [0, 1], [1, 0], [0, -1]];
+
+    while (idx < cola.length) {
+        var actual = cola[idx++];
+        var f = actual[0], c = actual[1], dist = actual[2];
+
+        // Solo considerar celdas lógicas (intersecciones) para la llave
+        if (dist > maxDist && f % 2 === 1 && c % 2 === 1) {
+            maxDist = dist;
+            masLejano = [f, c];
+        }
+
+        for (var d = 0; d < dirs.length; d++) {
+            var nf = f + dirs[d][0];
+            var nc = c + dirs[d][1];
+            if (nf >= 0 && nf < FILAS && nc >= 0 && nc < COLS && !visitadoBFS[nf][nc] && mapa[nf][nc] === 0) {
+                visitadoBFS[nf][nc] = true;
+                cola.push([nf, nc, dist + 1]);
+            }
+        }
+    }
+
+    return masLejano;
+}
 
 // --- Estado del módulo ---
+
+let mapa = null;
+let llaveFila = 0;
+let llaveCol = 0;
+let entradaFila = 0;
+let entradaCol = 0;
 
 let jugador = null;
 let callbackSalir = null;
@@ -69,6 +206,8 @@ function crearPantalla() {
 
     contenedorLaberinto = document.createElement("div");
     contenedorLaberinto.id = "laberinto";
+    contenedorLaberinto.style.width = COLS * TAM_CELDA + "px";
+    contenedorLaberinto.style.height = FILAS * TAM_CELDA + "px";
 
     // Jugador dentro del laberinto
     elementoJugador = document.createElement("div");
@@ -113,6 +252,18 @@ export function iniciarHabitacion1(jugadorRef, callback) {
     tieneLlave = false;
     activo = true;
 
+    // Generar laberinto aleatorio
+    mapa = generarMapa();
+
+    // Entrada en la esquina inferior izquierda
+    entradaFila = FILAS - 2;
+    entradaCol = 1;
+
+    // Colocar la llave en el punto más lejano de la entrada
+    var puntoLlave = encontrarPuntoLejano(mapa, entradaFila, entradaCol);
+    llaveFila = puntoLlave[0];
+    llaveCol = puntoLlave[1];
+
     // Crear e insertar la pantalla
     crearPantalla();
 
@@ -120,8 +271,8 @@ export function iniciarHabitacion1(jugadorRef, callback) {
     renderizarLaberinto();
 
     // Posicionar jugador en la entrada
-    posX = ENTRADA_COL * TAM_CELDA + (TAM_CELDA - TAM_JUGADOR) / 2;
-    posY = ENTRADA_FILA * TAM_CELDA + (TAM_CELDA - TAM_JUGADOR) / 2;
+    posX = entradaCol * TAM_CELDA + (TAM_CELDA - TAM_JUGADOR) / 2;
+    posY = entradaFila * TAM_CELDA + (TAM_CELDA - TAM_JUGADOR) / 2;
     actualizarPosicion();
 
     // Resetear indicador
@@ -138,9 +289,9 @@ export function iniciarHabitacion1(jugadorRef, callback) {
 }
 
 function renderizarLaberinto() {
-    for (var fila = 0; fila < MAPA.length; fila++) {
-        for (var col = 0; col < MAPA[fila].length; col++) {
-            if (MAPA[fila][col] === 1) {
+    for (var fila = 0; fila < mapa.length; fila++) {
+        for (var col = 0; col < mapa[fila].length; col++) {
+            if (mapa[fila][col] === 1) {
                 var pared = document.createElement("div");
                 pared.className = "laberinto-pared";
                 pared.style.left = col * TAM_CELDA + "px";
@@ -156,8 +307,8 @@ function renderizarLaberinto() {
     elementoLlave = document.createElement("div");
     elementoLlave.className = "laberinto-llave";
     elementoLlave.textContent = "🔑";
-    elementoLlave.style.left = LLAVE_COL * TAM_CELDA + "px";
-    elementoLlave.style.top = LLAVE_FILA * TAM_CELDA + "px";
+    elementoLlave.style.left = llaveCol * TAM_CELDA + "px";
+    elementoLlave.style.top = llaveFila * TAM_CELDA + "px";
     elementoLlave.style.width = TAM_CELDA + "px";
     elementoLlave.style.height = TAM_CELDA + "px";
     contenedorLaberinto.appendChild(elementoLlave);
@@ -166,8 +317,8 @@ function renderizarLaberinto() {
     var salida = document.createElement("div");
     salida.className = "laberinto-salida";
     salida.textContent = "🚪";
-    salida.style.left = ENTRADA_COL * TAM_CELDA + "px";
-    salida.style.top = ENTRADA_FILA * TAM_CELDA + "px";
+    salida.style.left = entradaCol * TAM_CELDA + "px";
+    salida.style.top = entradaFila * TAM_CELDA + "px";
     salida.style.width = TAM_CELDA + "px";
     salida.style.height = TAM_CELDA + "px";
     contenedorLaberinto.appendChild(salida);
@@ -182,10 +333,10 @@ function esPared(pixelX, pixelY) {
     var col = Math.floor(pixelX / TAM_CELDA);
     var fila = Math.floor(pixelY / TAM_CELDA);
 
-    if (fila < 0 || fila >= MAPA.length || col < 0 || col >= MAPA[0].length) {
+    if (fila < 0 || fila >= FILAS || col < 0 || col >= COLS) {
         return true;
     }
-    return MAPA[fila][col] === 1;
+    return mapa[fila][col] === 1;
 }
 
 // Verifica colisión del jugador en una posición dada
@@ -264,7 +415,7 @@ function detectarLlave() {
     if (tieneLlave) return;
 
     var celda = getCeldaJugador();
-    if (celda.fila === LLAVE_FILA && celda.col === LLAVE_COL) {
+    if (celda.fila === llaveFila && celda.col === llaveCol) {
         tieneLlave = true;
 
         // Animación de absorción
@@ -284,7 +435,7 @@ function detectarSalida() {
     if (!tieneLlave) return;
 
     var celda = getCeldaJugador();
-    if (celda.fila === ENTRADA_FILA && celda.col === ENTRADA_COL) {
+    if (celda.fila === entradaFila && celda.col === entradaCol) {
         activo = false;
         mensajeExito.textContent = "¡Escapaste con la llave!";
         mensajeExito.classList.remove("oculto");

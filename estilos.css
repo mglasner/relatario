@@ -1056,11 +1056,9 @@ h1 {
     50% { text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.3); }
 }
 
-/* Contenedor del laberinto */
+/* Contenedor del laberinto (dimensiones se setean desde JS) */
 #laberinto {
     position: relative;
-    width: 390px;   /* 13 columnas x 30px */
-    height: 450px;  /* 15 filas x 30px */
     background-color: #0d0d1a;
     border: 3px solid #333;
     border-radius: 8px;
