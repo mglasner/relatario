@@ -427,6 +427,30 @@ h1 {
     background-color: rgba(150, 150, 150, 0.15);
 }
 
+/* El Errante — verde/negro */
+.villano-errante {
+    border-color: #0a4a0a;
+    background-color: #081a08;
+}
+
+.villano-errante h3 {
+    color: #44cc44;
+}
+
+.villano-errante .avatar img {
+    border-color: #2a6b2a;
+    box-shadow: 0 0 10px rgba(50, 200, 50, 0.4);
+}
+
+.villano-errante .barra-vida-relleno {
+    background: linear-gradient(90deg, #1a6b1a, #44cc44);
+}
+
+.villano-errante .ataque-dano {
+    color: #44cc44;
+    background-color: rgba(68, 204, 68, 0.15);
+}
+
 /* --- Botón de jugar --- */
 
 #btn-jugar {
