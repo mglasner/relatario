@@ -17,6 +17,7 @@ const FILAS = 17;
 const COLS = 17;
 const ATAJOS = 8; // Paredes extra que se abren para crear caminos alternativos
 const COOLDOWN_TRAMPA = 1000; // ms entre golpes de la misma trampa
+const COOLDOWN_TRAMPA_LENTA = 500; // ms antes de poder reactivar la trampa de lentitud
 
 // Trasgo
 const TAM_TRASGO = 20;
@@ -270,6 +271,110 @@ function mostrarDano(dano) {
     }, 800);
 }
 
+// --- Trampas de lentitud ---
+
+// Coloca 2-3 trampas que ralentizan al jugador
+function colocarTrampasLentas() {
+    var numTrampas = 2 + Math.floor(Math.random() * 2); // 2-3
+    var celdasLibres = [];
+
+    // Celdas ocupadas por trampas de fuego
+    var ocupadas = {};
+    for (var i = 0; i < trampas.length; i++) {
+        ocupadas[trampas[i].fila + "," + trampas[i].col] = true;
+    }
+
+    for (var f = 1; f < FILAS - 1; f++) {
+        for (var c = 1; c < COLS - 1; c++) {
+            if (mapa[f][c] !== 0) continue;
+            if (f === entradaFila && c === entradaCol) continue;
+            if (f === llaveFila && c === llaveCol) continue;
+            if (Math.abs(f - entradaFila) + Math.abs(c - entradaCol) <= 3) continue;
+            if (f % 2 !== 1 || c % 2 !== 1) continue;
+            if (ocupadas[f + "," + c]) continue;
+            celdasLibres.push([f, c]);
+        }
+    }
+
+    mezclar(celdasLibres);
+    trampasLentas = [];
+
+    for (var i = 0; i < Math.min(numTrampas, celdasLibres.length); i++) {
+        trampasLentas.push({
+            fila: celdasLibres[i][0],
+            col: celdasLibres[i][1],
+            periodo: 2000 + Math.floor(Math.random() * 2000), // 2-4s por ciclo
+            desfase: Math.floor(Math.random() * 3000),
+            reduccion: 0.3 + Math.random() * 0.3, // 30-60% de reducción
+            duracion: 3000 + Math.floor(Math.random() * 1000), // 3-4s
+            ultimoGolpe: 0,
+            elemento: null,
+        });
+    }
+}
+
+// Determina si una trampa de lentitud está activa
+function esTrampaLentaActiva(trampa) {
+    return Math.floor((Date.now() + trampa.desfase) / trampa.periodo) % 2 === 0;
+}
+
+// Actualiza el estado visual de las trampas de lentitud
+function actualizarTrampasLentas() {
+    for (var i = 0; i < trampasLentas.length; i++) {
+        var activa = esTrampaLentaActiva(trampasLentas[i]);
+        if (activa) {
+            trampasLentas[i].elemento.classList.add("trampa-lenta-activa");
+        } else {
+            trampasLentas[i].elemento.classList.remove("trampa-lenta-activa");
+        }
+    }
+}
+
+// Detecta si el jugador pisa una trampa de lentitud activa
+function detectarTrampasLentas() {
+    if (velocidadActual < VELOCIDAD) return; // Ya está lento
+
+    var celda = getCeldaJugador();
+    var ahora = Date.now();
+
+    for (var i = 0; i < trampasLentas.length; i++) {
+        var t = trampasLentas[i];
+        if (celda.fila === t.fila && celda.col === t.col && esTrampaLentaActiva(t)) {
+            if (ahora - t.ultimoGolpe >= COOLDOWN_TRAMPA_LENTA) {
+                t.ultimoGolpe = ahora;
+                aplicarLentitud(t.reduccion, t.duracion);
+            }
+        }
+    }
+}
+
+// Aplica reducción de velocidad temporal
+function aplicarLentitud(reduccion, duracion) {
+    velocidadActual = VELOCIDAD * (1 - reduccion);
+
+    // Feedback visual en el jugador
+    elementoJugador.classList.add("jugador-lento");
+
+    // Mostrar texto flotante
+    var elem = document.createElement("div");
+    elem.className = "efecto-flotante efecto-lentitud";
+    elem.textContent = "🕸️ Lento!";
+    elem.style.left = posX + "px";
+    elem.style.top = posY - 5 + "px";
+    contenedorLaberinto.appendChild(elem);
+    setTimeout(function () {
+        if (elem.parentNode) elem.parentNode.removeChild(elem);
+    }, 1000);
+
+    // Restaurar velocidad tras la duración
+    if (timerLentitud) clearTimeout(timerLentitud);
+    timerLentitud = setTimeout(function () {
+        velocidadActual = VELOCIDAD;
+        elementoJugador.classList.remove("jugador-lento");
+        timerLentitud = null;
+    }, duracion);
+}
+
 // --- Trasgo (enemigo con IA) ---
 
 // Busca una celda a distancia media de la entrada para colocar al Trasgo
@@ -450,7 +555,10 @@ let llaveCol = 0;
 let entradaFila = 0;
 let entradaCol = 0;
 let trampas = [];
+let trampasLentas = [];
 let trasgo = null;
+let velocidadActual = VELOCIDAD;
+let timerLentitud = null;
 
 let jugador = null;
 let callbackSalir = null;
@@ -544,6 +652,11 @@ export function iniciarHabitacion1(jugadorRef, callback) {
 
     // Colocar trampas aleatorias
     colocarTrampas();
+    colocarTrampasLentas();
+
+    // Resetear velocidad
+    velocidadActual = VELOCIDAD;
+    if (timerLentitud) { clearTimeout(timerLentitud); timerLentitud = null; }
 
     // Colocar al Trasgo
     iniciarTrasgo();
@@ -599,6 +712,19 @@ function renderizarLaberinto() {
         elemTrampa.style.height = TAM_CELDA + "px";
         contenedorLaberinto.appendChild(elemTrampa);
         t.elemento = elemTrampa;
+    }
+
+    // Trampas de lentitud
+    for (var i = 0; i < trampasLentas.length; i++) {
+        var tl = trampasLentas[i];
+        var elemTrampaLenta = document.createElement("div");
+        elemTrampaLenta.className = "laberinto-trampa-lenta";
+        elemTrampaLenta.style.left = tl.col * TAM_CELDA + "px";
+        elemTrampaLenta.style.top = tl.fila * TAM_CELDA + "px";
+        elemTrampaLenta.style.width = TAM_CELDA + "px";
+        elemTrampaLenta.style.height = TAM_CELDA + "px";
+        contenedorLaberinto.appendChild(elemTrampaLenta);
+        tl.elemento = elemTrampaLenta;
     }
 
     // Trasgo
@@ -769,10 +895,10 @@ function loopLaberinto() {
     var dx = 0;
     var dy = 0;
 
-    if (teclas["ArrowUp"])    dy -= VELOCIDAD;
-    if (teclas["ArrowDown"])  dy += VELOCIDAD;
-    if (teclas["ArrowLeft"])  dx -= VELOCIDAD;
-    if (teclas["ArrowRight"]) dx += VELOCIDAD;
+    if (teclas["ArrowUp"])    dy -= velocidadActual;
+    if (teclas["ArrowDown"])  dy += velocidadActual;
+    if (teclas["ArrowLeft"])  dx -= velocidadActual;
+    if (teclas["ArrowRight"]) dx += velocidadActual;
 
     if (dx !== 0 || dy !== 0) {
         moverEnLaberinto(dx, dy);
@@ -780,6 +906,8 @@ function loopLaberinto() {
 
     actualizarTrampas();
     detectarTrampas();
+    actualizarTrampasLentas();
+    detectarTrampasLentas();
     actualizarTrasgo();
     detectarLlave();
     detectarSalida();
@@ -805,7 +933,10 @@ function onKeyUp(e) {
 function limpiarHabitacion1() {
     activo = false;
     trampas = [];
+    trampasLentas = [];
     trasgo = null;
+    velocidadActual = VELOCIDAD;
+    if (timerLentitud) { clearTimeout(timerLentitud); timerLentitud = null; }
 
     if (animacionId) {
         cancelAnimationFrame(animacionId);
