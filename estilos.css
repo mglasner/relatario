@@ -99,6 +99,118 @@ h1 {
     display: inline-block;
 }
 
+.avatar img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #555;
+}
+
+/* --- Colores por personaje --- */
+
+/* Lina - paleta morada */
+.personaje-lina {
+    border-color: #4a1a6b;
+    background-color: #1a0a2e;
+}
+
+.personaje-lina:hover {
+    border-color: #9b59b6;
+}
+
+.personaje-lina h3 {
+    color: #bb86fc;
+}
+
+.personaje-lina .avatar img {
+    border-color: #9b59b6;
+}
+
+.personaje-lina.seleccionado {
+    border-color: #bb86fc;
+    box-shadow: 0 0 30px rgba(187, 134, 252, 0.7), 0 0 60px rgba(155, 89, 182, 0.3);
+    background-color: #2a1045;
+}
+
+.personaje-lina.seleccionado h3 {
+    animation: neon-lina 1.5s ease-in-out infinite;
+}
+
+@keyframes neon-lina {
+    0% { color: #bb86fc; text-shadow: none; }
+    50% { color: #e0b0ff; text-shadow: 0 0 10px #9b59b6, 0 0 20px #9b59b6; }
+    100% { color: #bb86fc; text-shadow: none; }
+}
+
+/* Rosé - paleta verde */
+.personaje-rose {
+    border-color: #1a6b2a;
+    background-color: #0a2e14;
+}
+
+.personaje-rose:hover {
+    border-color: #2ecc71;
+}
+
+.personaje-rose h3 {
+    color: #6bfc86;
+}
+
+.personaje-rose .avatar img {
+    border-color: #2ecc71;
+}
+
+.personaje-rose.seleccionado {
+    border-color: #6bfc86;
+    box-shadow: 0 0 30px rgba(107, 252, 134, 0.7), 0 0 60px rgba(46, 204, 113, 0.3);
+    background-color: #10452a;
+}
+
+.personaje-rose.seleccionado h3 {
+    animation: neon-rose 1.5s ease-in-out infinite;
+}
+
+@keyframes neon-rose {
+    0% { color: #6bfc86; text-shadow: none; }
+    50% { color: #b0ffc0; text-shadow: 0 0 10px #2ecc71, 0 0 20px #2ecc71; }
+    100% { color: #6bfc86; text-shadow: none; }
+}
+
+/* DonBu - paleta azul con rojo */
+.personaje-donbu {
+    border-color: #1a3a6b;
+    background-color: #0a1430;
+}
+
+.personaje-donbu:hover {
+    border-color: #3498db;
+}
+
+.personaje-donbu h3 {
+    color: #6bb5fc;
+}
+
+.personaje-donbu .avatar img {
+    border-color: #c0392b;
+}
+
+.personaje-donbu.seleccionado {
+    border-color: #6bb5fc;
+    box-shadow: 0 0 30px rgba(107, 181, 252, 0.7), 0 0 60px rgba(192, 57, 43, 0.4);
+    background-color: #151035;
+}
+
+.personaje-donbu.seleccionado h3 {
+    animation: neon-donbu 1.5s ease-in-out infinite;
+}
+
+@keyframes neon-donbu {
+    0% { color: #6bb5fc; text-shadow: none; }
+    50% { color: #ff6b6b; text-shadow: 0 0 10px #c0392b, 0 0 20px #3498db; }
+    100% { color: #6bb5fc; text-shadow: none; }
+}
+
 .personaje h3 {
     color: #e94560;
     margin: 5px 0;
