@@ -156,6 +156,19 @@ document.getElementById("btn-volver").addEventListener("click", function () {
 // --- Controles del teclado ---
 
 document.addEventListener("keydown", function (e) {
+    // Si el modal está abierto, manejar navegación del modal
+    if (!modalPuerta.classList.contains("oculto")) {
+        if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+            e.preventDefault();
+            botonModalSeleccionado = botonModalSeleccionado === 0 ? 1 : 0;
+            actualizarFocoModal();
+        } else if (e.key === "Enter") {
+            e.preventDefault();
+            botonesModal[botonModalSeleccionado].click();
+        }
+        return;
+    }
+
     if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
         e.preventDefault();
         teclasPresionadas[e.key] = true;
@@ -183,6 +196,9 @@ function gameLoop() {
         moverPersonaje(dx, dy);
     }
 
+    // Detectar colisión con puertas
+    detectarColisionPuertas();
+
     requestAnimationFrame(gameLoop);
 }
 
@@ -207,3 +223,104 @@ function actualizarPosicion() {
     personajeJugador.style.left = posX + "px";
     personajeJugador.style.top = posY + "px";
 }
+
+// --- Detección de colisión con puertas ---
+
+let esperandoSalirDePuerta = false; // Evita reabrir el modal al cerrar si sigue tocando la puerta
+
+function detectarColisionPuertas() {
+    const puertas = document.querySelectorAll(".puerta");
+    let tocandoAlguna = false;
+
+    puertas.forEach(function (puerta) {
+        const rect = puerta.getBoundingClientRect();
+        const pasilloRect = pasillo.getBoundingClientRect();
+
+        // Posición de la puerta relativa al pasillo
+        const px = rect.left - pasilloRect.left;
+        const py = rect.top - pasilloRect.top;
+        const pw = rect.width;
+        const ph = rect.height;
+
+        // Verificar si el jugador se superpone con la puerta
+        const colisiona =
+            posX < px + pw &&
+            posX + tamPersonaje > px &&
+            posY < py + ph &&
+            posY + tamPersonaje > py;
+
+        if (colisiona) {
+            tocandoAlguna = true;
+            if (!esperandoSalirDePuerta && modalPuerta.classList.contains("oculto")) {
+                mostrarModalPuerta(puerta.dataset.puerta);
+            }
+        }
+    });
+
+    // Si ya no toca ninguna puerta, desbloquear
+    if (!tocandoAlguna) {
+        esperandoSalirDePuerta = false;
+    }
+}
+
+// --- Modal de confirmación para puertas ---
+
+const modalPuerta = document.getElementById("modal-puerta");
+const modalTitulo = document.getElementById("modal-titulo");
+const modalMensaje = document.getElementById("modal-mensaje");
+const btnEntrar = document.getElementById("btn-entrar");
+const btnCancelar = document.getElementById("btn-cancelar");
+
+let puertaActiva = null; // número de la puerta seleccionada
+
+let botonModalSeleccionado = 0; // 0 = Entrar, 1 = Cancelar
+const botonesModal = [btnEntrar, btnCancelar];
+
+function actualizarFocoModal() {
+    botonesModal.forEach(function (btn, i) {
+        if (i === botonModalSeleccionado) {
+            btn.classList.add("modal-btn-foco");
+        } else {
+            btn.classList.remove("modal-btn-foco");
+        }
+    });
+}
+
+function mostrarModalPuerta(numeroPuerta) {
+    puertaActiva = numeroPuerta;
+    modalTitulo.textContent = "Habitación " + numeroPuerta;
+    modalMensaje.textContent = "¿Quieres entrar a esta habitación?";
+    modalPuerta.classList.remove("oculto");
+    loopActivo = false; // Pausar movimiento mientras el modal está abierto
+    botonModalSeleccionado = 0;
+    actualizarFocoModal();
+}
+
+function cerrarModalPuerta() {
+    modalPuerta.classList.add("oculto");
+    puertaActiva = null;
+    esperandoSalirDePuerta = true; // No reabrir hasta que se aleje de la puerta
+    loopActivo = true;
+    requestAnimationFrame(gameLoop);
+}
+
+// Clic en las puertas
+document.querySelectorAll(".puerta").forEach(function (puerta) {
+    puerta.addEventListener("click", function () {
+        if (modalPuerta.classList.contains("oculto")) {
+            mostrarModalPuerta(puerta.dataset.puerta);
+        }
+    });
+});
+
+// Botones del modal
+btnCancelar.addEventListener("click", cerrarModalPuerta);
+
+btnEntrar.addEventListener("click", function () {
+    cerrarModalPuerta();
+    // TODO: Cargar la habitación correspondiente
+    console.log("Entrando a la habitación " + puertaActiva);
+});
+
+// Cerrar modal con el fondo
+document.querySelector(".modal-fondo").addEventListener("click", cerrarModalPuerta);

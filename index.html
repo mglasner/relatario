@@ -104,6 +104,19 @@
             <p id="controles-hint">Usa las flechas ← ↑ ↓ → para moverte</p>
             <button id="btn-volver">← Volver a elegir personaje</button>
         </div>
+
+        <!-- Modal de confirmación para entrar a una habitación -->
+        <div id="modal-puerta" class="oculto">
+            <div class="modal-fondo"></div>
+            <div class="modal-contenido">
+                <h2 id="modal-titulo">Habitación 1</h2>
+                <p id="modal-mensaje">¿Quieres entrar a esta habitación?</p>
+                <div class="modal-botones">
+                    <button id="btn-entrar">Entrar</button>
+                    <button id="btn-cancelar">No, mejor no</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script type="module" src="js/juego.js"></script>
