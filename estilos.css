@@ -35,7 +35,7 @@ h1 {
     border: 3px solid #0f3460;
     border-radius: 15px;
     padding: 20px;
-    width: 180px;
+    width: 200px;
     cursor: pointer;
     transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
@@ -220,6 +220,113 @@ h1 {
 .descripcion {
     font-size: 0.85rem;
     color: #a0a0b0;
+    margin-bottom: 10px;
+}
+
+/* --- Stats del personaje en la tarjeta --- */
+
+.stats {
+    text-align: left;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 10px;
+    margin-top: 4px;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+/* Barra de vida */
+.stat-vida {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 2px 8px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.stat-vida .stat-label {
+    grid-column: 1 / -1;
+}
+
+.barra-vida-fondo {
+    height: 6px;
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.barra-vida-relleno {
+    height: 100%;
+    background: linear-gradient(90deg, #e94560, #ff6b81);
+    border-radius: 3px;
+    transition: width 0.3s;
+}
+
+.stat-valor {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #ccc;
+}
+
+/* Ataques */
+.stat-ataques {
+    margin-top: 2px;
+}
+
+.ataque {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3px 0;
+}
+
+.ataque-nombre {
+    font-size: 0.75rem;
+    color: #b0b0c0;
+}
+
+.ataque-dano {
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #e94560;
+    background-color: rgba(233, 69, 96, 0.12);
+    padding: 1px 6px;
+    border-radius: 8px;
+}
+
+/* Colores de barra de vida por personaje */
+.personaje-lina .barra-vida-relleno {
+    background: linear-gradient(90deg, #9b59b6, #bb86fc);
+}
+
+.personaje-lina .ataque-dano {
+    color: #bb86fc;
+    background-color: rgba(155, 89, 182, 0.15);
+}
+
+.personaje-rose .barra-vida-relleno {
+    background: linear-gradient(90deg, #2ecc71, #6bfc86);
+}
+
+.personaje-rose .ataque-dano {
+    color: #6bfc86;
+    background-color: rgba(46, 204, 113, 0.15);
+}
+
+.personaje-donbu .barra-vida-relleno {
+    background: linear-gradient(90deg, #c0392b, #6bb5fc);
+}
+
+.personaje-donbu .ataque-dano {
+    color: #6bb5fc;
+    background-color: rgba(107, 181, 252, 0.15);
 }
 
 /* --- Botón de jugar --- */

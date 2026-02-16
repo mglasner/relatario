@@ -3,6 +3,49 @@ import { PERSONAJES } from "./personajes.js";
 
 console.log("¡La Casa del Terror está cargando!");
 
+// --- Llenar tarjetas de personajes desde el modelo ---
+
+function crearElemento(tag, clase, texto) {
+    var el = document.createElement(tag);
+    if (clase) el.className = clase;
+    if (texto) el.textContent = texto;
+    return el;
+}
+
+document.querySelectorAll(".personaje").forEach(function (tarjeta) {
+    var nombre = tarjeta.dataset.nombre;
+    var datos = PERSONAJES[nombre];
+    if (!datos) return;
+
+    // Descripción
+    tarjeta.querySelector(".descripcion").textContent = datos.descripcion;
+
+    // Contenedor de stats
+    var stats = tarjeta.querySelector(".stats");
+
+    // Barra de vida
+    var statVida = crearElemento("div", "stat-vida");
+    statVida.appendChild(crearElemento("span", "stat-label", "Vida"));
+    var barraFondo = crearElemento("div", "barra-vida-fondo");
+    var barraRelleno = crearElemento("div", "barra-vida-relleno");
+    barraRelleno.style.width = (datos.vidaMax / 1.2) + "%";
+    barraFondo.appendChild(barraRelleno);
+    statVida.appendChild(barraFondo);
+    statVida.appendChild(crearElemento("span", "stat-valor", datos.vidaMax.toString()));
+    stats.appendChild(statVida);
+
+    // Ataques
+    var statAtaques = crearElemento("div", "stat-ataques");
+    statAtaques.appendChild(crearElemento("span", "stat-label", "Ataques"));
+    datos.ataques.forEach(function (ataque) {
+        var ataqueDiv = crearElemento("div", "ataque");
+        ataqueDiv.appendChild(crearElemento("span", "ataque-nombre", ataque.nombre));
+        ataqueDiv.appendChild(crearElemento("span", "ataque-dano", ataque.dano.toString()));
+        statAtaques.appendChild(ataqueDiv);
+    });
+    stats.appendChild(statAtaques);
+});
+
 // --- Selección de personaje ---
 
 let personajeElegido = null;   // nombre del personaje (string)
