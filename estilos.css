@@ -526,6 +526,30 @@ h1 {
     background-color: rgba(150, 150, 150, 0.15);
 }
 
+/* El Profano — púrpura/rojo sangre */
+.villano-profano {
+    border-color: #4a0a2a;
+    background-color: #1a0812;
+}
+
+.villano-profano h3 {
+    color: #cc44aa;
+}
+
+.villano-profano .avatar img {
+    border-color: #8b0040;
+    box-shadow: 0 0 10px rgba(200, 50, 100, 0.4);
+}
+
+.villano-profano .barra-vida-relleno {
+    background: linear-gradient(90deg, #6b0030, #cc44aa);
+}
+
+.villano-profano .ataque-dano {
+    color: #cc44aa;
+    background-color: rgba(204, 68, 170, 0.15);
+}
+
 /* El Errante — verde/negro */
 .villano-errante {
     border-color: #0a4a0a;
@@ -1108,6 +1132,69 @@ h1 {
     background: linear-gradient(135deg, #2a1a3e 0%, #1a102e 50%, #150d24 100%);
     border: 1px solid rgba(100, 60, 150, 0.2);
     box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.4);
+}
+
+/* Trampas del laberinto */
+.laberinto-trampa {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    border-radius: 3px;
+    background-color: rgba(80, 30, 30, 0.25);
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.laberinto-trampa::after {
+    content: "🔥";
+    font-size: 0.9rem;
+    opacity: 0.15;
+    transition: opacity 0.2s;
+}
+
+.laberinto-trampa.trampa-activa {
+    background-color: rgba(200, 50, 30, 0.45);
+    box-shadow: inset 0 0 10px rgba(255, 50, 30, 0.5);
+}
+
+.laberinto-trampa.trampa-activa::after {
+    opacity: 1;
+    animation: trampa-fuego 0.4s ease-in-out infinite alternate;
+}
+
+@keyframes trampa-fuego {
+    from { transform: scale(1); }
+    to { transform: scale(1.3); }
+}
+
+/* Flash al recibir daño de trampa */
+.jugador-golpeado img {
+    animation: golpe-flash 0.3s ease !important;
+}
+
+@keyframes golpe-flash {
+    0% { filter: brightness(1); }
+    25% { filter: brightness(3) saturate(0); }
+    50% { filter: brightness(1) sepia(1) saturate(5) hue-rotate(-30deg); }
+    100% { filter: brightness(1); }
+}
+
+/* Número de daño flotante */
+.dano-flotante {
+    position: absolute;
+    color: #ff4444;
+    font-weight: bold;
+    font-size: 1rem;
+    z-index: 10;
+    pointer-events: none;
+    text-shadow: 0 0 4px rgba(255, 0, 0, 0.6);
+    animation: dano-subir 0.8s ease-out forwards;
+}
+
+@keyframes dano-subir {
+    0% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-30px); }
 }
 
 /* Llave */

@@ -147,6 +147,13 @@ document.addEventListener("inventario-cambio", function () {
     }
 });
 
+// Escuchar cambios de vida (trampas, combate, etc.)
+document.addEventListener("vida-cambio", function () {
+    if (jugadorActual) {
+        barra.actualizarVida(jugadorActual);
+    }
+});
+
 // --- Iniciar el juego ---
 
 function iniciarJuego() {

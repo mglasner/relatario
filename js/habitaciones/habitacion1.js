@@ -14,6 +14,7 @@ const TOLERANCIA_ESQUINA = 8;
 const FILAS = 21;
 const COLS = 17;
 const ATAJOS = 8; // Paredes extra que se abren para crear caminos alternativos
+const COOLDOWN_TRAMPA = 1000; // ms entre golpes de la misma trampa
 
 // --- Generación aleatoria del laberinto ---
 
@@ -166,6 +167,101 @@ function encontrarPuntoLejano(mapa, inicioF, inicioC) {
     return masLejano;
 }
 
+// --- Trampas ---
+
+// Coloca entre 3 y 5 trampas en celdas lógicas lejos de la entrada y la llave
+function colocarTrampas() {
+    var numTrampas = 3 + Math.floor(Math.random() * 3); // 3-5
+    var celdasLibres = [];
+
+    for (var f = 1; f < FILAS - 1; f++) {
+        for (var c = 1; c < COLS - 1; c++) {
+            if (mapa[f][c] !== 0) continue;
+            if (f === entradaFila && c === entradaCol) continue;
+            if (f === llaveFila && c === llaveCol) continue;
+            // Evitar celdas muy cerca de la entrada
+            if (Math.abs(f - entradaFila) + Math.abs(c - entradaCol) <= 3) continue;
+            // Solo en celdas lógicas (intersecciones, más visibles)
+            if (f % 2 !== 1 || c % 2 !== 1) continue;
+            celdasLibres.push([f, c]);
+        }
+    }
+
+    mezclar(celdasLibres);
+    trampas = [];
+
+    for (var i = 0; i < Math.min(numTrampas, celdasLibres.length); i++) {
+        trampas.push({
+            fila: celdasLibres[i][0],
+            col: celdasLibres[i][1],
+            periodo: 1500 + Math.floor(Math.random() * 2000), // 1.5-3.5s por ciclo
+            desfase: Math.floor(Math.random() * 3000), // cada trampa arranca en distinto momento
+            ultimoGolpe: 0,
+            elemento: null,
+        });
+    }
+}
+
+// Determina si una trampa está activa (peligrosa) en este momento
+function esTrampaActiva(trampa) {
+    return Math.floor((Date.now() + trampa.desfase) / trampa.periodo) % 2 === 0;
+}
+
+// Actualiza el estado visual de cada trampa (se llama cada frame)
+function actualizarTrampas() {
+    for (var i = 0; i < trampas.length; i++) {
+        var activa = esTrampaActiva(trampas[i]);
+        if (activa) {
+            trampas[i].elemento.classList.add("trampa-activa");
+        } else {
+            trampas[i].elemento.classList.remove("trampa-activa");
+        }
+    }
+}
+
+// Detecta si el jugador está sobre una trampa activa y aplica daño
+function detectarTrampas() {
+    var celda = getCeldaJugador();
+    var ahora = Date.now();
+
+    for (var i = 0; i < trampas.length; i++) {
+        var t = trampas[i];
+        if (celda.fila === t.fila && celda.col === t.col && esTrampaActiva(t)) {
+            if (ahora - t.ultimoGolpe >= COOLDOWN_TRAMPA) {
+                var dano = 5 + Math.floor(Math.random() * 6); // 5-10
+                jugador.recibirDano(dano);
+                t.ultimoGolpe = ahora;
+
+                // Notificar a la barra superior
+                document.dispatchEvent(new Event("vida-cambio"));
+
+                // Número de daño flotante
+                mostrarDano(dano);
+
+                // Flash rojo en el jugador
+                elementoJugador.classList.add("jugador-golpeado");
+                setTimeout(function () {
+                    elementoJugador.classList.remove("jugador-golpeado");
+                }, 300);
+            }
+        }
+    }
+}
+
+// Muestra un número de daño flotante que sube y desaparece
+function mostrarDano(dano) {
+    var elem = document.createElement("div");
+    elem.className = "dano-flotante";
+    elem.textContent = "-" + dano;
+    elem.style.left = posX + "px";
+    elem.style.top = posY - 5 + "px";
+    contenedorLaberinto.appendChild(elem);
+
+    setTimeout(function () {
+        if (elem.parentNode) elem.parentNode.removeChild(elem);
+    }, 800);
+}
+
 // --- Estado del módulo ---
 
 let mapa = null;
@@ -173,6 +269,7 @@ let llaveFila = 0;
 let llaveCol = 0;
 let entradaFila = 0;
 let entradaCol = 0;
+let trampas = [];
 
 let jugador = null;
 let callbackSalir = null;
@@ -264,6 +361,9 @@ export function iniciarHabitacion1(jugadorRef, callback) {
     llaveFila = puntoLlave[0];
     llaveCol = puntoLlave[1];
 
+    // Colocar trampas aleatorias
+    colocarTrampas();
+
     // Crear e insertar la pantalla
     crearPantalla();
 
@@ -289,6 +389,7 @@ export function iniciarHabitacion1(jugadorRef, callback) {
 }
 
 function renderizarLaberinto() {
+    // Paredes
     for (var fila = 0; fila < mapa.length; fila++) {
         for (var col = 0; col < mapa[fila].length; col++) {
             if (mapa[fila][col] === 1) {
@@ -301,6 +402,19 @@ function renderizarLaberinto() {
                 contenedorLaberinto.appendChild(pared);
             }
         }
+    }
+
+    // Trampas
+    for (var i = 0; i < trampas.length; i++) {
+        var t = trampas[i];
+        var elemTrampa = document.createElement("div");
+        elemTrampa.className = "laberinto-trampa";
+        elemTrampa.style.left = t.col * TAM_CELDA + "px";
+        elemTrampa.style.top = t.fila * TAM_CELDA + "px";
+        elemTrampa.style.width = TAM_CELDA + "px";
+        elemTrampa.style.height = TAM_CELDA + "px";
+        contenedorLaberinto.appendChild(elemTrampa);
+        t.elemento = elemTrampa;
     }
 
     // Llave
@@ -464,6 +578,8 @@ function loopLaberinto() {
         moverEnLaberinto(dx, dy);
     }
 
+    actualizarTrampas();
+    detectarTrampas();
     detectarLlave();
     detectarSalida();
 
@@ -487,6 +603,7 @@ function onKeyUp(e) {
 
 function limpiarHabitacion1() {
     activo = false;
+    trampas = [];
 
     if (animacionId) {
         cancelAnimationFrame(animacionId);
