@@ -46,6 +46,18 @@ la-casa-del-terror/
 2. **Pasillo** - Pasillo con 4 puertas, movimiento con flechas y modal de confirmación
 3. **Habitación 1: El Laberinto** - Grid 15x13 donde el jugador busca una llave y vuelve a la salida
 
+## Diseño de villanos
+
+El juego es apto para niños desde 7 años. Los villanos deben seguir estas reglas:
+
+- **Estilo visual**: cartoon/Halloween, sin sangre ni gore. Colores oscuros pero estilizados
+- **Descripciones**: tono misterioso y divertido, nunca violento ni gráfico (nada de "asesino", "sangre", "muerte", "infierno")
+- **Ataques**: nombres de magia/sombras/misterio en vez de violencia explícita (ej: "Hechizo sombrío" en vez de "Corte maldito")
+- **Imagen**: generada con estilo semi-cartoon, apta para niños, circular para avatar de juego
+- **Paleta CSS**: cada villano tiene su clase `.villano-nombre` con colores de borde, fondo, h3, avatar img, barra de vida y ataque-dano
+- **Datos**: definidos en `js/enemigos.js` como instancias de `Enemigo(nombre, vidaMax, ataques[], descripcion)`
+- **Imágenes**: van en `assets/img/enemigos/`
+
 ## Convenciones
 
 - Archivos e IDs en español (ej: `estilos.css`, `#seleccion-personaje`, `#btn-jugar`)

@@ -15,7 +15,12 @@ const ENEMIGOS = {
     "El Errante": new Enemigo("El Errante", 140, [
         { nombre: "Mordida tóxica", dano: 35, descripcion: "Mordida venenosa que infecta" },
         { nombre: "Grito de ultratumba", dano: 25, descripcion: "Aullido paralizante del más allá" }
-    ], "Cadáver inteligente y siniestro. Planifica cada ataque.")
+    ], "Cadáver inteligente y siniestro. Planifica cada ataque."),
+
+    "El Profano": new Enemigo("El Profano", 180, [
+        { nombre: "Cuchillada sombría", dano: 35, descripcion: "Un tajo rápido desde las sombras" },
+        { nombre: "Emboscada", dano: 30, descripcion: "Aparece por sorpresa y ataca" }
+    ], "Sigiloso y despiadado. Aparece cuando menos lo esperas.")
 };
 
 export { ENEMIGOS };
