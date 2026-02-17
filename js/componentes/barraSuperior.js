@@ -3,6 +3,7 @@
 
 const ICONOS_ITEMS = {
     "llave-habitacion-2": "🔑",
+    "llave-habitacion-3": "🔑",
 };
 
 export function crearBarraSuperior(contenedor) {

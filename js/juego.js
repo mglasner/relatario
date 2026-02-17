@@ -2,6 +2,7 @@
 import { PERSONAJES } from "./personajes.js";
 import { ENEMIGOS } from "./enemigos.js";
 import { iniciarHabitacion1, limpiarHabitacion1 } from "./habitaciones/habitacion1.js";
+import { iniciarHabitacion2, limpiarHabitacion2 } from "./habitaciones/habitacion2.js";
 import { crearBarraSuperior } from "./componentes/barraSuperior.js";
 import { crearModalPuerta } from "./componentes/modalPuerta.js";
 import { crearModalDerrota } from "./componentes/modalDerrota.js";
@@ -162,7 +163,8 @@ document.addEventListener("jugador-muerto", function () {
     if (!jugadorActual) return;
 
     // Buscar la pantalla de habitación activa como contenedor del modal
-    var pantallaHabitacion = document.getElementById("pantalla-habitacion1");
+    var pantallaHabitacion = document.getElementById("pantalla-habitacion1")
+        || document.getElementById("pantalla-habitacion2");
     var contenedorModal = pantallaHabitacion || contenedorJuego;
     modalDerrota.mostrar(jugadorActual.nombre, contenedorModal);
 });
@@ -242,6 +244,7 @@ document.getElementById("btn-volver").addEventListener("click", volverASeleccion
 modalDerrota.onAceptar(function () {
     // Limpiar la habitación activa
     if (habitacionActual === "1") limpiarHabitacion1();
+    if (habitacionActual === "2") limpiarHabitacion2();
     habitacionActual = null;
     volverASeleccion();
 });
@@ -405,6 +408,15 @@ modal.onEntrar(function (numeroPuerta) {
         habitacionActual = "1";
         document.getElementById("pantalla-juego").classList.add("oculto");
         iniciarHabitacion1(jugadorActual, function () {
+            habitacionActual = null;
+            document.getElementById("pantalla-juego").classList.remove("oculto");
+            loopActivo = true;
+            requestAnimationFrame(gameLoop);
+        });
+    } else if (numeroPuerta === "2") {
+        habitacionActual = "2";
+        document.getElementById("pantalla-juego").classList.add("oculto");
+        iniciarHabitacion2(jugadorActual, function () {
             habitacionActual = null;
             document.getElementById("pantalla-juego").classList.remove("oculto");
             loopActivo = true;
