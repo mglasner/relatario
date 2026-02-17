@@ -6,13 +6,24 @@ import { generarMapa, encontrarPuntoLejano } from '../laberinto.js';
 
 // --- Constantes ---
 
-const ANCHO_CANVAS = 640;
-const ALTO_CANVAS = 400;
-const ANCHO_MINIMAPA = 150;
-const ALTO_MINIMAPA = 150;
+let ANCHO_CANVAS = 640;
+let ALTO_CANVAS = 400;
+let ANCHO_MINIMAPA = 150;
+let ALTO_MINIMAPA = 150;
 const FOV = Math.PI / 3; // 60 grados
-const NUM_RAYOS = 320;
-const ANCHO_FRANJA = ANCHO_CANVAS / NUM_RAYOS; // 2px por franja
+let NUM_RAYOS = 320;
+let ANCHO_FRANJA = 2;
+
+// Calcula dimensiones del canvas según el viewport
+function calcularDimensionesCanvas() {
+    const contenedor = document.getElementById('juego');
+    ANCHO_CANVAS = Math.min(640, contenedor.clientWidth - 20);
+    ALTO_CANVAS = Math.round(ANCHO_CANVAS * 0.625);
+    NUM_RAYOS = Math.max(160, Math.round(ANCHO_CANVAS / 2));
+    ANCHO_FRANJA = ANCHO_CANVAS / NUM_RAYOS;
+    ANCHO_MINIMAPA = Math.min(150, Math.round(ANCHO_CANVAS * 0.23));
+    ALTO_MINIMAPA = ANCHO_MINIMAPA;
+}
 
 // Dimensiones del laberinto (impares para el algoritmo de generación)
 const FILAS = 13;
@@ -564,11 +575,14 @@ function onKeyUp(e) {
 
 // --- API pública ---
 
-export function iniciarHabitacion2(jugadorRef, callback) {
+export function iniciarHabitacion2(jugadorRef, callback, dpadRef) {
     jugador = jugadorRef;
     callbackSalir = callback;
     tieneLlave = false;
     activo = true;
+
+    // Escalar canvas al viewport
+    calcularDimensionesCanvas();
 
     // Generar laberinto aleatorio
     mapa = generarMapa(FILAS, COLS, ATAJOS);
@@ -605,6 +619,12 @@ export function iniciarHabitacion2(jugadorRef, callback) {
     // Registrar controles
     document.addEventListener('keydown', onKeyDown);
     document.addEventListener('keyup', onKeyUp);
+
+    // Activar D-pad touch apuntando a las teclas del laberinto 3D
+    if (dpadRef) {
+        dpadRef.setTeclasRef(teclas);
+        dpadRef.mostrar();
+    }
 
     // Iniciar game loop
     animacionId = requestAnimationFrame(loop);

@@ -50,6 +50,32 @@ export const est = {
     mensajeExito: null,
 };
 
+// Valores base para escalar proporcionalmente
+const VALORES_BASE = {
+    TAM_CELDA: 30,
+    TAM_JUGADOR: 22,
+    TAM_TRASGO: 20,
+    VELOCIDAD: 3,
+    VELOCIDAD_TRASGO: 2,
+    MARGEN_COLISION: 2,
+    TOLERANCIA_ESQUINA: 8,
+};
+
+// Calcula TAM_CELDA según el ancho disponible y escala todo proporcionalmente
+export function calcularTamCelda() {
+    const contenedor = document.getElementById('juego');
+    const maxAncho = Math.min(contenedor.clientWidth - 20, VALORES_BASE.TAM_CELDA * CONFIG.COLS);
+    CONFIG.TAM_CELDA = Math.max(Math.floor(maxAncho / CONFIG.COLS), 16);
+
+    const escala = CONFIG.TAM_CELDA / VALORES_BASE.TAM_CELDA;
+    CONFIG.TAM_JUGADOR = Math.max(12, Math.round(VALORES_BASE.TAM_JUGADOR * escala));
+    CONFIG.TAM_TRASGO = Math.max(10, Math.round(VALORES_BASE.TAM_TRASGO * escala));
+    CONFIG.VELOCIDAD = Math.max(1.5, VALORES_BASE.VELOCIDAD * escala);
+    CONFIG.VELOCIDAD_TRASGO = Math.max(1, VALORES_BASE.VELOCIDAD_TRASGO * escala);
+    CONFIG.MARGEN_COLISION = Math.max(1, Math.round(VALORES_BASE.MARGEN_COLISION * escala));
+    CONFIG.TOLERANCIA_ESQUINA = Math.max(3, Math.round(VALORES_BASE.TOLERANCIA_ESQUINA * escala));
+}
+
 // --- Utilidades compartidas ---
 
 // Obtiene la celda lógica donde está el centro del jugador

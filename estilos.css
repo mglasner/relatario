@@ -960,8 +960,9 @@ h1 {
 
 #pasillo {
     position: relative;
-    width: 400px;
-    height: 600px;
+    width: min(400px, 90vw);
+    aspect-ratio: 2 / 3;
+    touch-action: none;
     background:
         /* Piso de baldosas oscuras */
         repeating-conic-gradient(#1a1a28 0% 25%, #15152a 0% 50%) 0 0 / 50px 50px,
@@ -1051,8 +1052,8 @@ h1 {
 /* Cuadros siniestros entre las puertas */
 .deco-cuadro {
     position: absolute;
-    width: 55px;
-    height: 45px;
+    width: 13.75%;
+    height: 7.5%;
     overflow: hidden;
     border-radius: 2px;
     box-shadow:
@@ -1070,8 +1071,8 @@ h1 {
 }
 
 .deco-cuadro-izq {
-    left: 8px;
-    top: 272px;
+    left: 2%;
+    top: 45.3%;
     transform: rotate(-2deg);
 }
 
@@ -1096,10 +1097,10 @@ h1 {
 }
 
 .deco-cuadro-der {
-    right: 8px;
-    top: 278px;
-    width: 58px;
-    height: 42px;
+    right: 2%;
+    top: 46.3%;
+    width: 14.5%;
+    height: 7%;
     transform: rotate(2deg);
 }
 
@@ -1107,8 +1108,8 @@ h1 {
 
 .puerta {
     position: absolute;
-    width: 60px;
-    height: 90px;
+    width: 15%;
+    height: 15%;
     background: linear-gradient(180deg, #3d2815 0%, #2a1a0a 40%, #1f1208 100%);
     border: 3px solid #4a3020;
     border-radius: 4px 4px 0 0;
@@ -1171,29 +1172,29 @@ h1 {
 
 /* Posiciones de las puertas */
 .puerta-izquierda {
-    left: 10px;
+    left: 2.5%;
 }
 
 .puerta-derecha {
-    right: 10px;
+    right: 2.5%;
 }
 
 /* Puertas 1 y 2 — más cerca de la entrada (abajo) */
 .puerta-1 {
-    top: 360px;
+    top: 60%;
 }
 
 .puerta-2 {
-    top: 360px;
+    top: 60%;
 }
 
 /* Puertas 3 y 4 — más al fondo (arriba) */
 .puerta-3 {
-    top: 140px;
+    top: 23.3%;
 }
 
 .puerta-4 {
-    top: 140px;
+    top: 23.3%;
 }
 
 .puerta:hover {
@@ -1207,8 +1208,8 @@ h1 {
 
 #personaje-jugador {
     position: absolute;
-    width: 50px;
-    height: 50px;
+    width: 12.5%;
+    aspect-ratio: 1;
     z-index: 4;
     transition: box-shadow 0.3s;
 }
@@ -1322,7 +1323,7 @@ h1 {
         0 0 40px rgb(233 69 96 / 40%),
         0 0 80px rgb(0 0 0 / 60%);
     animation: modal-aparecer 0.3s ease;
-    max-width: 340px;
+    max-width: min(340px, 90vw);
 }
 
 @keyframes modal-aparecer {
@@ -1445,7 +1446,7 @@ h1 {
         0 0 30px rgb(139 0 0 / 40%),
         inset 0 0 20px rgb(0 0 0 / 50%);
     animation: derrota-caja-aparecer 0.4s ease;
-    max-width: 280px;
+    max-width: min(280px, 85vw);
 }
 
 @keyframes derrota-caja-aparecer {
@@ -1742,6 +1743,7 @@ h1 {
 #laberinto {
     position: relative;
     background-color: var(--color-oscuro);
+    touch-action: none;
     border: 3px solid var(--color-borde);
     border-radius: 8px;
     overflow: hidden;
@@ -2075,8 +2077,6 @@ h1 {
 /* Jugador dentro del laberinto */
 .jugador-laberinto {
     position: absolute;
-    width: 22px;
-    height: 22px;
     z-index: 5;
     transform: scale(1.45);
 }
@@ -2321,6 +2321,71 @@ h1 {
     }
 }
 
+/* --- D-pad virtual (touch) --- */
+
+.dpad-contenedor {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 150;
+    display: grid;
+    grid-template:
+        '.     arriba  .      ' 56px
+        'izq   .       der    ' 56px
+        '.     abajo   .      ' 56px
+        / 56px 56px 56px;
+    gap: 4px;
+}
+
+.dpad-btn {
+    width: 56px;
+    height: 56px;
+    border: 2px solid rgb(255 255 255 / 15%);
+    border-radius: 12px;
+    background-color: rgb(15 15 30 / 75%);
+    color: rgb(255 255 255 / 60%);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: none;
+    user-select: none;
+    transition:
+        background-color 0.1s,
+        border-color 0.1s;
+}
+
+.dpad-btn:active {
+    background-color: rgb(233 69 96 / 40%);
+    border-color: var(--color-accent);
+    color: white;
+}
+
+.dpad-arriba {
+    grid-area: arriba;
+}
+
+.dpad-izquierda {
+    grid-area: izq;
+}
+
+.dpad-derecha {
+    grid-area: der;
+}
+
+.dpad-abajo {
+    grid-area: abajo;
+}
+
+/* Ocultar D-pad en dispositivos sin touch */
+@media (hover: hover) and (pointer: fine) {
+    .dpad-contenedor {
+        display: none !important;
+    }
+}
+
 /* --- Utilidades --- */
 
 .oculto {
@@ -2349,6 +2414,32 @@ h1 {
     .avatar img {
         width: 80px;
         height: 80px;
+    }
+
+    .modal-contenido {
+        padding: 24px 28px;
+    }
+
+    .modal-derrota-caja {
+        padding: 20px 24px;
+    }
+
+    .barra-superior {
+        gap: 10px;
+        padding: 6px 10px;
+    }
+
+    .barra-jugador img {
+        width: 28px;
+        height: 28px;
+    }
+
+    .barra-jugador span {
+        font-size: 0.8rem;
+    }
+
+    .barra-vida-jugador {
+        min-width: 80px;
     }
 }
 
@@ -2385,5 +2476,92 @@ h1 {
     .btn-empezar {
         padding: 10px 24px;
         font-size: 1rem;
+    }
+
+    .modal-contenido {
+        padding: 20px;
+    }
+
+    .modal-contenido h2 {
+        font-size: 1.1rem;
+    }
+
+    .modal-derrota-caja {
+        padding: 18px 16px;
+    }
+
+    .modal-derrota-caja h2 {
+        font-size: 1.05rem;
+    }
+
+    #btn-entrar,
+    #btn-cancelar {
+        padding: 10px 22px;
+        font-size: 0.9rem;
+    }
+
+    .barra-superior {
+        gap: 6px;
+        padding: 5px 8px;
+    }
+
+    .barra-jugador img {
+        width: 24px;
+        height: 24px;
+    }
+
+    .barra-jugador span {
+        font-size: 0.75rem;
+    }
+
+    .barra-vida-texto {
+        font-size: 0.65rem;
+    }
+
+    .barra-vida-jugador {
+        min-width: 60px;
+        gap: 4px;
+    }
+
+    .barra-inventario-label {
+        font-size: 0.6rem;
+    }
+
+    .inventario-item {
+        font-size: 0.9rem;
+    }
+}
+
+/* --- Pulido mobile --- */
+
+/* Ocultar hints de teclado en dispositivos touch */
+@media (hover: none) {
+    #controles-hint,
+    .laberinto-hint {
+        display: none;
+    }
+}
+
+/* Targets mínimos de 44x44px en botones interactivos */
+@media (pointer: coarse) {
+    #btn-volver,
+    #btn-huir,
+    #btn-huir-3d,
+    #btn-entrar,
+    #btn-cancelar,
+    .modal-derrota-btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+}
+
+/* Reducir animaciones pesadas si el usuario lo prefiere */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
     }
 }

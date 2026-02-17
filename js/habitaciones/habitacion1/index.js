@@ -3,7 +3,7 @@
 // El laberinto se genera aleatoriamente cada vez
 
 import { generarMapa, encontrarPuntoLejano } from '../../laberinto.js';
-import { CONFIG, est } from './estado.js';
+import { CONFIG, est, calcularTamCelda } from './estado.js';
 import {
     colocarTrampas,
     actualizarTrampas,
@@ -38,6 +38,8 @@ function crearPantalla() {
     // Jugador dentro del laberinto
     est.elementoJugador = document.createElement('div');
     est.elementoJugador.className = 'jugador-laberinto';
+    est.elementoJugador.style.width = CONFIG.TAM_JUGADOR + 'px';
+    est.elementoJugador.style.height = CONFIG.TAM_JUGADOR + 'px';
     const img = document.createElement('img');
     img.src = est.jugador.img;
     img.alt = est.jugador.nombre;
@@ -72,11 +74,14 @@ function crearPantalla() {
 
 // --- Funciones principales ---
 
-export function iniciarHabitacion1(jugadorRef, callback) {
+export function iniciarHabitacion1(jugadorRef, callback, dpadRef) {
     est.jugador = jugadorRef;
     est.callbackSalir = callback;
     est.tieneLlave = false;
     est.activo = true;
+
+    // Escalar tamaño de celda al viewport
+    calcularTamCelda();
 
     // Generar laberinto aleatorio
     est.mapa = generarMapa(CONFIG.FILAS, CONFIG.COLS, CONFIG.ATAJOS);
@@ -129,6 +134,12 @@ export function iniciarHabitacion1(jugadorRef, callback) {
     // Registrar controles
     document.addEventListener('keydown', onKeyDown);
     document.addEventListener('keyup', onKeyUp);
+
+    // Activar D-pad touch apuntando a las teclas del laberinto
+    if (dpadRef) {
+        dpadRef.setTeclasRef(est.teclas);
+        dpadRef.mostrar();
+    }
 
     // Iniciar game loop
     est.animacionId = requestAnimationFrame(loopLaberinto);

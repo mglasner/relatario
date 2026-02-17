@@ -7,6 +7,7 @@ import { crearBarraSuperior } from './componentes/barraSuperior.js';
 import { crearModalPuerta } from './componentes/modalPuerta.js';
 import { crearModalDerrota } from './componentes/modalDerrota.js';
 import { crearTransicion } from './componentes/transicion.js';
+import { crearControlesTouch } from './componentes/controlesTouch.js';
 
 // --- Estados del juego (máquina de estados) ---
 
@@ -253,9 +254,14 @@ const pasillo = document.getElementById('pasillo');
 const personajeJugador = document.getElementById('personaje-jugador');
 const imgJugador = document.getElementById('img-jugador');
 
-// Constantes de movimiento
-const velocidad = 4;
-const tamPersonaje = 50;
+// Movimiento proporcional al tamaño del pasillo
+function getVelocidad() {
+    return pasillo.clientWidth * 0.01;
+}
+
+function getTamPersonaje() {
+    return personajeJugador.offsetWidth;
+}
 
 // --- Crear componentes ---
 
@@ -264,6 +270,7 @@ const barra = crearBarraSuperior(contenedorJuego);
 const modal = crearModalPuerta(contenedorJuego);
 const modalDerrota = crearModalDerrota();
 const transicion = crearTransicion();
+const dpad = crearControlesTouch();
 
 // Escuchar cambios de inventario desde las habitaciones
 document.addEventListener('inventario-cambio', function () {
@@ -306,6 +313,7 @@ function ejecutarCambioEstado(anterior, nuevo, datos) {
     // Salir del estado anterior
     if (anterior === ESTADOS.PASILLO) {
         estado.loopActivo = false;
+        dpad.ocultar();
     } else if (anterior === ESTADOS.HABITACION) {
         const hab = habitaciones[estado.habitacionActual];
         if (hab) hab.limpiar();
@@ -360,14 +368,19 @@ function ejecutarCambioEstado(anterior, nuevo, datos) {
         document.getElementById('pantalla-juego').classList.remove('oculto');
 
         if (anterior === ESTADOS.SELECCION) {
-            movimiento.limiteDerecho = pasillo.clientWidth - tamPersonaje;
-            movimiento.limiteInferior = pasillo.clientHeight - tamPersonaje;
-            movimiento.x = (pasillo.clientWidth - tamPersonaje) / 2;
-            movimiento.y = pasillo.clientHeight - tamPersonaje - 15;
+            movimiento.limiteDerecho = pasillo.clientWidth - getTamPersonaje();
+            movimiento.limiteInferior = pasillo.clientHeight - getTamPersonaje();
+            movimiento.x = (pasillo.clientWidth - getTamPersonaje()) / 2;
+            movimiento.y = pasillo.clientHeight - getTamPersonaje() - 15;
             actualizarPosicion();
 
             barra.mostrar(estado.jugadorActual);
         }
+
+        // Activar D-pad touch apuntando a las teclas del pasillo
+        dpad.setTeclasRef(movimiento.teclas);
+        dpad.mostrar();
+
         estado.loopActivo = true;
         requestAnimationFrame(gameLoop);
     } else if (nuevo === ESTADOS.HABITACION) {
@@ -377,9 +390,13 @@ function ejecutarCambioEstado(anterior, nuevo, datos) {
         document.getElementById('pantalla-juego').classList.add('oculto');
         estado.habitacionActual = datos.numero;
 
-        hab.iniciar(estado.jugadorActual, function () {
-            cambiarEstado(ESTADOS.PASILLO);
-        });
+        hab.iniciar(
+            estado.jugadorActual,
+            function () {
+                cambiarEstado(ESTADOS.PASILLO);
+            },
+            dpad
+        );
     }
 }
 
@@ -470,10 +487,12 @@ function gameLoop() {
     let dx = 0;
     let dy = 0;
 
-    if (movimiento.teclas['ArrowUp']) dy -= velocidad;
-    if (movimiento.teclas['ArrowDown']) dy += velocidad;
-    if (movimiento.teclas['ArrowLeft']) dx -= velocidad;
-    if (movimiento.teclas['ArrowRight']) dx += velocidad;
+    const vel = getVelocidad();
+
+    if (movimiento.teclas['ArrowUp']) dy -= vel;
+    if (movimiento.teclas['ArrowDown']) dy += vel;
+    if (movimiento.teclas['ArrowLeft']) dx -= vel;
+    if (movimiento.teclas['ArrowRight']) dx += vel;
 
     if (dx !== 0 || dy !== 0) {
         moverPersonaje(dx, dy);
@@ -524,9 +543,9 @@ function detectarColisionPuertas() {
 
         const colisiona =
             movimiento.x < px + pw &&
-            movimiento.x + tamPersonaje > px &&
+            movimiento.x + getTamPersonaje() > px &&
             movimiento.y < py + ph &&
-            movimiento.y + tamPersonaje > py;
+            movimiento.y + getTamPersonaje() > py;
 
         if (colisiona) {
             tocandoAlguna = true;
