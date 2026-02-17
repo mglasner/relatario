@@ -288,7 +288,12 @@ function cambiarEstado(nuevo, datos) {
                 'jugador-donbu'
             );
             personajeJugador.classList.add(estado.jugadorActual.clase);
+        }
 
+        // Hacer visible ANTES de calcular dimensiones (clientWidth es 0 si está oculto)
+        document.getElementById('pantalla-juego').classList.remove('oculto');
+
+        if (anterior === ESTADOS.SELECCION) {
             movimiento.limiteDerecho = pasillo.clientWidth - tamPersonaje;
             movimiento.limiteInferior = pasillo.clientHeight - tamPersonaje;
             movimiento.x = (pasillo.clientWidth - tamPersonaje) / 2;
@@ -297,8 +302,6 @@ function cambiarEstado(nuevo, datos) {
 
             barra.mostrar(estado.jugadorActual);
         }
-
-        document.getElementById('pantalla-juego').classList.remove('oculto');
         estado.loopActivo = true;
         requestAnimationFrame(gameLoop);
     } else if (nuevo === ESTADOS.HABITACION) {
