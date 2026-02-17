@@ -93,7 +93,7 @@ export function crearBarraSuperior(contenedor) {
 
         actualizarVida: function (jugador) {
             const porcentaje = Math.round((jugador.vidaActual / jugador.vidaMax) * 100);
-            barraRelleno.style.width = porcentaje + '%';
+            barraRelleno.style.transform = 'scaleX(' + porcentaje / 100 + ')';
             vidaTexto.textContent = jugador.vidaActual + '/' + jugador.vidaMax;
 
             // Color dinámico: verde → amarillo → rojo

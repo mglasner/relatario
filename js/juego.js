@@ -48,7 +48,7 @@ function llenarStats(tarjeta, datos) {
     statVida.appendChild(crearElemento('span', 'stat-label', 'Vida'));
     const barraFondo = crearElemento('div', 'barra-vida-fondo');
     const barraRelleno = crearElemento('div', 'barra-vida-relleno');
-    barraRelleno.style.width = Math.round(datos.vidaMax / 1.5) + '%';
+    barraRelleno.style.transform = 'scaleX(' + datos.vidaMax / 150 + ')';
     barraFondo.appendChild(barraRelleno);
     statVida.appendChild(barraFondo);
     statVida.appendChild(crearElemento('span', 'stat-valor', datos.vidaMax.toString()));
