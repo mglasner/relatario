@@ -1675,33 +1675,47 @@ h1 {
 .barra-inventario {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     flex-shrink: 0;
 }
 
-.barra-inventario-label {
-    font-size: 0.7rem;
-    color: var(--color-texto-apagado);
-    text-transform: uppercase;
-}
-
-.barra-inventario-items {
+.inventario-slot {
+    width: 28px;
+    height: 28px;
+    border: 2px solid rgb(255 255 255 / 8%);
+    border-radius: 6px;
+    background-color: rgb(255 255 255 / 3%);
     display: flex;
-    gap: 4px;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    line-height: 1;
+    transition:
+        border-color 0.3s,
+        background-color 0.3s,
+        box-shadow 0.3s;
 }
 
-.inventario-item {
-    font-size: 1.1rem;
-    animation: aparecer-item 0.4s ease;
+.inventario-slot-lleno {
+    border-color: var(--slot-color);
+    background-color: rgb(255 255 255 / 6%);
+    box-shadow:
+        0 0 8px var(--slot-color),
+        inset 0 0 6px rgb(0 0 0 / 30%);
+    animation: slot-aparecer 0.4s ease;
 }
 
-@keyframes aparecer-item {
-    from {
-        transform: scale(0);
+@keyframes slot-aparecer {
+    0% {
+        transform: scale(0.5);
         opacity: 0;
     }
 
-    to {
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
         transform: scale(1);
         opacity: 1;
     }
@@ -2551,6 +2565,12 @@ h1 {
     .barra-vida-jugador {
         min-width: 80px;
     }
+
+    .inventario-slot {
+        width: 24px;
+        height: 24px;
+        font-size: 0.85rem;
+    }
 }
 
 /* --- Mobile (≤480px) --- */
@@ -2637,12 +2657,10 @@ h1 {
         font-size: 0.75rem;
     }
 
-    .barra-inventario-label {
-        font-size: 0.6rem;
-    }
-
-    .inventario-item {
-        font-size: 0.9rem;
+    .inventario-slot {
+        width: 22px;
+        height: 22px;
+        font-size: 0.8rem;
     }
 }
 

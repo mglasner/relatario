@@ -1,10 +1,14 @@
 // Componente: Barra superior del jugador
 // Muestra avatar, vida e inventario durante el juego
 
-const ICONOS_ITEMS = {
-    'llave-habitacion-2': '🔑',
-    'llave-habitacion-3': '🔑',
+const ITEMS_INFO = {
+    'llave-habitacion-2': { icono: '🔑', color: '#bb86fc', slot: 0 },
+    'llave-habitacion-3': { icono: '🔑', color: '#6bfc86', slot: 1 },
+    'llave-habitacion-4': { icono: '🔑', color: '#e94560', slot: 2 },
+    'llave-habitacion-5': { icono: '🔑', color: '#5eeadb', slot: 3 },
 };
+
+const TOTAL_SLOTS = 4;
 
 export function crearBarraSuperior(contenedor) {
     // --- Crear estructura DOM ---
@@ -49,19 +53,17 @@ export function crearBarraSuperior(contenedor) {
     vidaDiv.appendChild(corazon);
     vidaDiv.appendChild(barraFondo);
 
-    // Inventario
+    // Inventario con slots
     const invDiv = document.createElement('div');
     invDiv.className = 'barra-inventario';
 
-    const invLabel = document.createElement('span');
-    invLabel.className = 'barra-inventario-label';
-    invLabel.textContent = 'Items:';
-
-    const invItems = document.createElement('div');
-    invItems.className = 'barra-inventario-items';
-
-    invDiv.appendChild(invLabel);
-    invDiv.appendChild(invItems);
+    const slots = [];
+    for (let i = 0; i < TOTAL_SLOTS; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'inventario-slot';
+        invDiv.appendChild(slot);
+        slots.push(slot);
+    }
 
     // Ensamblar
     el.appendChild(jugadorDiv);
@@ -108,23 +110,21 @@ export function crearBarraSuperior(contenedor) {
         },
 
         actualizarInventario: function (jugador) {
-            invItems.replaceChildren();
+            // Resetear todos los slots
+            slots.forEach(function (slot) {
+                slot.className = 'inventario-slot';
+                slot.textContent = '';
+                slot.style.removeProperty('--slot-color');
+            });
 
-            if (jugador.inventario.length === 0) {
-                const vacio = document.createElement('span');
-                vacio.style.fontSize = '0.75rem';
-                vacio.style.color = '#555';
-                vacio.textContent = '—';
-                invItems.appendChild(vacio);
-                return;
-            }
-
+            // Llenar los slots que tienen items
             jugador.inventario.forEach(function (item) {
-                const span = document.createElement('span');
-                span.className = 'inventario-item';
-                span.textContent = ICONOS_ITEMS[item] || '📦';
-                span.title = item;
-                invItems.appendChild(span);
+                const info = ITEMS_INFO[item];
+                if (!info) return;
+                const slot = slots[info.slot];
+                slot.classList.add('inventario-slot-lleno');
+                slot.textContent = info.icono;
+                slot.style.setProperty('--slot-color', info.color);
             });
         },
     };
