@@ -888,6 +888,7 @@ h1 {
         inset 0 0 30px rgb(0 0 0 / 50%),
         0 0 20px rgb(0 0 0 / 60%);
     overflow: hidden;
+    animation: parpadeo-luz 6s ease-in-out infinite;
 }
 
 /* Viñeta oscura sobre el pasillo */
@@ -948,10 +949,6 @@ h1 {
     98% {
         opacity: 0.9;
     }
-}
-
-#pasillo {
-    animation: parpadeo-luz 6s ease-in-out infinite;
 }
 
 /* --- Decoración del pasillo --- */

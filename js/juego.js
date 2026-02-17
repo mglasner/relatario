@@ -7,8 +7,6 @@ import { crearBarraSuperior } from './componentes/barraSuperior.js';
 import { crearModalPuerta } from './componentes/modalPuerta.js';
 import { crearModalDerrota } from './componentes/modalDerrota.js';
 
-console.log('¡La Casa del Terror está cargando!');
-
 // --- Estados del juego (máquina de estados) ---
 
 const ESTADOS = {
