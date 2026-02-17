@@ -46,22 +46,18 @@ export function renderizarMinimapa(ctx, base, datos) {
     );
     ctx.fill();
 
-    // Llave (dorada con brillo)
+    // Llave (dorada con pseudo-glow sin shadowBlur)
     if (!datos.tieneLlave) {
-        ctx.save();
-        ctx.shadowColor = '#ffd700';
-        ctx.shadowBlur = 6;
+        const lx = (datos.llaveCol + 0.5) * tamCelda;
+        const ly = (datos.llaveFila + 0.5) * tamCelda;
+        ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
+        ctx.beginPath();
+        ctx.arc(lx, ly, 7, 0, Math.PI * 2);
+        ctx.fill();
         ctx.fillStyle = '#ffd700';
         ctx.beginPath();
-        ctx.arc(
-            (datos.llaveCol + 0.5) * tamCelda,
-            (datos.llaveFila + 0.5) * tamCelda,
-            4,
-            0,
-            Math.PI * 2
-        );
+        ctx.arc(lx, ly, 4, 0, Math.PI * 2);
         ctx.fill();
-        ctx.restore();
     }
 
     // Jugador
@@ -69,15 +65,15 @@ export function renderizarMinimapa(ctx, base, datos) {
     const py = datos.jugadorY * tamCelda;
     const radioAvatar = 8;
 
-    // Resplandor
-    ctx.save();
-    ctx.shadowColor = '#ffcc00';
-    ctx.shadowBlur = 10;
+    // Resplandor (pseudo-glow sin shadowBlur)
+    ctx.fillStyle = 'rgba(255, 204, 0, 0.3)';
+    ctx.beginPath();
+    ctx.arc(px, py, radioAvatar + 4, 0, Math.PI * 2);
+    ctx.fill();
     ctx.fillStyle = 'rgba(255, 204, 0, 0.4)';
     ctx.beginPath();
     ctx.arc(px, py, radioAvatar + 2, 0, Math.PI * 2);
     ctx.fill();
-    ctx.restore();
 
     // Avatar recortado en círculo
     ctx.save();

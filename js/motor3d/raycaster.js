@@ -3,6 +3,21 @@
 import { FOV, TEX_SIZE, COLORES, canvas } from './config.js';
 import { obtenerTextura } from './texturas.js';
 
+// zBuffer preallocado (se redimensiona si cambia numRayos)
+let _zBuffer = new Float64Array(320);
+
+// LUT de strings de sombra preallocados (101 niveles de 0.00 a 1.00)
+const LUT_SOMBRA = Array.from(
+    { length: 101 },
+    (_, i) => 'rgba(0,0,0,' + (i / 100).toFixed(2) + ')'
+);
+
+// LUT de strings de tinte cálido preallocados (101 niveles)
+const LUT_TINTE = Array.from(
+    { length: 101 },
+    (_, i) => 'rgba(255,160,50,' + ((i / 100) * 0.15).toFixed(3) + ')'
+);
+
 // Renderiza la vista 3D con raycasting DDA
 // Retorna el zBuffer para sprites
 export function renderizar3D(ctx, jugador, mapa, filas, cols, grad, texturas, mapaLuz) {
@@ -15,7 +30,11 @@ export function renderizar3D(ctx, jugador, mapa, filas, cols, grad, texturas, ma
     ctx.fillStyle = grad.suelo;
     ctx.fillRect(0, mitadAlto, ancho, mitadAlto);
 
-    const zBuffer = new Array(numRayos);
+    // Reutilizar zBuffer preallocado
+    if (_zBuffer.length < numRayos) {
+        _zBuffer = new Float64Array(numRayos);
+    }
+    _zBuffer.fill(0);
 
     for (let i = 0; i < numRayos; i++) {
         const anguloRayo = jugador.angulo - FOV / 2 + (i / numRayos) * FOV;
@@ -77,7 +96,7 @@ export function renderizar3D(ctx, jugador, mapa, filas, cols, grad, texturas, ma
         let distPerp = distRayo * Math.cos(anguloRayo - jugador.angulo);
         if (distPerp < 0.01) distPerp = 0.01;
 
-        zBuffer[i] = distPerp;
+        _zBuffer[i] = distPerp;
 
         const alturaPared = alto / distPerp;
         const inicioY = Math.floor(mitadAlto - alturaPared / 2);
@@ -115,21 +134,21 @@ export function renderizar3D(ctx, jugador, mapa, filas, cols, grad, texturas, ma
             // Caras N/S 20% más oscuras
             if (lado === 1) brillo *= 0.8;
 
-            // Overlay de oscuridad por distancia
+            // Overlay de oscuridad por distancia (LUT sin string concat)
             const oscuridad = 1 - brillo;
             if (oscuridad > 0.01) {
-                ctx.fillStyle = 'rgba(0,0,0,' + oscuridad.toFixed(2) + ')';
+                ctx.fillStyle = LUT_SOMBRA[Math.min(100, Math.round(oscuridad * 100))];
                 ctx.fillRect(screenX, inicioY, anchoFranja, alturaPared);
             }
 
-            // Tinte cálido naranja cerca de antorchas
+            // Tinte cálido naranja cerca de antorchas (LUT sin string concat)
             if (mapaLuz) {
                 const lx = Math.min(cols - 1, Math.max(0, mapX));
                 const ly = Math.min(filas - 1, Math.max(0, mapY));
                 const luzLocal = mapaLuz[ly * cols + lx];
                 if (luzLocal > 0.3) {
-                    const tinte = (luzLocal - 0.3) * 0.15;
-                    ctx.fillStyle = 'rgba(255,160,50,' + tinte.toFixed(3) + ')';
+                    const tinteIdx = Math.min(100, Math.round((luzLocal - 0.3) * 100));
+                    ctx.fillStyle = LUT_TINTE[tinteIdx];
                     ctx.fillRect(screenX, inicioY, anchoFranja, alturaPared);
                 }
             }
@@ -145,5 +164,5 @@ export function renderizar3D(ctx, jugador, mapa, filas, cols, grad, texturas, ma
         }
     }
 
-    return zBuffer;
+    return _zBuffer;
 }

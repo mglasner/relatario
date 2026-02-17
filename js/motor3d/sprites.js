@@ -35,21 +35,25 @@ function dibujarSprite(ctx, sprite, zBuffer, jugadorX, jugadorY, angulo) {
     // Tamaño del emoji según distancia
     const fontSize = Math.min(Math.max((canvas.alto / distPerp) * 0.4, 10), 60);
 
-    ctx.save();
-    ctx.font = Math.floor(fontSize) + 'px serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.shadowColor = sprite.color;
-    ctx.shadowBlur = 15;
-
     // Offset vertical según z del sprite (0=suelo, 1=techo, 0.5=centro)
     const alturaPared = canvas.alto / distPerp;
     const z = sprite.z !== undefined ? sprite.z : 0.5;
     const screenY = canvas.alto / 2 - (z - 0.5) * alturaPared;
 
+    // Pseudo-glow sin shadowBlur (mucho más rápido)
+    ctx.save();
+    ctx.globalAlpha = 0.25;
+    ctx.font = Math.floor(fontSize * 1.4) + 'px serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
     ctx.fillText(sprite.emoji, screenX, screenY);
-    ctx.shadowBlur = 0;
     ctx.restore();
+
+    // Sprite principal
+    ctx.font = Math.floor(fontSize) + 'px serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(sprite.emoji, screenX, screenY);
 }
 
 // Renderiza todos los sprites ordenados por distancia (más lejanos primero)

@@ -153,24 +153,20 @@ export function actualizarParticulas(ahora, antorchas, jugadorX, jugadorY) {
         }
     }
 
-    // Emitir chispas desde antorchas cercanas
+    // Emitir chispas desde antorchas cercanas (sin allocar arrays/objetos)
     if (antorchas) {
-        // Encontrar las antorchas más cercanas
-        const cercanas = [];
-        for (const a of antorchas) {
+        const radioSqCull = RADIO_CULLING * RADIO_CULLING;
+        let emitidas = 0;
+
+        for (let ai = 0; ai < antorchas.length && emitidas < MAX_EMISORES_CHISPA; ai++) {
+            const a = antorchas[ai];
             const dx = a.x - jugadorX;
             const dy = a.y - jugadorY;
-            const distSq = dx * dx + dy * dy;
-            if (distSq < RADIO_CULLING * RADIO_CULLING) {
-                cercanas.push({ antorcha: a, distSq });
-            }
-        }
-        cercanas.sort((a, b) => a.distSq - b.distSq);
-
-        const limite = Math.min(cercanas.length, MAX_EMISORES_CHISPA);
-        for (let i = 0; i < limite; i++) {
-            if (Math.random() < 0.08) {
-                emitirChispa(cercanas[i].antorcha);
+            if (dx * dx + dy * dy < radioSqCull) {
+                if (Math.random() < 0.08) {
+                    emitirChispa(a);
+                    emitidas++;
+                }
             }
         }
     }
