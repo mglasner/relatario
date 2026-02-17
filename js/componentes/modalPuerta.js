@@ -1,5 +1,54 @@
 // Componente: Modal de confirmación para entrar a una habitación
-// Muestra diálogo con botones Entrar/Cancelar y navegación con flechas
+// Muestra diálogo temático con icono, nivel y descripción de cada habitación
+
+const HABITACIONES = {
+    1: {
+        icono: '🏰',
+        nombre: 'El Laberinto',
+        nivel: 'Nivel 1',
+        descripcion: 'Un oscuro laberinto de piedra te espera... ¿encontrarás la salida?',
+        boton: 'Entrar al laberinto',
+        accent: '#bb86fc',
+        fondo: '#2a1a3e',
+    },
+    2: {
+        icono: '👁️',
+        nombre: 'El Laberinto 3D',
+        nivel: 'Nivel 2',
+        descripcion: 'Las paredes se mueven y los pasillos no tienen fin...',
+        boton: 'Entrar al laberinto 3D',
+        accent: '#6bfc86',
+        fondo: '#1a3e1a',
+    },
+    3: {
+        icono: '🔥',
+        nombre: 'La Cámara Secreta',
+        nivel: 'Nivel 3',
+        descripcion: 'Algo arde detrás de esta puerta... ¿te atreves a mirar?',
+        boton: 'Entrar',
+        accent: '#e94560',
+        fondo: '#3e1a1a',
+    },
+    4: {
+        icono: '🌊',
+        nombre: 'El Abismo',
+        nivel: 'Nivel 4',
+        descripcion: 'Se escuchan ecos desde las profundidades...',
+        boton: 'Entrar',
+        accent: '#5eeadb',
+        fondo: '#1a1a3e',
+    },
+};
+
+const HAB_DEFAULT = {
+    icono: '🚪',
+    nombre: 'Habitación desconocida',
+    nivel: '???',
+    descripcion: 'Nadie sabe qué hay detrás de esta puerta...',
+    boton: 'Entrar',
+    accent: '#e94560',
+    fondo: '#16213e',
+};
 
 export function crearModalPuerta(contenedor) {
     let puertaActiva = null;
@@ -18,6 +67,15 @@ export function crearModalPuerta(contenedor) {
 
     const contenido = document.createElement('div');
     contenido.className = 'modal-contenido';
+
+    const lineaDecorativa = document.createElement('div');
+    lineaDecorativa.className = 'modal-puerta-linea';
+
+    const iconoDiv = document.createElement('div');
+    iconoDiv.className = 'modal-puerta-icono';
+
+    const nivelSpan = document.createElement('span');
+    nivelSpan.className = 'modal-puerta-nivel';
 
     const titulo = document.createElement('h2');
     titulo.id = 'modal-titulo';
@@ -38,6 +96,9 @@ export function crearModalPuerta(contenedor) {
 
     botonesDiv.appendChild(btnEntrar);
     botonesDiv.appendChild(btnCancelar);
+    contenido.appendChild(lineaDecorativa);
+    contenido.appendChild(iconoDiv);
+    contenido.appendChild(nivelSpan);
     contenido.appendChild(titulo);
     contenido.appendChild(mensaje);
     contenido.appendChild(botonesDiv);
@@ -84,8 +145,18 @@ export function crearModalPuerta(contenedor) {
     const api = {
         mostrar: function (numeroPuerta) {
             puertaActiva = numeroPuerta;
-            titulo.textContent = 'Habitación ' + numeroPuerta;
-            mensaje.textContent = '¿Quieres entrar a esta habitación?';
+            const hab = HABITACIONES[numeroPuerta] || HAB_DEFAULT;
+
+            iconoDiv.textContent = hab.icono;
+            nivelSpan.textContent = hab.nivel;
+            titulo.textContent = hab.nombre;
+            mensaje.textContent = hab.descripcion;
+            btnEntrar.textContent = hab.boton;
+
+            // Aplicar colores de la habitación
+            contenido.style.setProperty('--modal-accent', hab.accent);
+            contenido.style.setProperty('--modal-fondo', hab.fondo);
+
             el.classList.remove('oculto');
             botonSeleccionado = 0;
             actualizarFoco();
