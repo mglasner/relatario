@@ -25,18 +25,18 @@ integran como una de las mejoras principales.
 
 ## Tabla de prioridades
 
-| # | Mejora | Esfuerzo | Impacto | Categoria |
-|---|--------|----------|---------|-----------|
-| 1 | Tipografia con personalidad | Bajo | Alto | Visual |
-| 2 | Diseno responsivo y controles tactiles | Alto | Alto | Accesibilidad |
-| 3 | Tutorial interactivo de onboarding | Medio | Alto | UX |
-| 4 | Feedback visual de dano mejorado | Bajo | Alto | Game feel |
-| 5 | Transiciones cinematicas entre pantallas | Medio | Medio | Visual / UX |
-| 6 | Paleta de colores unica por habitacion | Bajo | Medio | Visual |
-| 7 | Barra de vida con microinteracciones | Bajo | Medio | UI / Game feel |
-| 8 | Modal de puerta con identidad de habitacion | Bajo | Medio | UI / UX |
-| 9 | Notificaciones toast para eventos | Bajo | Medio | UX / Feedback |
-| 10 | Inventario visual con slots | Medio | Medio | UI / Game feel |
+| # | Mejora | Esfuerzo | Impacto | Categoria | Estado |
+|---|--------|----------|---------|-----------|--------|
+| 1 | Tipografia con personalidad | Bajo | Alto | Visual | Hecho |
+| 2 | Diseno responsivo y controles tactiles | Alto | Alto | Accesibilidad | Pendiente |
+| 3 | Tutorial interactivo de onboarding | Medio | Alto | UX | Pendiente |
+| 4 | Feedback visual de dano mejorado | Bajo | Alto | Game feel | Hecho |
+| 5 | Transiciones cinematicas entre pantallas | Medio | Medio | Visual / UX | Hecho |
+| 6 | Paleta de colores unica por habitacion | Bajo | Medio | Visual | Pendiente |
+| 7 | Barra de vida con microinteracciones | Bajo | Medio | UI / Game feel | Pendiente |
+| 8 | Modal de puerta con identidad de habitacion | Bajo | Medio | UI / UX | Pendiente |
+| 9 | Notificaciones toast para eventos | Bajo | Medio | UX / Feedback | Pendiente |
+| 10 | Inventario visual con slots | Medio | Medio | UI / Game feel | Pendiente |
 
 ---
 
