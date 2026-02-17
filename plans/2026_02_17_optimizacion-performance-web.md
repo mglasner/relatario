@@ -347,19 +347,17 @@ layout exterior, permitiendo optimizaciones de rendering.
 
 ---
 
-### Fase 4: Build pipeline para GitHub Pages
+### Fase 4: Build pipeline con GitHub Actions
 
-> **Contexto**: El proyecto se despliega en GitHub Pages desde `main`.
-> GitHub Pages sirve archivos estáticos directamente del repo, no ejecuta
-> un paso de build. Esto impone restricciones sobre cómo implementar
-> bundling y minificación.
+> **Contexto**: El proyecto se despliega en GitHub Pages desde `main` hoy,
+> pero a futuro tendrá un backend real. El build pipeline debe ser portable
+> y no atarse a las limitaciones de GitHub Pages.
 
-#### 4.1 Decisión: build local con output en el repo vs GitHub Actions
+#### 4.1 Build con esbuild + deploy con GitHub Actions
 
-**Opción A — Build local, commitear `dist/` (recomendada para este proyecto)**:
-
-Correr el build localmente y commitear los archivos generados. GitHub Pages
-los sirve directamente. Más simple, sin configurar CI.
+GitHub Actions es la opción correcta: automatiza el build en cada push,
+no contamina el repo con archivos generados, y el workflow se adapta
+fácilmente cuando el proyecto migre a otro hosting con backend.
 
 ```bash
 npm install -D esbuild
@@ -376,15 +374,10 @@ npm install -D esbuild
 }
 ```
 
-Configurar GitHub Pages para servir desde `/dist` (en Settings > Pages > Source).
-
-**Opción B — GitHub Actions (más robusto, más complejo)**:
-
-Un workflow `.github/workflows/deploy.yml` que corre `npm run build` y publica
-`dist/` automáticamente con `actions/deploy-pages`. Evita commitear archivos
-generados pero agrega complejidad de CI.
-
-Para un proyecto educativo familiar, la Opción A es suficiente.
+Workflow `.github/workflows/deploy.yml`:
+- Trigger: push a `main`
+- Steps: `npm ci` → `npm run build` → `actions/deploy-pages` sobre `dist/`
+- Agregar `dist/` al `.gitignore` (no commitear archivos generados)
 
 Resultado del build:
 - Bundlea 25 archivos JS en 1 (elimina 24 requests HTTP)
@@ -392,8 +385,6 @@ Resultado del build:
 - Minifica CSS (~51 KB → ~30-35 KB)
 
 #### 4.2 Agregar meta tags para web pública
-
-Estos van directamente en `index.html` (fuente), no requieren build:
 
 ```html
 <meta name="description" content="La Casa del Terror - Un juego web de aventura y misterio para toda la familia">
@@ -405,8 +396,8 @@ Estos van directamente en `index.html` (fuente), no requieren build:
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
 ```
 
-**Nota**: La URL de `og:image` debe ser absoluta para que funcione al compartir
-en redes sociales. Usar la URL de GitHub Pages directamente.
+**Nota**: La URL de `og:image` debe ser absoluta. Actualizar cuando el
+dominio cambie al migrar de hosting.
 
 #### 4.3 Preload de assets críticos
 
@@ -419,60 +410,70 @@ en redes sociales. Usar la URL de GitHub Pages directamente.
 
 ---
 
-### Fase 5: Optimizaciones de GitHub Pages
+### Fase 5: Entrega y caching
 
-> **Contexto**: GitHub Pages provee gzip automático y cache headers fijos.
-> No se pueden personalizar headers HTTP ni configurar reglas de cache.
+> **Contexto**: Hoy el hosting es GitHub Pages (gzip automático, cache fijo
+> de 10 min, sin configuración de headers). A futuro habrá un backend donde
+> los cache headers serán configurables. El service worker debe diseñarse
+> con ambos escenarios en mente.
 
-#### 5.1 Compresión — ya incluida
+#### 5.1 Compresión
 
-GitHub Pages sirve todo con gzip automáticamente. No hay acción necesaria.
+GitHub Pages ya sirve con gzip. Cuando se migre a un hosting con backend,
+verificar que gzip o brotli estén habilitados en el servidor.
 
 Impacto esperado con el build de Fase 4:
 - JS minificado: ~65 KB → ~20 KB gzip
 - CSS minificado: ~35 KB → ~10 KB gzip
 - Total código: ~30 KB gzip (vs ~200 KB sin minificar sin comprimir)
 
-#### 5.2 Cache headers — limitación de GitHub Pages
+#### 5.2 Cache headers
 
-GitHub Pages usa `Cache-Control: max-age=600` (10 min) para todos los archivos.
-**No es configurable.** Esto significa que:
-- Los assets no se cachean a largo plazo como en otros hostings
-- Cada visita después de 10 min revalida todos los archivos
-- El impacto real es menor porque los archivos que no cambian se resuelven
-  con `304 Not Modified` (respuesta sin cuerpo)
+**Hoy (GitHub Pages)**: `max-age=600` fijo, no configurable. Los archivos
+que no cambian se resuelven con `304 Not Modified`.
 
-**Mitigación posible**: Un service worker puede interceptar las requests y
-servir desde cache local, anulando las limitaciones de headers del servidor.
+**Futuro (hosting con backend)**: Configurar cache diferenciado:
+```
+assets/**/*  → Cache-Control: public, max-age=31536000, immutable
+dist/*.min.* → Cache-Control: public, max-age=31536000, immutable
+index.html   → Cache-Control: no-cache
+/api/**      → Cache-Control: no-store
+```
 
-#### 5.3 Service Worker (recomendado para este caso)
+#### 5.3 Service Worker
 
-Dado que GitHub Pages no permite cache headers personalizados, un service worker
-se vuelve más valioso. Para un juego autocontenido sin backend:
+El service worker debe usar estrategias diferenciadas desde el inicio,
+preparándose para cuando haya llamadas a un backend:
 
 ```js
-// sw.js — cache-first para assets, network-first para index.html
+// sw.js — estrategias por tipo de recurso
 const CACHE_NAME = 'casa-terror-v1';
-const ASSETS = [
-    '/la-casa-del-terror/',
+
+// Assets estáticos: cache-first (JS, CSS, fuentes, imágenes)
+// Se actualizan solo cuando cambia CACHE_NAME
+const STATIC_ASSETS = [
     '/la-casa-del-terror/dist/juego.min.js',
     '/la-casa-del-terror/dist/estilos.min.css',
     // ... fonts e imágenes
 ];
+
+// HTML: network-first con fallback a cache
+// Garantiza que el usuario siempre vea la versión más reciente
+
+// API (futuro): network-only, nunca cachear
+// Las rutas /api/** van directo al servidor
 ```
 
-Beneficios en GitHub Pages:
-- Juego funciona 100% offline después de la primera carga
-- Elimina la limitación de cache de 10 min
-- Segunda visita carga instantáneamente desde cache local
+Beneficios:
+- Carga instantánea en segunda visita (cache local, no depende del servidor)
+- Compensar el cache de 10 min de GitHub Pages mientras se use
+- Preparado para backend: las rutas `/api/**` nunca se cachean
 - Actualización en background cuando hay nueva versión
 
 **Archivos a crear**: `sw.js` (en la raíz), registro en `index.html`.
 
-**Nota sobre rutas**: GitHub Pages sirve el sitio bajo el path
-`/la-casa-del-terror/`, no en la raíz. El service worker y todas las rutas
-de assets deben incluir este prefijo. Sin embargo, `mglasner.github.io`
-redirige al juego, por lo que algunos usuarios llegarán por esa URL.
+**Nota sobre rutas**: GitHub Pages sirve bajo `/la-casa-del-terror/`. Este
+prefijo deberá actualizarse si el dominio/path cambia al migrar de hosting.
 
 ---
 
@@ -493,20 +494,16 @@ redirige al juego, por lo que algunos usuarios llegarán por esa URL.
 
 1. **Fase 1** (imágenes) — Mayor impacto absoluto, afecta a todos los usuarios
 2. **Fase 2** (game loops) — Crítico para dispositivos móviles/lentos
-3. **Fase 4** (build pipeline) — Necesario para reducir requests HTTP en GitHub Pages
+3. **Fase 4** (build pipeline) — Necesario para reducir requests HTTP
 4. **Fase 3** (CSS) — Mejoras incrementales
-5. **Fase 5** (GitHub Pages) — Service worker compensa la falta de cache headers
+5. **Fase 5** (entrega y caching) — Service worker con estrategias diferenciadas
 
 ## Notas
 
-- **Deploy**: GitHub Pages desde `main`, URL `https://mglasner.github.io/la-casa-del-terror/`
-- Todas las optimizaciones son retrocompatibles con el flujo de desarrollo actual
-  (`npm run dev` sigue funcionando igual)
-- El build pipeline es solo para producción; en desarrollo se siguen usando los
-  archivos fuente directamente
-- Las optimizaciones de game loop no cambian la lógica del juego, solo cómo se
-  comunican los cambios al navegador
-- GitHub Pages no permite personalizar cache headers (fijo 10 min) — el service
-  worker es la solución recomendada para cache a largo plazo y soporte offline
-- Las URLs de Open Graph (`og:image`) deben ser absolutas con el dominio de
-  GitHub Pages para que funcionen al compartir en redes sociales
+- **Deploy actual**: GitHub Pages desde `main` (`mglasner.github.io/la-casa-del-terror/`)
+- **Deploy futuro**: Se prevé migración a hosting con backend. El build pipeline
+  (GitHub Actions) y el service worker están diseñados para ser portables
+- Todas las optimizaciones son retrocompatibles con `npm run dev`
+- El build pipeline es solo para producción; en desarrollo se usan los fuentes
+- Las optimizaciones de game loop no cambian la lógica del juego
+- Las URLs de Open Graph (`og:image`) deben actualizarse al cambiar de dominio

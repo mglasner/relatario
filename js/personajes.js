@@ -10,7 +10,7 @@ const PERSONAJES = {
             { nombre: 'Patada giratoria', dano: 25, descripcion: 'Ataque poderoso' },
         ],
         {
-            img: 'assets/img/personajes/lina.png',
+            img: 'assets/img/personajes/lina.webp',
             clase: 'jugador-lina',
             descripcion: '13 años. Valiente e inteligente.',
         }
@@ -24,7 +24,7 @@ const PERSONAJES = {
             { nombre: 'Escudo brillante', dano: 10, descripcion: 'Ataque defensivo' },
         ],
         {
-            img: 'assets/img/personajes/rose.png',
+            img: 'assets/img/personajes/rose.webp',
             clase: 'jugador-rose',
             descripcion: '10 años. Nunca se rinde.',
         }
@@ -38,7 +38,7 @@ const PERSONAJES = {
             { nombre: 'Golpe de bambú', dano: 18, descripcion: 'Golpe rápido con bambú' },
         ],
         {
-            img: 'assets/img/personajes/pandajuro.png',
+            img: 'assets/img/personajes/pandajuro.webp',
             clase: 'jugador-pandajuro',
             descripcion: 'Furioso, leal y honorable.',
         }
@@ -52,7 +52,7 @@ const PERSONAJES = {
             { nombre: 'Coreografía letal', dano: 22, descripcion: 'Movimientos mortales de baile' },
         ],
         {
-            img: 'assets/img/personajes/hana.png',
+            img: 'assets/img/personajes/hana.webp',
             clase: 'jugador-hana',
             descripcion: '16 años. Idol de K-pop. Lucha con música.',
         }
@@ -66,7 +66,7 @@ const PERSONAJES = {
             { nombre: 'Trampa de luz', dano: 18, descripcion: 'Destello que ciega y daña' },
         ],
         {
-            img: 'assets/img/personajes/kira.png',
+            img: 'assets/img/personajes/kira.webp',
             clase: 'jugador-kira',
             descripcion: '14 años. Investigadora paranormal. Nada se le escapa.',
         }
@@ -80,7 +80,7 @@ const PERSONAJES = {
             { nombre: 'Cabezazo terco', dano: 20, descripcion: 'Embiste con toda su terquedad' },
         ],
         {
-            img: 'assets/img/personajes/donbu.png',
+            img: 'assets/img/personajes/donbu.webp',
             clase: 'jugador-donbu',
             descripcion: 'Padre de familia. Burro terco y protector.',
         }

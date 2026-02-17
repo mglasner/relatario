@@ -10,7 +10,7 @@ const ENEMIGOS = {
             { nombre: 'Grito infernal', dano: 30, descripcion: 'Onda de terror puro' },
         ],
         {
-            img: 'assets/img/enemigos/siniestra.png',
+            img: 'assets/img/enemigos/siniestra.webp',
             clase: 'villano-siniestra',
             descripcion: 'Espectro furioso. Destruye todo a su paso.',
         }
@@ -24,7 +24,7 @@ const ENEMIGOS = {
             { nombre: 'Trampa', dano: 10, descripcion: 'Trampa escondida en el suelo' },
         ],
         {
-            img: 'assets/img/enemigos/trasgo.png',
+            img: 'assets/img/enemigos/trasgo.webp',
             clase: 'villano-trasgo',
             descripcion: 'Duende torpe. Intenta ser malo pero le sale mal.',
         }
@@ -42,7 +42,7 @@ const ENEMIGOS = {
             },
         ],
         {
-            img: 'assets/img/enemigos/errante.png',
+            img: 'assets/img/enemigos/errante.webp',
             clase: 'villano-errante',
             descripcion: 'Cadáver inteligente y siniestro. Planifica cada ataque.',
         }
@@ -60,7 +60,7 @@ const ENEMIGOS = {
             { nombre: 'Emboscada', dano: 30, descripcion: 'Aparece por sorpresa y ataca' },
         ],
         {
-            img: 'assets/img/enemigos/profano.png',
+            img: 'assets/img/enemigos/profano.webp',
             clase: 'villano-profano',
             descripcion: 'Sigiloso y despiadado. Aparece cuando menos lo esperas.',
         }

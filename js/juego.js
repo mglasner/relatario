@@ -255,13 +255,37 @@ const pasillo = document.getElementById('pasillo');
 const personajeJugador = document.getElementById('personaje-jugador');
 const imgJugador = document.getElementById('img-jugador');
 
-// Movimiento proporcional al tamaño del pasillo
-function getVelocidad() {
-    return pasillo.clientWidth * 0.01;
+// Cache de dimensiones (se recalculan solo en resize)
+let velocidadCache = 0;
+let tamPersonajeCache = 0;
+let puertasCache = [];
+
+function recalcularDimensiones() {
+    velocidadCache = pasillo.clientWidth * 0.01;
+    tamPersonajeCache = personajeJugador.offsetWidth;
+    puertasCache = Array.from(document.querySelectorAll('.puerta')).map(function (puerta) {
+        const rect = puerta.getBoundingClientRect();
+        const pasilloRect = pasillo.getBoundingClientRect();
+        return {
+            elemento: puerta,
+            px: rect.left - pasilloRect.left,
+            py: rect.top - pasilloRect.top,
+            pw: rect.width,
+            ph: rect.height,
+        };
+    });
 }
 
-function getTamPersonaje() {
-    return personajeJugador.offsetWidth;
+window.addEventListener('resize', function () {
+    if (estado.estadoActual === ESTADOS.PASILLO) {
+        recalcularDimensiones();
+        movimiento.limiteDerecho = pasillo.clientWidth - tamPersonajeCache;
+        movimiento.limiteInferior = pasillo.clientHeight - tamPersonajeCache;
+    }
+});
+
+function getVelocidad() {
+    return velocidadCache;
 }
 
 // --- Crear componentes ---
@@ -376,11 +400,14 @@ function ejecutarCambioEstado(anterior, nuevo, datos) {
         // Hacer visible ANTES de calcular dimensiones (clientWidth es 0 si está oculto)
         document.getElementById('pantalla-juego').classList.remove('oculto');
 
+        // Recalcular dimensiones cacheadas (el pasillo ya es visible)
+        recalcularDimensiones();
+
         if (anterior === ESTADOS.SELECCION) {
-            movimiento.limiteDerecho = pasillo.clientWidth - getTamPersonaje();
-            movimiento.limiteInferior = pasillo.clientHeight - getTamPersonaje();
-            movimiento.x = (pasillo.clientWidth - getTamPersonaje()) / 2;
-            movimiento.y = pasillo.clientHeight - getTamPersonaje() - 15;
+            movimiento.limiteDerecho = pasillo.clientWidth - tamPersonajeCache;
+            movimiento.limiteInferior = pasillo.clientHeight - tamPersonajeCache;
+            movimiento.x = (pasillo.clientWidth - tamPersonajeCache) / 2;
+            movimiento.y = pasillo.clientHeight - tamPersonajeCache - 15;
             actualizarPosicion();
 
             barra.mostrar(estado.jugadorActual);
@@ -536,39 +563,32 @@ function moverPersonaje(dx, dy) {
 }
 
 function actualizarPosicion() {
-    personajeJugador.style.left = movimiento.x + 'px';
-    personajeJugador.style.top = movimiento.y + 'px';
+    personajeJugador.style.transform = `translate(${movimiento.x}px, ${movimiento.y}px)`;
 }
 
 // --- Detección de colisión con puertas ---
 
 function detectarColisionPuertas() {
-    const puertas = document.querySelectorAll('.puerta');
     let tocandoAlguna = false;
+    const tam = tamPersonajeCache;
 
-    puertas.forEach(function (puerta) {
-        const rect = puerta.getBoundingClientRect();
-        const pasilloRect = pasillo.getBoundingClientRect();
-
-        const px = rect.left - pasilloRect.left;
-        const py = rect.top - pasilloRect.top;
-        const pw = rect.width;
-        const ph = rect.height;
+    for (let i = 0; i < puertasCache.length; i++) {
+        const p = puertasCache[i];
 
         const colisiona =
-            movimiento.x < px + pw &&
-            movimiento.x + getTamPersonaje() > px &&
-            movimiento.y < py + ph &&
-            movimiento.y + getTamPersonaje() > py;
+            movimiento.x < p.px + p.pw &&
+            movimiento.x + tam > p.px &&
+            movimiento.y < p.py + p.ph &&
+            movimiento.y + tam > p.py;
 
         if (colisiona) {
             tocandoAlguna = true;
             if (!estado.esperandoSalirDePuerta && !modal.estaAbierto()) {
                 estado.loopActivo = false;
-                modal.mostrar(puerta.dataset.puerta);
+                modal.mostrar(p.elemento.dataset.puerta);
             }
         }
-    });
+    }
 
     if (!tocandoAlguna) {
         estado.esperandoSalirDePuerta = false;

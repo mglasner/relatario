@@ -158,6 +158,8 @@ export function iniciarHabitacion1(jugadorRef, callback, dpadRef) {
 // --- Renderizado ---
 
 function renderizarLaberinto() {
+    const fragment = document.createDocumentFragment();
+
     // Paredes
     for (let fila = 0; fila < est.mapa.length; fila++) {
         for (let col = 0; col < est.mapa[fila].length; col++) {
@@ -168,12 +170,13 @@ function renderizarLaberinto() {
                 pared.style.top = fila * CONFIG.TAM_CELDA + 'px';
                 pared.style.width = CONFIG.TAM_CELDA + 'px';
                 pared.style.height = CONFIG.TAM_CELDA + 'px';
-                est.contenedorLaberinto.appendChild(pared);
+                fragment.appendChild(pared);
             }
         }
     }
 
-    // Trampas y trasgo (delegados a submódulos)
+    // Trampas y trasgo (delegados a submódulos, appenden al contenedor directamente)
+    est.contenedorLaberinto.appendChild(fragment);
     renderizarTrampas();
     renderizarTrampasLentas();
     renderizarTrasgo();
@@ -273,8 +276,7 @@ function moverEnLaberinto(dx, dy) {
 }
 
 function actualizarPosicion() {
-    est.elementoJugador.style.left = est.posX + 'px';
-    est.elementoJugador.style.top = est.posY + 'px';
+    est.elementoJugador.style.transform = `translate(${est.posX}px, ${est.posY}px)`;
 }
 
 // --- Detección de llave y salida ---

@@ -167,8 +167,7 @@ export function actualizarTrasgo() {
             est.trasgo.posY += (dy / dist) * CONFIG.VELOCIDAD_TRASGO;
         }
 
-        est.trasgo.elemento.style.left = est.trasgo.posX + 'px';
-        est.trasgo.elemento.style.top = est.trasgo.posY + 'px';
+        est.trasgo.elemento.style.transform = `translate(${est.trasgo.posX}px, ${est.trasgo.posY}px)`;
     }
 
     // Detectar colisión con jugador
@@ -203,10 +202,9 @@ export function renderizarTrasgo() {
     elem.className = 'trasgo-laberinto';
     elem.style.width = CONFIG.TAM_TRASGO + 'px';
     elem.style.height = CONFIG.TAM_TRASGO + 'px';
-    elem.style.left = est.trasgo.posX + 'px';
-    elem.style.top = est.trasgo.posY + 'px';
+    elem.style.transform = `translate(${est.trasgo.posX}px, ${est.trasgo.posY}px)`;
     const img = document.createElement('img');
-    img.src = 'assets/img/enemigos/trasgo.png';
+    img.src = 'assets/img/enemigos/trasgo.webp';
     img.alt = 'Trasgo';
     elem.appendChild(img);
     est.contenedorLaberinto.appendChild(elem);
