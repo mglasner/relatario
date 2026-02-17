@@ -199,8 +199,14 @@ export function actualizarParticulas(ahora, antorchas, jugadorX, jugadorY) {
     }
 }
 
+// Cache para fillStyle de partículas (evita string concat repetida)
+let _lastColorKey = -1;
+let _lastAlphaIdx = -1;
+let _lastFillStyle = '';
+
 // Renderiza partículas en la vista 3D (con z-buffer check)
 export function renderizarParticulas(ctx, zBuffer, jugadorX, jugadorY, angulo) {
+    _lastColorKey = -1; // Reset cache cada frame
     const { ancho, alto, numRayos, anchoFranja } = canvas;
     const radioSq = RADIO_CULLING * RADIO_CULLING;
 
@@ -240,7 +246,16 @@ export function renderizarParticulas(ctx, zBuffer, jugadorX, jugadorY, angulo) {
         // Tamaño según distancia
         const tamano = Math.max(1, p.tamano * (3 / distPerp));
 
-        ctx.fillStyle = 'rgba(' + p.r + ',' + p.g + ',' + p.b + ',' + p.alpha.toFixed(2) + ')';
+        // Reutilizar fillStyle solo si color cambió (evita string concat por partícula)
+        const alphaIdx = Math.min(100, Math.round(p.alpha * 100));
+        const key = (p.r << 16) | (p.g << 8) | p.b;
+        if (key !== _lastColorKey || alphaIdx !== _lastAlphaIdx) {
+            _lastColorKey = key;
+            _lastAlphaIdx = alphaIdx;
+            _lastFillStyle =
+                'rgba(' + p.r + ',' + p.g + ',' + p.b + ',' + (alphaIdx / 100).toFixed(2) + ')';
+        }
+        ctx.fillStyle = _lastFillStyle;
         ctx.fillRect(screenX - tamano / 2, screenY - tamano / 2, tamano, tamano);
     }
 }

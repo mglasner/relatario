@@ -157,9 +157,22 @@ export function actualizarDecoraciones(decs, ahora) {
     }
 }
 
+// Pool de sprites preallocado para evitar allocaciones por frame
+const MAX_SPRITES_DECO = MAX_ANTORCHAS + MAX_TELARANAS + MAX_MURCIELAGOS;
+const _spritesPool = Array.from({ length: MAX_SPRITES_DECO }, () => ({
+    x: 0,
+    y: 0,
+    z: 0,
+    emoji: '',
+    color: '',
+}));
+// Vista reutilizable: { sprites, count }
+const _spritesResult = { sprites: _spritesPool, count: 0 };
+
 // Convierte decoraciones a sprites para renderizar (con culling por distancia)
+// Retorna { sprites, count } donde count indica cuántos slots están activos
 export function obtenerSpritesDecoraciones(decs, jugadorX, jugadorY) {
-    const sprites = [];
+    let idx = 0;
     const radioSq = RADIO_CULLING * RADIO_CULLING;
 
     // Antorchas
@@ -168,13 +181,12 @@ export function obtenerSpritesDecoraciones(decs, jugadorX, jugadorY) {
         const dy = a.y - jugadorY;
         if (dx * dx + dy * dy > radioSq) continue;
 
-        sprites.push({
-            x: a.x,
-            y: a.y,
-            z: 0.55, // Ligeramente arriba del centro
-            emoji: FRAMES_ANTORCHA[a.frame],
-            color: '#ff8800',
-        });
+        const s = _spritesPool[idx++];
+        s.x = a.x;
+        s.y = a.y;
+        s.z = 0.55;
+        s.emoji = FRAMES_ANTORCHA[a.frame];
+        s.color = '#ff8800';
     }
 
     // Telarañas
@@ -183,13 +195,12 @@ export function obtenerSpritesDecoraciones(decs, jugadorX, jugadorY) {
         const dy = t.y - jugadorY;
         if (dx * dx + dy * dy > radioSq) continue;
 
-        sprites.push({
-            x: t.x,
-            y: t.y,
-            z: t.z,
-            emoji: '\uD83D\uDD78\uFE0F',
-            color: '#888888',
-        });
+        const s = _spritesPool[idx++];
+        s.x = t.x;
+        s.y = t.y;
+        s.z = t.z;
+        s.emoji = '\uD83D\uDD78\uFE0F';
+        s.color = '#888888';
     }
 
     // Murciélagos
@@ -198,14 +209,14 @@ export function obtenerSpritesDecoraciones(decs, jugadorX, jugadorY) {
         const dy = b.y - jugadorY;
         if (dx * dx + dy * dy > radioSq) continue;
 
-        sprites.push({
-            x: b.x,
-            y: b.y,
-            z: b.z,
-            emoji: '\uD83E\uDD87',
-            color: '#6633aa',
-        });
+        const s = _spritesPool[idx++];
+        s.x = b.x;
+        s.y = b.y;
+        s.z = b.z;
+        s.emoji = '\uD83E\uDD87';
+        s.color = '#6633aa';
     }
 
-    return sprites;
+    _spritesResult.count = idx;
+    return _spritesResult;
 }

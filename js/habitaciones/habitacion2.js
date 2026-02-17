@@ -67,6 +67,19 @@ let usarTexturas = true;
 let ultimoFrame = 0;
 let framesLentos = 0;
 
+// Pool de sprites preallocado para el loop (llave + puerta + ~30 decoraciones)
+const MAX_SPRITES_LOOP = 35;
+const _sprites = Array.from({ length: MAX_SPRITES_LOOP }, () => ({
+    x: 0,
+    y: 0,
+    z: undefined,
+    emoji: '',
+    color: '',
+}));
+let _spritesCount = 0;
+// Vista mutable: array cuyas entries apuntan a _sprites (se ajusta .length cada frame)
+const _spritesView = _sprites.slice();
+
 // --- Crear pantalla HTML ---
 
 function crearPantalla(esTouch) {
@@ -232,34 +245,42 @@ function loop(ahora) {
         mapaLuz
     );
 
-    // Sprites: objetos del juego + decoraciones
-    const sprites = [];
+    // Sprites: objetos del juego + decoraciones (reutilizar array preallocado)
+    _spritesCount = 0;
 
     if (!tieneLlave) {
-        sprites.push({
-            x: llaveCol + 0.5,
-            y: llaveFila + 0.5,
-            emoji: '\uD83D\uDD11',
-            color: '#ffd700',
-        });
+        const s = _sprites[_spritesCount++];
+        s.x = llaveCol + 0.5;
+        s.y = llaveFila + 0.5;
+        s.emoji = '\uD83D\uDD11';
+        s.color = '#ffd700';
+        s.z = undefined;
     }
 
-    sprites.push({
-        x: entradaCol + 0.5,
-        y: entradaFila + 0.5,
-        emoji: '\uD83D\uDEAA',
-        color: tieneLlave ? '#44ff44' : '#444444',
-    });
+    const sPuerta = _sprites[_spritesCount++];
+    sPuerta.x = entradaCol + 0.5;
+    sPuerta.y = entradaFila + 0.5;
+    sPuerta.emoji = '\uD83D\uDEAA';
+    sPuerta.color = tieneLlave ? '#44ff44' : '#444444';
+    sPuerta.z = undefined;
 
     // Agregar decoraciones como sprites
     if (decoraciones) {
-        const decoSprites = obtenerSpritesDecoraciones(decoraciones, estado.x, estado.y);
-        for (let i = 0; i < decoSprites.length; i++) {
-            sprites.push(decoSprites[i]);
+        const deco = obtenerSpritesDecoraciones(decoraciones, estado.x, estado.y);
+        for (let i = 0; i < deco.count; i++) {
+            const src = deco.sprites[i];
+            const dst = _sprites[_spritesCount++];
+            dst.x = src.x;
+            dst.y = src.y;
+            dst.z = src.z;
+            dst.emoji = src.emoji;
+            dst.color = src.color;
         }
     }
 
-    renderizarSprites(ctx3D, sprites, zBuffer, estado.x, estado.y, estado.angulo);
+    // Crear vista del array con solo los sprites activos
+    _spritesView.length = _spritesCount;
+    renderizarSprites(ctx3D, _spritesView, zBuffer, estado.x, estado.y, estado.angulo);
 
     // Partículas (después de sprites, encima de todo)
     renderizarParticulas(ctx3D, zBuffer, estado.x, estado.y, estado.angulo);

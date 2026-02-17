@@ -4,13 +4,19 @@ const LUZ_AMBIENTAL = 0.15;
 const RADIO_LUZ = 3;
 const RADIO_LUZ_SQ = RADIO_LUZ * RADIO_LUZ;
 
+// Buffer preallocado (se redimensiona si cambia el tamaño del mapa)
+let _mapaLuz = new Float32Array(0);
+
 // Precalcula el mapa de luz para todo el laberinto
 // Retorna Float32Array[filas * cols] con valores de brillo (0.0 - 1.0+)
 export function precalcularMapaLuz(filas, cols, antorchas, tiempo) {
-    const mapa = new Float32Array(filas * cols);
+    const tamano = filas * cols;
+    if (_mapaLuz.length < tamano) {
+        _mapaLuz = new Float32Array(tamano);
+    }
 
     // Luz ambiental base en todas las celdas
-    mapa.fill(LUZ_AMBIENTAL);
+    _mapaLuz.fill(LUZ_AMBIENTAL);
 
     // Contribución de cada antorcha
     for (const antorcha of antorchas) {
@@ -33,11 +39,11 @@ export function precalcularMapaLuz(filas, cols, antorchas, tiempo) {
                 if (distSq < RADIO_LUZ_SQ) {
                     // Atenuación cuadrática
                     const atenuacion = 1 - distSq / RADIO_LUZ_SQ;
-                    mapa[f * cols + c] += intensidad * atenuacion * 0.8;
+                    _mapaLuz[f * cols + c] += intensidad * atenuacion * 0.8;
                 }
             }
         }
     }
 
-    return mapa;
+    return _mapaLuz;
 }
