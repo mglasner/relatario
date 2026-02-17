@@ -59,6 +59,33 @@ El juego es apto para niños desde 7 años. Los villanos deben seguir estas regl
 - **Datos**: definidos en `js/enemigos.js` como instancias de `Enemigo(nombre, vidaMax, ataques[], descripcion)`
 - **Imágenes**: van en `assets/img/enemigos/`
 
+## Linting y formateo
+
+El proyecto usa ESLint v9 (flat config), Prettier y Stylelint. Todas son devDependencies en `package.json`.
+
+| Comando | Qué hace |
+|---|---|
+| `npm run lint` | Verificar calidad JS con ESLint |
+| `npm run lint:fix` | Auto-corregir problemas JS |
+| `npm run lint:css` | Verificar calidad CSS con Stylelint |
+| `npm run lint:css:fix` | Auto-corregir problemas CSS |
+| `npm run format:check` | Verificar formateo con Prettier |
+| `npm run format` | Auto-formatear JS, CSS, HTML y JSON |
+
+**Orden recomendado para corregir todo:**
+
+```bash
+npm run lint:fix && npm run lint:css:fix && npm run format
+```
+
+Primero los linters (que pueden cambiar lógica como `let` → `const`), luego Prettier (que solo ajusta formato).
+
+**Configuración:**
+
+- `eslint.config.js` — reglas: `prefer-const`, `eqeqeq`, `no-var`, `no-console` (warn)
+- `.prettierrc` — 4 espacios, single quotes, printWidth 100
+- `.stylelintrc.json` — extiende `stylelint-config-standard`
+
 ## Convenciones
 
 - Archivos e IDs en español (ej: `estilos.css`, `#seleccion-personaje`, `#btn-jugar`)
