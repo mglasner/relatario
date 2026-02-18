@@ -1,4 +1,4 @@
-// Libro de Villanos — bestiario con índice y detalle
+// Libro de Villanos — bestiario con índice y detalle (botón flotante + modal)
 
 import { crearElemento } from '../utils.js';
 import { TIERS, llenarStats } from './stats.js';
@@ -52,16 +52,12 @@ function generarDetalle(nombre) {
     return contenido;
 }
 
-export function crearLibroVillanos(contenedor) {
+// Construye el libro completo (índice + detalle + navegación)
+function construirLibro() {
     const nombres = ordenarPorTier(Object.keys(ENEMIGOS));
     let indiceActual = 0;
     let transicionEnCurso = false;
 
-    // Limpiar contenedor y quitar estilos de carrusel
-    contenedor.replaceChildren();
-    contenedor.className = '';
-
-    // Contenedor principal del libro
     const libro = crearElemento('div', 'libro-villanos');
 
     // --- Página izquierda: índice ---
@@ -81,7 +77,6 @@ export function crearLibroVillanos(contenedor) {
         item.dataset.indice = i;
         item.tabIndex = 0;
 
-        // Emoji de tier + nombre
         if (datos.tier && TIERS[datos.tier]) {
             item.textContent = TIERS[datos.tier].emoji + ' ' + nombre;
         } else {
@@ -113,7 +108,6 @@ export function crearLibroVillanos(contenedor) {
     // --- Página derecha: detalle ---
     const paginaDer = crearElemento('div', 'libro-pagina libro-pagina-der');
 
-    // Contenido inicial
     const detalleWrap = crearElemento('div', 'libro-detalle-wrap');
     detalleWrap.appendChild(generarDetalle(nombres[0]));
     paginaDer.appendChild(detalleWrap);
@@ -146,7 +140,6 @@ export function crearLibroVillanos(contenedor) {
     libro.appendChild(paginaIzq);
     libro.appendChild(lomo);
     libro.appendChild(paginaDer);
-    contenedor.appendChild(libro);
 
     // --- Navegación con crossfade ---
     function navegarA(nuevoIndice) {
@@ -157,23 +150,19 @@ export function crearLibroVillanos(contenedor) {
         transicionEnCurso = true;
         const contenidoActual = detalleWrap.querySelector('.libro-detalle-contenido');
 
-        // Fade out
         if (contenidoActual) {
             contenidoActual.classList.add('libro-fade-out');
         }
 
         setTimeout(function () {
-            // Reemplazar contenido
             detalleWrap.replaceChildren();
             const nuevoContenido = generarDetalle(nombres[nuevoIndice]);
             nuevoContenido.classList.add('libro-fade-in');
             detalleWrap.appendChild(nuevoContenido);
 
-            // Actualizar índice activo
             indiceActual = nuevoIndice;
             actualizarIndice();
 
-            // Limpiar clase de animación al terminar
             setTimeout(function () {
                 nuevoContenido.classList.remove('libro-fade-in');
                 transicionEnCurso = false;
@@ -182,23 +171,18 @@ export function crearLibroVillanos(contenedor) {
     }
 
     function actualizarIndice() {
-        // Marcar item activo
         const items = listaIndice.querySelectorAll('.libro-indice-item');
         items.forEach(function (item, i) {
             item.classList.toggle('libro-indice-activo', i === indiceActual);
         });
 
-        // Actualizar botones
         btnAnterior.disabled = indiceActual === 0;
         btnSiguiente.disabled = indiceActual === nombres.length - 1;
-
-        // Actualizar contador
         contador.textContent = indiceActual + 1 + ' / ' + nombres.length;
     }
 
-    // --- Navegación por teclado ---
-    function manejarTeclado(e) {
-        // Solo actuar si el libro o sus hijos tienen foco
+    // Navegación por teclado (flechas dentro del libro)
+    function manejarTecladoLibro(e) {
         if (!libro.contains(document.activeElement) && document.activeElement !== document.body) {
             return;
         }
@@ -212,12 +196,88 @@ export function crearLibroVillanos(contenedor) {
         }
     }
 
-    document.addEventListener('keydown', manejarTeclado);
+    return { libro, manejarTecladoLibro };
+}
+
+export function crearLibroVillanos(contenedor) {
+    // --- Botón flotante ---
+    const boton = crearElemento('button', 'libro-boton');
+    boton.type = 'button';
+
+    const imgBoton = document.createElement('img');
+    imgBoton.src = 'assets/img/libro-villanos.webp';
+    imgBoton.alt = 'Libro de Villanos';
+    boton.appendChild(imgBoton);
+
+    const textoBoton = crearElemento('span', 'libro-boton-texto', 'Libro de Villanos');
+    boton.appendChild(textoBoton);
+
+    // Chispas mágicas
+    const chispas = crearElemento('div', 'libro-chispas');
+    for (let i = 0; i < 6; i++) {
+        const chispa = document.createElement('span');
+        chispa.className = 'libro-chispa';
+        chispas.appendChild(chispa);
+    }
+    boton.appendChild(chispas);
+
+    contenedor.appendChild(boton);
+
+    // --- Modal ---
+    const overlay = crearElemento('div', 'libro-modal oculto');
+
+    const fondo = crearElemento('div', 'libro-modal-fondo');
+    overlay.appendChild(fondo);
+
+    const cuerpo = crearElemento('div', 'libro-modal-cuerpo');
+
+    // Botón cerrar
+    const btnCerrar = crearElemento('button', 'libro-modal-cerrar', '\u00D7');
+    btnCerrar.type = 'button';
+    cuerpo.appendChild(btnCerrar);
+
+    // Construir el libro e insertarlo
+    const { libro, manejarTecladoLibro } = construirLibro();
+    cuerpo.appendChild(libro);
+    overlay.appendChild(cuerpo);
+
+    document.getElementById('juego').appendChild(overlay);
+
+    // --- Abrir / cerrar ---
+    let tecladoActivo = false;
+
+    function abrir() {
+        overlay.classList.remove('oculto');
+        document.addEventListener('keydown', manejarTeclado);
+        document.addEventListener('keydown', manejarTecladoLibro);
+        tecladoActivo = true;
+    }
+
+    function cerrar() {
+        overlay.classList.add('oculto');
+        if (tecladoActivo) {
+            document.removeEventListener('keydown', manejarTeclado);
+            document.removeEventListener('keydown', manejarTecladoLibro);
+            tecladoActivo = false;
+        }
+    }
+
+    function manejarTeclado(e) {
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            cerrar();
+        }
+    }
+
+    boton.addEventListener('click', abrir);
+    fondo.addEventListener('click', cerrar);
+    btnCerrar.addEventListener('click', cerrar);
 
     return {
         destruir: function () {
-            document.removeEventListener('keydown', manejarTeclado);
-            contenedor.replaceChildren();
+            cerrar();
+            overlay.remove();
+            boton.remove();
         },
     };
 }

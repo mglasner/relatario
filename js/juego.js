@@ -141,11 +141,15 @@ mezclar(Object.keys(PERSONAJES)).forEach(function (nombre) {
 });
 crearCarrusel(contenedorPersonajes);
 
-// Libro de villanos (reemplaza al carrusel)
-const contenedorVillanos = document.querySelector('.villanos');
-crearLibroVillanos(contenedorVillanos);
+// Libro de villanos (botón flotante + modal)
+const pantallaSeleccion = document.getElementById('seleccion-personaje');
+crearLibroVillanos(pantallaSeleccion);
+
+// Limpiar sección villanos (el libro ahora flota en esquina)
 const tituloVillanos = document.querySelector('.titulo-villanos');
 if (tituloVillanos) tituloVillanos.remove();
+const contenedorVillanos = document.querySelector('.villanos');
+if (contenedorVillanos) contenedorVillanos.remove();
 
 // --- Estado del juego ---
 
@@ -510,6 +514,10 @@ document.addEventListener('keydown', function (e) {
 
     // Navegación con teclado en pantalla de selección
     if (estado.estadoActual === ESTADOS.SELECCION) {
+        // Si el modal del libro está abierto, no interceptar teclas
+        const libroModal = document.querySelector('.libro-modal');
+        if (libroModal && !libroModal.classList.contains('oculto')) return;
+
         // Si el modal de personaje está abierto
         if (!elModalPersonaje.classList.contains('oculto')) {
             if (e.key === 'Escape') {
