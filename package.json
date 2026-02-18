@@ -11,6 +11,10 @@
         "format": "prettier --write '**/*.{js,css,html,json}'",
         "format:check": "prettier --check '**/*.{js,css,html,json}'",
         "dev": "browser-sync start --server --files '**/*.html, **/*.css, **/*.js' --no-notify",
+        "build": "npm run build:js && npm run build:css && npm run build:html",
+        "build:js": "esbuild js/juego.js --bundle --minify --outfile=dist/juego.min.js --format=esm",
+        "build:css": "esbuild estilos.css --minify --outfile=dist/estilos.min.css",
+        "build:html": "node scripts/build-html.js",
         "img:optimize": "node scripts/optimizar-imagenes.js"
     },
     "repository": {
@@ -28,6 +32,7 @@
     "devDependencies": {
         "@eslint/js": "^10.0.1",
         "browser-sync": "^3.0.4",
+        "esbuild": "^0.27.3",
         "eslint": "^10.0.0",
         "eslint-config-prettier": "^10.1.8",
         "globals": "^17.3.0",
