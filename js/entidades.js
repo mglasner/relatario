@@ -33,6 +33,10 @@ class Personaje extends Entidad {
         this.velocidad = datos.velocidad;
         this.estatura = datos.estatura;
         this.edad = datos.edad;
+        this.colorHud = datos.colorHud;
+        this.colorHudClaro = datos.colorHudClaro;
+        this.colorPiel = datos.colorPiel;
+        this.emojiHud = datos.emojiHud;
     }
 }
 

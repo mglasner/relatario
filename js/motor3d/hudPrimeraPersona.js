@@ -3,47 +3,6 @@
 
 import { canvas } from './config.js';
 
-// --- Configuración visual por personaje ---
-
-const CONFIGS_HUD = {
-    Lina: {
-        colorPrimario: '#9b59b6',
-        colorClaro: '#bb86fc',
-        colorPiel: '#f5d0a9',
-        emoji: '\uD83C\uDFA4',
-    },
-    Rosé: {
-        colorPrimario: '#2ecc71',
-        colorClaro: '#6bfc86',
-        colorPiel: '#f5d0a9',
-        emoji: '\u2728',
-    },
-    PandaJuro: {
-        colorPrimario: '#c0392b',
-        colorClaro: '#e74c3c',
-        colorPiel: '#1a1a1a',
-        emoji: '\u2694\uFE0F',
-    },
-    Hana: {
-        colorPrimario: '#e91e90',
-        colorClaro: '#fc86d4',
-        colorPiel: '#f5d0a9',
-        emoji: '\uD83C\uDF38',
-    },
-    Kira: {
-        colorPrimario: '#2ec4b6',
-        colorClaro: '#3dd8c8',
-        colorPiel: '#f5d0a9',
-        emoji: '\uD83D\uDD26',
-    },
-    DonBu: {
-        colorPrimario: '#d4a052',
-        colorClaro: '#e6b86a',
-        colorPiel: '#8B6914',
-        emoji: '\uD83D\uDEE1\uFE0F',
-    },
-};
-
 // --- Estado interno ---
 
 let _config = null;
@@ -62,8 +21,8 @@ function dibujarMano(ctx, x, y, espejo, config, escala) {
     const anchoBrazo = 35 * escala;
     const altoBrazo = 60 * escala;
     const grad = ctx.createLinearGradient(0, 0, 0, altoBrazo);
-    grad.addColorStop(0, config.colorClaro);
-    grad.addColorStop(1, config.colorPrimario);
+    grad.addColorStop(0, config.colorHudClaro);
+    grad.addColorStop(1, config.colorHud);
 
     ctx.fillStyle = grad;
     ctx.beginPath();
@@ -99,13 +58,13 @@ function dibujarArma(ctx, x, y, config, escala) {
     ctx.font = tamano + 'px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(config.emoji, x, y);
+    ctx.fillText(config.emojiHud, x, y);
 }
 
 // --- API pública ---
 
 export function inicializarHUD(jugador) {
-    _config = CONFIGS_HUD[jugador.nombre] || null;
+    _config = jugador.colorHud ? jugador : null;
     _fase = 0;
     _faseBob = 0;
     _flinchIntensidad = 0;

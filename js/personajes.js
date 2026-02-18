@@ -22,6 +22,10 @@ const PERSONAJES = {
             edad: 13,
             velocidad: 7,
             estatura: 1.55,
+            colorHud: '#9b59b6',
+            colorHudClaro: '#bb86fc',
+            colorPiel: '#f5d0a9',
+            emojiHud: '🎤',
         }
     ),
 
@@ -47,6 +51,10 @@ const PERSONAJES = {
             edad: 10,
             velocidad: 8,
             estatura: 1.4,
+            colorHud: '#2ecc71',
+            colorHudClaro: '#6bfc86',
+            colorPiel: '#f5d0a9',
+            emojiHud: '✨',
         }
     ),
 
@@ -65,6 +73,10 @@ const PERSONAJES = {
             edad: 300,
             velocidad: 5,
             estatura: 1.7,
+            colorHud: '#c0392b',
+            colorHudClaro: '#e74c3c',
+            colorPiel: '#1a1a1a',
+            emojiHud: '⚔️',
         }
     ),
 
@@ -86,6 +98,10 @@ const PERSONAJES = {
             edad: 16,
             velocidad: 9,
             estatura: 1.62,
+            colorHud: '#e91e90',
+            colorHudClaro: '#fc86d4',
+            colorPiel: '#f5d0a9',
+            emojiHud: '🌸',
         }
     ),
 
@@ -103,6 +119,10 @@ const PERSONAJES = {
             edad: 14,
             velocidad: 7,
             estatura: 1.58,
+            colorHud: '#2ec4b6',
+            colorHudClaro: '#3dd8c8',
+            colorPiel: '#f5d0a9',
+            emojiHud: '🔦',
         }
     ),
 
@@ -121,6 +141,10 @@ const PERSONAJES = {
             edad: 45,
             velocidad: 4,
             estatura: 1.5,
+            colorHud: '#d4a052',
+            colorHudClaro: '#e6b86a',
+            colorPiel: '#8B6914',
+            emojiHud: '🛡️',
         }
     ),
 };

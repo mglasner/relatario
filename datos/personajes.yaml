@@ -6,6 +6,10 @@ Lina:
   edad: 13
   velocidad: 7
   estatura: 1.55
+  colorHud: "#9b59b6"
+  colorHudClaro: "#bb86fc"
+  colorPiel: "#f5d0a9"
+  emojiHud: "\U0001F3A4"
   ataques:
     - nombre: Nota aguda
       dano: 15
@@ -22,6 +26,10 @@ Rosé:
   edad: 10
   velocidad: 8
   estatura: 1.4
+  colorHud: "#2ecc71"
+  colorHudClaro: "#6bfc86"
+  colorPiel: "#f5d0a9"
+  emojiHud: "\u2728"
   ataques:
     - nombre: Latigazo de tela
       dano: 20
@@ -38,6 +46,10 @@ PandaJuro:
   edad: 300
   velocidad: 5
   estatura: 1.7
+  colorHud: "#c0392b"
+  colorHudClaro: "#e74c3c"
+  colorPiel: "#1a1a1a"
+  emojiHud: "\u2694\uFE0F"
   ataques:
     - nombre: Corte samurái
       dano: 30
@@ -54,6 +66,10 @@ Hana:
   edad: 16
   velocidad: 9
   estatura: 1.62
+  colorHud: "#e91e90"
+  colorHudClaro: "#fc86d4"
+  colorPiel: "#f5d0a9"
+  emojiHud: "\U0001F338"
   ataques:
     - nombre: Pirueta fulminante
       dano: 20
@@ -70,6 +86,10 @@ Kira:
   edad: 14
   velocidad: 7
   estatura: 1.58
+  colorHud: "#2ec4b6"
+  colorHudClaro: "#3dd8c8"
+  colorPiel: "#f5d0a9"
+  emojiHud: "\U0001F526"
   ataques:
     - nombre: Disparo certero
       dano: 28
@@ -86,6 +106,10 @@ DonBu:
   edad: 45
   velocidad: 4
   estatura: 1.5
+  colorHud: "#d4a052"
+  colorHudClaro: "#e6b86a"
+  colorPiel: "#8B6914"
+  emojiHud: "\U0001F6E1\uFE0F"
   ataques:
     - nombre: Patada de mula
       dano: 35

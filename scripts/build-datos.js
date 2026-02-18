@@ -8,6 +8,7 @@ const CABECERA = '// GENERADO desde datos/*.yaml — no editar directamente\n';
 const IMG_PLACEHOLDER = 'assets/img/placeholder.webp';
 
 const CAMPOS_ENTIDAD = ['vida', 'clase', 'descripcion', 'edad', 'velocidad', 'estatura'];
+const CAMPOS_PERSONAJE = [...CAMPOS_ENTIDAD, 'colorHud', 'colorHudClaro', 'colorPiel', 'emojiHud'];
 const CAMPOS_ENEMIGO = ['tier', ...CAMPOS_ENTIDAD];
 const CAMPOS_ATAQUE = ['nombre', 'dano', 'descripcion'];
 
@@ -73,6 +74,10 @@ function generarDatos(datos) {
         `edad: ${datos.edad},`,
         `velocidad: ${datos.velocidad},`,
         `estatura: ${datos.estatura},`,
+        ...(datos.colorHud ? [`colorHud: '${datos.colorHud}',`] : []),
+        ...(datos.colorHudClaro ? [`colorHudClaro: '${datos.colorHudClaro}',`] : []),
+        ...(datos.colorPiel ? [`colorPiel: '${datos.colorPiel}',`] : []),
+        ...(datos.emojiHud ? [`emojiHud: '${datos.emojiHud}',`] : []),
     ];
     return `{\n${lineas.map((l) => `            ${l}`).join('\n')}\n        }`;
 }
@@ -112,7 +117,7 @@ async function main() {
     // Personajes
     const personajesYaml = readFileSync('datos/personajes.yaml', 'utf-8');
     const personajesData = yaml.load(personajesYaml);
-    validarTodos(personajesData, 'personajes.yaml', CAMPOS_ENTIDAD);
+    validarTodos(personajesData, 'personajes.yaml', CAMPOS_PERSONAJE);
     const personajesJS = generarJS(personajesData, 'Personaje', './entidades.js');
     const personajesFmt = await prettier.format(personajesJS, configPrettier);
     writeFileSync('js/personajes.js', personajesFmt);
