@@ -279,6 +279,10 @@ function loop(ahora) {
     }
 
     // Crear vista del array con solo los sprites activos
+    // Re-asignar refs cada frame porque .sort() y .length pueden desordenar/borrar entradas
+    for (let i = 0; i < _spritesCount; i++) {
+        _spritesView[i] = _sprites[i];
+    }
     _spritesView.length = _spritesCount;
     renderizarSprites(ctx3D, _spritesView, zBuffer, estado.x, estado.y, estado.angulo);
 
