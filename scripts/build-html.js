@@ -17,5 +17,10 @@ writeFileSync('dist/index.html', html);
 // Copiar assets estáticos (imágenes y fuentes)
 cpSync('assets', 'dist/assets', { recursive: true });
 
-// Copiar service worker
-cpSync('sw.js', 'dist/sw.js');
+// Service worker: inyectar versión única para invalidar cache en cada deploy
+const buildId = Date.now().toString(36);
+let sw = readFileSync('sw.js', 'utf-8');
+sw = sw.replace(/casa-terror-v\w+/, 'casa-terror-' + buildId);
+writeFileSync('dist/sw.js', sw);
+// eslint-disable-next-line no-console
+console.log('SW cache version: casa-terror-' + buildId);
