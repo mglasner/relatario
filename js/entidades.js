@@ -30,6 +30,9 @@ class Personaje extends Entidad {
         this.img = datos.img;
         this.clase = datos.clase;
         this.descripcion = datos.descripcion;
+        this.velocidad = datos.velocidad;
+        this.estatura = datos.estatura;
+        this.edad = datos.edad;
     }
 }
 
@@ -45,6 +48,9 @@ class Enemigo extends Entidad {
             this.img = datos.img;
             this.clase = datos.clase;
             this.descripcion = datos.descripcion || '';
+            this.velocidad = datos.velocidad;
+            this.estatura = datos.estatura;
+            this.edad = datos.edad;
         }
     }
 }

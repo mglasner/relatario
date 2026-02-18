@@ -13,6 +13,9 @@ const ENEMIGOS = {
             img: 'assets/img/enemigos/siniestra.webp',
             clase: 'villano-siniestra',
             descripcion: 'Espectro furioso. Destruye todo a su paso.',
+            edad: 500,
+            velocidad: 8,
+            estatura: 1.8,
         }
     ),
 
@@ -27,6 +30,9 @@ const ENEMIGOS = {
             img: 'assets/img/enemigos/trasgo.webp',
             clase: 'villano-trasgo',
             descripcion: 'Duende torpe. Intenta ser malo pero le sale mal.',
+            edad: 120,
+            velocidad: 6,
+            estatura: 0.6,
         }
     ),
 
@@ -45,6 +51,9 @@ const ENEMIGOS = {
             img: 'assets/img/enemigos/errante.webp',
             clase: 'villano-errante',
             descripcion: 'Cadáver inteligente y siniestro. Planifica cada ataque.',
+            edad: 1000,
+            velocidad: 3,
+            estatura: 1.9,
         }
     ),
 
@@ -63,6 +72,9 @@ const ENEMIGOS = {
             img: 'assets/img/enemigos/profano.webp',
             clase: 'villano-profano',
             descripcion: 'Sigiloso y despiadado. Aparece cuando menos lo esperas.',
+            edad: 800,
+            velocidad: 9,
+            estatura: 2.1,
         }
     ),
 };

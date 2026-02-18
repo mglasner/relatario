@@ -620,9 +620,10 @@ h1 {
 .stat-label {
     display: block;
     font-size: 0.65rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--color-texto-apagado);
+    letter-spacing: 0.12em;
+    color: #9898b0;
     margin-bottom: 4px;
 }
 
@@ -662,9 +663,37 @@ h1 {
     color: #ccc;
 }
 
+/* Barra de velocidad */
+.stat-velocidad {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 2px 8px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.stat-velocidad .stat-label {
+    grid-column: 1 / -1;
+}
+
+.barra-velocidad-relleno {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+    border-radius: 3px;
+    transform-origin: left;
+    transition: transform 0.3s;
+}
+
 /* Ataques */
+.stat-atributos {
+    margin-top: 6px;
+    margin-bottom: 8px;
+}
+
 .stat-ataques {
-    margin-top: 2px;
+    margin-top: 8px;
 }
 
 .ataque {

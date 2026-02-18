@@ -54,6 +54,41 @@ function llenarStats(tarjeta, datos) {
     statVida.appendChild(crearElemento('span', 'stat-valor', datos.vidaMax.toString()));
     stats.appendChild(statVida);
 
+    // Barra de velocidad (escala: 10 = 100%)
+    if (datos.velocidad !== undefined) {
+        const statVel = crearElemento('div', 'stat-velocidad');
+        statVel.appendChild(crearElemento('span', 'stat-label', 'Velocidad'));
+        const barraFondoVel = crearElemento('div', 'barra-vida-fondo');
+        const barraRellenoVel = crearElemento('div', 'barra-velocidad-relleno');
+        barraRellenoVel.style.transform = 'scaleX(' + datos.velocidad / 10 + ')';
+        barraFondoVel.appendChild(barraRellenoVel);
+        statVel.appendChild(barraFondoVel);
+        statVel.appendChild(crearElemento('span', 'stat-valor', datos.velocidad.toString()));
+        stats.appendChild(statVel);
+    }
+
+    // Atributos extra (edad, estatura)
+    if (datos.edad !== undefined || datos.estatura !== undefined) {
+        const statAtributos = crearElemento('div', 'stat-atributos');
+        statAtributos.appendChild(crearElemento('span', 'stat-label', 'Atributos'));
+
+        if (datos.edad !== undefined) {
+            const fila = crearElemento('div', 'ataque');
+            fila.appendChild(crearElemento('span', 'ataque-nombre', 'Edad'));
+            fila.appendChild(crearElemento('span', 'stat-valor', datos.edad + ' años'));
+            statAtributos.appendChild(fila);
+        }
+
+        if (datos.estatura !== undefined) {
+            const fila = crearElemento('div', 'ataque');
+            fila.appendChild(crearElemento('span', 'ataque-nombre', 'Estatura'));
+            fila.appendChild(crearElemento('span', 'stat-valor', datos.estatura + ' m'));
+            statAtributos.appendChild(fila);
+        }
+
+        stats.appendChild(statAtributos);
+    }
+
     // Ataques
     const statAtaques = crearElemento('div', 'stat-ataques');
     statAtaques.appendChild(crearElemento('span', 'stat-label', 'Ataques'));

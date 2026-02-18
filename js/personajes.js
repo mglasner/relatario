@@ -6,13 +6,16 @@ const PERSONAJES = {
         'Lina',
         100,
         [
-            { nombre: 'Golpe veloz', dano: 15, descripcion: 'Un golpe rápido' },
-            { nombre: 'Patada giratoria', dano: 25, descripcion: 'Ataque poderoso' },
+            { nombre: 'Nota aguda', dano: 15, descripcion: 'Un agudo que aturde al rival' },
+            { nombre: 'Encore explosivo', dano: 25, descripcion: 'Actuación final que arrasa el escenario' },
         ],
         {
             img: 'assets/img/personajes/lina.webp',
             clase: 'jugador-lina',
-            descripcion: '13 años. Valiente e inteligente.',
+            descripcion: '13 años. Idol de K-pop y visual de su banda. Lucha al ritmo de la música.',
+            edad: 13,
+            velocidad: 7,
+            estatura: 1.55,
         }
     ),
 
@@ -20,13 +23,16 @@ const PERSONAJES = {
         'Rosé',
         90,
         [
-            { nombre: 'Rayo de luz', dano: 20, descripcion: 'Destello cegador' },
-            { nombre: 'Escudo brillante', dano: 10, descripcion: 'Ataque defensivo' },
+            { nombre: 'Latigazo de tela', dano: 20, descripcion: 'Un giro envolvente con la tela aérea' },
+            { nombre: 'Giro del cubo', dano: 10, descripcion: 'Atrapa al rival girando desde el cubo' },
         ],
         {
             img: 'assets/img/personajes/rose.webp',
             clase: 'jugador-rose',
-            descripcion: '10 años. Nunca se rinde.',
+            descripcion: '10 años. Estudiante de circo aéreo. Domina la tela y el cubo.',
+            edad: 10,
+            velocidad: 8,
+            estatura: 1.4,
         }
     ),
 
@@ -40,7 +46,10 @@ const PERSONAJES = {
         {
             img: 'assets/img/personajes/pandajuro.webp',
             clase: 'jugador-pandajuro',
-            descripcion: 'Furioso, leal y honorable.',
+            descripcion: 'Shōgun legendario de la era Tokugawa. Venció a 100 ninjas con un solo bambú.',
+            edad: 300,
+            velocidad: 5,
+            estatura: 1.7,
         }
     ),
 
@@ -48,13 +57,16 @@ const PERSONAJES = {
         'Hana',
         95,
         [
-            { nombre: 'Onda sónica', dano: 20, descripcion: 'Un grito agudo que aturde' },
+            { nombre: 'Pirueta fulminante', dano: 20, descripcion: 'Un giro vertiginoso que derriba al rival' },
             { nombre: 'Coreografía letal', dano: 22, descripcion: 'Movimientos mortales de baile' },
         ],
         {
             img: 'assets/img/personajes/hana.webp',
             clase: 'jugador-hana',
-            descripcion: '16 años. Idol de K-pop. Lucha con música.',
+            descripcion: '16 años. Bailarina. Sus movimientos hipnotizan a cualquier rival.',
+            edad: 16,
+            velocidad: 9,
+            estatura: 1.62,
         }
     ),
 
@@ -69,6 +81,9 @@ const PERSONAJES = {
             img: 'assets/img/personajes/kira.webp',
             clase: 'jugador-kira',
             descripcion: '14 años. Investigadora paranormal. Nada se le escapa.',
+            edad: 14,
+            velocidad: 7,
+            estatura: 1.58,
         }
     ),
 
@@ -82,7 +97,10 @@ const PERSONAJES = {
         {
             img: 'assets/img/personajes/donbu.webp',
             clase: 'jugador-donbu',
-            descripcion: 'Padre de familia. Burro terco y protector.',
+            descripcion: 'Padre de familia. Casado con Pamelota, sus hijas Pototo y Topete le dan más problemas que cualquier villano.',
+            edad: 45,
+            velocidad: 4,
+            estatura: 1.5,
         }
     ),
 };
