@@ -3229,11 +3229,72 @@ h1 {
     flex: 1;
     position: relative;
     z-index: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .libro-detalle-contenido {
     text-align: center;
-    padding: 16px 20px;
+    padding: 12px 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* --- Tabs Perfil / Habilidades --- */
+.libro-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 10px;
+}
+
+.libro-tab {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: rgb(180 165 140 / 50%);
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    padding: 4px 14px;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition:
+        color 0.2s,
+        border-color 0.2s;
+}
+
+.libro-tab:hover {
+    color: rgb(200 185 160);
+}
+
+.libro-tab-activo {
+    color: var(--v-color, var(--color-dorado));
+    border-bottom-color: var(--v-color, var(--color-dorado));
+}
+
+/* --- Paneles --- */
+.libro-panel {
+    display: none;
+}
+
+.libro-panel-activo {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    animation: libro-panel-entrada 0.25s ease;
+}
+
+@keyframes libro-panel-entrada {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Marco ornamental del avatar */
@@ -3255,6 +3316,21 @@ h1 {
     border-radius: 50%;
     border: 1px solid rgb(255 215 0 / 12%);
     pointer-events: none;
+}
+
+/* Avatar mini para panel de habilidades */
+.libro-avatar-mini {
+    padding: 2px;
+    margin-bottom: 4px;
+}
+
+.libro-avatar-mini .avatar img {
+    width: 64px;
+    height: 64px;
+}
+
+.libro-avatar-mini::before {
+    inset: -3px;
 }
 
 .libro-detalle-contenido .avatar {
@@ -3287,45 +3363,35 @@ h1 {
     margin-bottom: 4px;
 }
 
-.libro-detalle-contenido .descripcion {
-    font-size: 0.8rem;
-    color: rgb(200 185 160);
+/* Descripción grande (panel perfil) */
+.libro-descripcion-grande {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: rgb(210 195 170);
     font-style: italic;
-    margin-bottom: 8px;
-    max-height: 3.6em;
+    text-align: left;
+    margin: 8px 0 0;
+    flex: 1;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: rgb(255 215 0 / 25%) transparent;
 }
 
-/* Scrollbar estilizado para descripción */
-.libro-detalle-contenido .descripcion::-webkit-scrollbar {
+.libro-descripcion-grande::-webkit-scrollbar {
     width: 4px;
 }
 
-.libro-detalle-contenido .descripcion::-webkit-scrollbar-track {
+.libro-descripcion-grande::-webkit-scrollbar-track {
     background: transparent;
 }
 
-.libro-detalle-contenido .descripcion::-webkit-scrollbar-thumb {
+.libro-descripcion-grande::-webkit-scrollbar-thumb {
     background: rgb(255 215 0 / 25%);
     border-radius: 2px;
 }
 
-.libro-detalle-contenido .descripcion::-webkit-scrollbar-thumb:hover {
+.libro-descripcion-grande::-webkit-scrollbar-thumb:hover {
     background: rgb(255 215 0 / 40%);
-}
-
-/* Separador entre descripción y stats */
-.libro-separador-stats {
-    height: 1px;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        var(--v-tenue, rgb(255 255 255 / 8%)),
-        transparent
-    );
-    margin: 4px 0 8px;
 }
 
 .libro-detalle-contenido .stats {
