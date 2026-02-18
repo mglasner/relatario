@@ -220,6 +220,10 @@ personajes.forEach(function (personaje, i) {
 const pasillo = document.getElementById('pasillo');
 const personajeJugador = document.getElementById('personaje-jugador');
 const imgJugador = document.getElementById('img-jugador');
+const jugadorSombra = document.querySelector('.jugador-sombra');
+
+// Distancia (en unidades de tamaño del personaje) para activar proximidad
+const DISTANCIA_PROXIMIDAD = 1.5;
 
 // Cache de dimensiones (se recalculan solo en resize)
 let velocidadCache = 0;
@@ -423,6 +427,7 @@ function ejecutarCambioEstado(anterior, nuevo, datos) {
     // Salir del estado anterior
     if (anterior === ESTADOS.PASILLO) {
         estado.loopActivo = false;
+        limpiarProximidadPuertas();
         dpad.ocultar();
     } else if (anterior === ESTADOS.HABITACION) {
         const hab = habitaciones[estado.habitacionActual];
@@ -621,12 +626,18 @@ function gameLoop() {
     if (movimiento.teclas['ArrowLeft']) dx -= vel;
     if (movimiento.teclas['ArrowRight']) dx += vel;
 
-    if (dx !== 0 || dy !== 0) {
+    const seMueve = dx !== 0 || dy !== 0;
+
+    if (seMueve) {
         moverPersonaje(dx, dy);
     }
 
-    // Detectar colisión con puertas
+    // Clase de movimiento para animación de caminar
+    personajeJugador.classList.toggle('moviendo', seMueve);
+
+    // Detectar colisión y proximidad con puertas
     detectarColisionPuertas();
+    actualizarProximidadPuertas();
 
     requestAnimationFrame(gameLoop);
 }
@@ -650,6 +661,39 @@ function moverPersonaje(dx, dy) {
 
 function actualizarPosicion() {
     personajeJugador.style.transform = `translate(${movimiento.x}px, ${movimiento.y}px)`;
+
+    // Escalar sombra según posición Y (más grande abajo, más chica arriba)
+    if (jugadorSombra && movimiento.limiteInferior > 0) {
+        const progreso = movimiento.y / movimiento.limiteInferior;
+        const escala = 0.6 + progreso * 0.5;
+        jugadorSombra.style.transform = `scaleX(${escala}) scaleY(${escala * 0.6})`;
+    }
+}
+
+// --- Proximidad de puertas ---
+
+function actualizarProximidadPuertas() {
+    const tam = tamPersonajeCache;
+    const centroX = movimiento.x + tam / 2;
+    const centroY = movimiento.y + tam / 2;
+
+    for (let i = 0; i < puertasCache.length; i++) {
+        const p = puertasCache[i];
+        const puertaCX = p.px + p.pw / 2;
+        const puertaCY = p.py + p.ph / 2;
+        const distX = (centroX - puertaCX) / tam;
+        const distY = (centroY - puertaCY) / tam;
+        const dist = Math.sqrt(distX * distX + distY * distY);
+
+        p.elemento.classList.toggle('puerta-cerca', dist < DISTANCIA_PROXIMIDAD);
+    }
+}
+
+function limpiarProximidadPuertas() {
+    document.querySelectorAll('.puerta-cerca').forEach(function (p) {
+        p.classList.remove('puerta-cerca');
+    });
+    personajeJugador.classList.remove('moviendo');
 }
 
 // --- Detección de colisión con puertas ---

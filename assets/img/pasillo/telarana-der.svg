@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+    <!-- Tela de araña esquina superior derecha (espejada) -->
+    <g fill="none" stroke="white" stroke-linecap="round">
+        <!-- Hilos radiales desde la esquina -->
+        <g stroke-opacity="0.7" stroke-width="0.6">
+            <line x1="100" y1="0" x2="2" y2="10" />
+            <line x1="100" y1="0" x2="10" y2="35" />
+            <line x1="100" y1="0" x2="26" y2="60" />
+            <line x1="100" y1="0" x2="48" y2="80" />
+            <line x1="100" y1="0" x2="74" y2="93" />
+            <line x1="100" y1="0" x2="94" y2="98" />
+        </g>
+        <!-- Anillos concéntricos (hilos espirales) -->
+        <g stroke-opacity="0.45" stroke-width="0.5">
+            <!-- Anillo interior -->
+            <path d="M 75,2.5 Q 74,7 77,9 Q 79,13 81,15 Q 84,19 87,20 Q 91,23 93,24 Q 97,25 98.5,25" />
+            <!-- Anillo medio -->
+            <path d="M 50,5 Q 49,14 54,18 Q 57,26 62,30 Q 67,38 74,40 Q 82,46 87,47 Q 94,50 97,50" />
+            <!-- Anillo exterior -->
+            <path d="M 22,8 Q 22,22 28,28 Q 33,40 41,48 Q 50,58 58,62 Q 70,70 80,74 Q 90,78 95,78" />
+        </g>
+        <!-- Hilo suelto colgante -->
+        <g stroke-opacity="0.3" stroke-width="0.4">
+            <path d="M 60,3 Q 56,8 62,14" />
+            <path d="M 97,42 Q 92,44 88,38" />
+        </g>
+    </g>
+</svg>

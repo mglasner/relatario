@@ -1240,9 +1240,7 @@ h1 {
     touch-action: none;
     contain: layout paint;
     background:
-        /* Piso de baldosas oscuras */
         repeating-conic-gradient(#1a1a28 0% 25%, #15152a 0% 50%) 0 0 / 50px 50px,
-        /* Luz tenue central */
         radial-gradient(ellipse at 50% 60%, rgb(80 50 20 / 30%) 0%, transparent 60%),
         var(--color-oscuro);
     border-left: 18px solid transparent;
@@ -1263,42 +1261,54 @@ h1 {
     animation: parpadeo-luz 6s ease-in-out infinite;
 }
 
-/* Viñeta oscura sobre el pasillo */
-#pasillo::before {
-    content: '';
+/* Capas de niebla */
+.niebla-capa {
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at 50% 60%, transparent 30%, rgb(0 0 0 / 60%) 100%);
     pointer-events: none;
-    z-index: 3;
+    z-index: 7;
 }
 
-/* Niebla sutil */
-#pasillo::after {
-    content: '';
-    position: absolute;
-    inset: 0;
+.niebla-capa-1 {
     background:
-        radial-gradient(ellipse at 30% 20%, rgb(100 80 120 / 8%) 0%, transparent 50%),
-        radial-gradient(ellipse at 70% 70%, rgb(100 80 120 / 6%) 0%, transparent 50%);
-    animation: niebla 8s ease-in-out infinite alternate;
-    pointer-events: none;
-    z-index: 2;
+        radial-gradient(ellipse at 25% 25%, rgb(120 90 160 / 22%) 0%, transparent 55%),
+        radial-gradient(ellipse at 75% 65%, rgb(120 90 160 / 18%) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgb(100 80 140 / 12%) 0%, transparent 60%);
+    animation: niebla-1 8s ease-in-out infinite alternate;
 }
 
-@keyframes niebla {
+.niebla-capa-2 {
+    background:
+        radial-gradient(ellipse at 65% 35%, rgb(90 70 130 / 18%) 0%, transparent 50%),
+        radial-gradient(ellipse at 15% 75%, rgb(100 80 140 / 15%) 0%, transparent 45%),
+        radial-gradient(ellipse at 80% 90%, rgb(80 60 120 / 10%) 0%, transparent 50%);
+    animation: niebla-2 12s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes niebla-1 {
     0% {
-        opacity: 0.4;
-        transform: translateX(-5px);
+        opacity: 0.5;
+        transform: translateX(-8px) translateY(2px);
     }
 
     100% {
         opacity: 1;
-        transform: translateX(5px);
+        transform: translateX(8px) translateY(-2px);
     }
 }
 
-/* Parpadeo de luz */
+@keyframes niebla-2 {
+    0% {
+        opacity: 0.4;
+        transform: translateX(6px) translateY(-3px);
+    }
+
+    100% {
+        opacity: 0.9;
+        transform: translateX(-6px) translateY(3px);
+    }
+}
+
 @keyframes parpadeo-luz {
     0%,
     90%,
@@ -1325,21 +1335,196 @@ h1 {
 
 /* --- Decoración del pasillo --- */
 
-/* Cuadros siniestros entre las puertas */
-.deco-cuadro {
+/* Ventana gótica al fondo */
+.pasillo-ventana {
     position: absolute;
-    width: 13.75%;
-    height: 7.5%;
+    top: 3%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 22%;
+    height: 12%;
+    border-radius: 50% 50% 4px 4px;
+    border: 3px solid #3a2a1a;
     overflow: hidden;
-    border-radius: 2px;
     box-shadow:
-        0 2px 8px rgb(0 0 0 / 70%),
-        0 0 3px rgb(100 70 30 / 30%);
+        inset 0 0 10px rgb(0 0 0 / 60%),
+        0 0 12px rgb(0 0 0 / 50%);
     pointer-events: none;
     z-index: 1;
 }
 
-.deco-cuadro img {
+.ventana-cielo {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, #0a0a2a 0%, #1a1a4a 60%, #2a2a5a 100%);
+    position: relative;
+}
+
+.ventana-luna {
+    position: absolute;
+    top: 18%;
+    right: 20%;
+    width: 28%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 40%, #fffde8 0%, #e8d88a 60%, #c8b86a 100%);
+    box-shadow:
+        0 0 8px rgb(255 253 232 / 60%),
+        0 0 20px rgb(255 253 232 / 25%);
+    animation: luna-pulso 4s ease-in-out infinite;
+}
+
+@keyframes luna-pulso {
+    0%,
+    100% {
+        box-shadow:
+            0 0 8px rgb(255 253 232 / 60%),
+            0 0 20px rgb(255 253 232 / 25%);
+    }
+
+    50% {
+        box-shadow:
+            0 0 12px rgb(255 253 232 / 80%),
+            0 0 30px rgb(255 253 232 / 35%);
+    }
+}
+
+.ventana-estrella {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: #fff;
+    border-radius: 50%;
+    animation: estrella-titilar 2s ease-in-out infinite;
+}
+
+.ventana-estrella-1 {
+    top: 20%;
+    left: 15%;
+}
+
+.ventana-estrella-2 {
+    top: 40%;
+    left: 35%;
+    animation-delay: 0.7s;
+}
+
+.ventana-estrella-3 {
+    top: 15%;
+    left: 55%;
+    animation-delay: 1.3s;
+}
+
+@keyframes estrella-titilar {
+    0%,
+    100% {
+        opacity: 0.3;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Telarañas en esquinas superiores — SVG con hilos y anillos */
+.telarana {
+    position: absolute;
+    top: 0;
+    width: 28%;
+    height: 28%;
+    pointer-events: none;
+    z-index: 2;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}
+
+.telarana-izq {
+    left: 0;
+    background-image: url('assets/img/pasillo/telarana-izq.svg');
+}
+
+.telarana-der {
+    right: 0;
+    background-image: url('assets/img/pasillo/telarana-der.svg');
+}
+
+/* Alfombra central */
+.pasillo-alfombra {
+    position: absolute;
+    top: 18%;
+    left: 30%;
+    width: 40%;
+    height: 80%;
+    background:
+        repeating-linear-gradient(
+            45deg,
+            rgb(120 30 30 / 12%) 0,
+            rgb(120 30 30 / 12%) 1px,
+            transparent 1px,
+            transparent 8px
+        ),
+        repeating-linear-gradient(
+            -45deg,
+            rgb(120 30 30 / 12%) 0,
+            rgb(120 30 30 / 12%) 1px,
+            transparent 1px,
+            transparent 8px
+        ),
+        linear-gradient(
+            180deg,
+            rgb(80 20 20 / 20%) 0%,
+            rgb(60 15 15 / 30%) 50%,
+            rgb(80 20 20 / 20%) 100%
+        );
+    border-left: 2px solid rgb(100 30 30 / 20%);
+    border-right: 2px solid rgb(100 30 30 / 20%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Cuadros siniestros mejorados */
+.deco-cuadro {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.cuadro-marco {
+    width: 100%;
+    height: 100%;
+    border: 3px solid #6a5a30;
+    border-radius: 2px;
+    overflow: hidden;
+    box-shadow:
+        0 2px 8px rgb(0 0 0 / 70%),
+        0 0 3px rgb(100 70 30 / 30%),
+        inset 0 0 6px rgb(100 80 30 / 20%);
+    position: relative;
+}
+
+/* Brillo inquietante periódico en los cuadros */
+.cuadro-marco::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 50%, rgb(200 50 30 / 15%) 0%, transparent 70%);
+    opacity: 0;
+    animation: cuadro-inquietante 8s ease-in-out infinite;
+}
+
+@keyframes cuadro-inquietante {
+    0%,
+    85%,
+    100% {
+        opacity: 0;
+    }
+
+    90% {
+        opacity: 1;
+    }
+}
+
+.cuadro-marco img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -1349,27 +1534,9 @@ h1 {
 .deco-cuadro-izq {
     left: 2%;
     top: 45.3%;
+    width: 13.75%;
+    height: 7.5%;
     transform: rotate(-2deg);
-}
-
-.deco-cuadro-izq img {
-    animation: cuadro-brillo 6s ease-in-out infinite;
-}
-
-@keyframes cuadro-brillo {
-    0%,
-    80%,
-    100% {
-        filter: brightness(0.7);
-    }
-
-    88% {
-        filter: brightness(1.1);
-    }
-
-    92% {
-        filter: brightness(0.7);
-    }
 }
 
 .deco-cuadro-der {
@@ -1380,34 +1547,458 @@ h1 {
     transform: rotate(2deg);
 }
 
-/* --- Puertas --- */
+/* Antorchas animadas */
+.antorcha {
+    position: absolute;
+    width: 5%;
+    height: 8%;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.antorcha-soporte {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30%;
+    height: 55%;
+    background: linear-gradient(180deg, #5a3a1a 0%, #3a2510 100%);
+    border-radius: 2px;
+}
+
+.antorcha-llama {
+    position: absolute;
+    top: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 55%;
+    aspect-ratio: 3 / 4;
+    background: radial-gradient(
+        ellipse at 50% 60%,
+        #ffd54f 0%,
+        #ff9800 40%,
+        #e65100 70%,
+        transparent 100%
+    );
+    border-radius: 50% 50% 40% 40%;
+    animation: llama-parpadeo 0.4s ease-in-out infinite alternate;
+    will-change: transform;
+}
+
+.antorcha-luz {
+    position: absolute;
+    top: -30%;
+    left: -100%;
+    width: 300%;
+    height: 200%;
+    background: radial-gradient(ellipse at 50% 40%, rgb(255 180 50 / 8%) 0%, transparent 60%);
+    animation: llama-luz 2s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
+@keyframes llama-parpadeo {
+    0% {
+        transform: translateX(-50%) scaleY(1) scaleX(1);
+        opacity: 0.9;
+    }
+
+    100% {
+        transform: translateX(-50%) scaleY(1.15) scaleX(0.9);
+        opacity: 1;
+    }
+}
+
+@keyframes llama-luz {
+    0% {
+        opacity: 0.6;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Posiciones de antorchas (par superior flanqueando la ventana) */
+.antorcha-izq.antorcha-1 {
+    left: 6%;
+    top: 12%;
+    animation-delay: 0.1s;
+}
+
+.antorcha-der.antorcha-2 {
+    right: 6%;
+    top: 12%;
+}
+
+.antorcha-2 .antorcha-llama {
+    animation-delay: 0.15s;
+}
+
+/* Partículas de polvo flotante */
+.polvo {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: rgb(200 180 150 / 40%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 6;
+    animation: polvo-flotar var(--polvo-duracion, 10s) ease-in-out infinite;
+    will-change: transform;
+}
+
+@keyframes polvo-flotar {
+    0%,
+    100% {
+        opacity: 0;
+        transform: translateY(0);
+    }
+
+    20% {
+        opacity: 0.6;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+
+    80% {
+        opacity: 0.6;
+    }
+
+    90% {
+        opacity: 0;
+        transform: translateY(-40px);
+    }
+}
+
+.polvo-1 {
+    left: 15%;
+    top: 30%;
+
+    --polvo-duracion: 9s;
+}
+
+.polvo-2 {
+    left: 70%;
+    top: 50%;
+
+    --polvo-duracion: 12s;
+
+    animation-delay: 1.5s;
+}
+
+.polvo-3 {
+    left: 40%;
+    top: 20%;
+
+    --polvo-duracion: 11s;
+
+    animation-delay: 3s;
+    width: 3px;
+    height: 3px;
+}
+
+.polvo-4 {
+    left: 85%;
+    top: 65%;
+
+    --polvo-duracion: 13s;
+
+    animation-delay: 4.5s;
+}
+
+.polvo-5 {
+    left: 25%;
+    top: 75%;
+
+    --polvo-duracion: 10s;
+
+    animation-delay: 2s;
+}
+
+.polvo-6 {
+    left: 55%;
+    top: 35%;
+
+    --polvo-duracion: 14s;
+
+    animation-delay: 6s;
+    width: 3px;
+    height: 3px;
+}
+
+.polvo-7 {
+    left: 80%;
+    top: 15%;
+
+    --polvo-duracion: 15s;
+
+    animation-delay: 7s;
+}
+
+.polvo-8 {
+    left: 10%;
+    top: 55%;
+
+    --polvo-duracion: 11s;
+
+    animation-delay: 5s;
+}
+
+.polvo-9 {
+    left: 48%;
+    top: 60%;
+
+    --polvo-duracion: 10s;
+
+    animation-delay: 1s;
+    width: 3px;
+    height: 3px;
+}
+
+.polvo-10 {
+    left: 92%;
+    top: 40%;
+
+    --polvo-duracion: 13s;
+
+    animation-delay: 3.5s;
+}
+
+.polvo-11 {
+    left: 33%;
+    top: 85%;
+
+    --polvo-duracion: 9s;
+
+    animation-delay: 8s;
+    width: 3px;
+    height: 3px;
+}
+
+.polvo-12 {
+    left: 65%;
+    top: 10%;
+
+    --polvo-duracion: 12s;
+
+    animation-delay: 2.5s;
+}
+
+.polvo-13 {
+    left: 20%;
+    top: 45%;
+
+    --polvo-duracion: 14s;
+
+    animation-delay: 9s;
+    width: 3px;
+    height: 3px;
+}
+
+.polvo-14 {
+    left: 75%;
+    top: 75%;
+
+    --polvo-duracion: 11s;
+
+    animation-delay: 6.5s;
+}
+
+/* --- Puertas con personalidad --- */
+
+/* Variables de color por puerta */
+.puerta-1 {
+    --puerta-accent: #bb86fc;
+    --puerta-accent-rgb: 187 134 252;
+    --puerta-marco: #4a3a5a;
+
+    top: 58%;
+}
+
+.puerta-2 {
+    --puerta-accent: #6bfc86;
+    --puerta-accent-rgb: 107 252 134;
+    --puerta-marco: #2a4a32;
+
+    top: 58%;
+}
+
+.puerta-3 {
+    --puerta-accent: #e94560;
+    --puerta-accent-rgb: 233 69 96;
+    --puerta-marco: #5a2a2a;
+
+    top: 22%;
+}
+
+.puerta-4 {
+    --puerta-accent: #5eeadb;
+    --puerta-accent-rgb: 94 234 219;
+    --puerta-marco: #1a3a4a;
+
+    top: 22%;
+}
 
 .puerta {
     position: absolute;
-    width: 15%;
-    height: 15%;
-    background: linear-gradient(180deg, #3d2815 0%, #2a1a0a 40%, #1f1208 100%);
-    border: 3px solid #4a3020;
-    border-radius: 4px 4px 0 0;
+    width: 17%;
+    height: 17%;
     cursor: pointer;
-    z-index: 1;
+    z-index: 3;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow:
-        inset 0 0 15px rgb(0 0 0 / 50%),
-        0 0 8px rgb(180 40 40 / 20%);
-    transition: box-shadow 0.3s;
 }
 
-/* Brillo rojo sutil con "respiración" */
-.puerta::before {
-    content: '';
+.puerta-marco {
+    width: 100%;
+    height: 100%;
+    background: var(--puerta-marco);
+    border-radius: 6px 6px 0 0;
+    padding: 3px;
+    box-shadow:
+        inset 0 0 8px rgb(0 0 0 / 40%),
+        0 2px 6px rgb(0 0 0 / 50%);
+    overflow: hidden;
+}
+
+.puerta-hoja {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, #3d2815 0%, #2a1a0a 40%, #1f1208 100%);
+    border-radius: 4px 4px 0 0;
+    position: relative;
+    transition:
+        transform 0.4s ease,
+        box-shadow 0.3s;
+    transform-origin: left center;
+    will-change: transform;
+}
+
+.puerta-detalle {
+    position: absolute;
+    inset: 15% 10%;
+    border-radius: 2px;
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+/* Puerta 1 — patrón de laberinto */
+.puerta-1 .puerta-detalle {
+    background:
+        repeating-linear-gradient(
+            0deg,
+            rgb(187 134 252 / 20%) 0,
+            rgb(187 134 252 / 20%) 1px,
+            transparent 1px,
+            transparent 6px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            rgb(187 134 252 / 20%) 0,
+            rgb(187 134 252 / 20%) 1px,
+            transparent 1px,
+            transparent 6px
+        );
+}
+
+.puerta-1 .puerta-marco {
+    border-radius: 12px 12px 0 0;
+}
+
+/* Puerta 2 — patrón geométrico neón */
+.puerta-2 .puerta-marco {
+    background: #1a2a1e;
+    border: 1px solid rgb(107 252 134 / 30%);
+}
+
+.puerta-2 .puerta-hoja {
+    background: linear-gradient(180deg, #1a2a20 0%, #0f1a14 40%, #0a1210 100%);
+}
+
+.puerta-2 .puerta-detalle {
+    background:
+        repeating-linear-gradient(
+            60deg,
+            rgb(107 252 134 / 15%) 0,
+            rgb(107 252 134 / 15%) 1px,
+            transparent 1px,
+            transparent 8px
+        ),
+        repeating-linear-gradient(
+            -60deg,
+            rgb(107 252 134 / 15%) 0,
+            rgb(107 252 134 / 15%) 1px,
+            transparent 1px,
+            transparent 8px
+        );
+}
+
+/* Puerta 3 — resplandor de fuego */
+.puerta-3 .puerta-detalle {
+    background: linear-gradient(0deg, rgb(233 69 96 / 25%) 0%, transparent 60%);
+    animation: fuego-puerta 2s ease-in-out infinite alternate;
+}
+
+@keyframes fuego-puerta {
+    0% {
+        inset: 40% 10% 15%;
+    }
+
+    100% {
+        inset: 30% 10% 15%;
+    }
+}
+
+.puerta-3 .puerta-marco {
+    background: repeating-linear-gradient(180deg, #5a2a2a 0, #4a2020 3px, #3a1818 3px, #5a2a2a 6px);
+}
+
+/* Puerta 4 — ondas de agua */
+.puerta-4 .puerta-marco {
+    background: #1a2a33;
+}
+
+.puerta-4 .puerta-detalle {
+    background: repeating-linear-gradient(
+        0deg,
+        rgb(94 234 219 / 10%) 0,
+        rgb(94 234 219 / 10%) 2px,
+        transparent 2px,
+        transparent 6px
+    );
+    animation: agua-puerta 3s linear infinite;
+}
+
+@keyframes agua-puerta {
+    0% {
+        transform: translateY(0);
+    }
+
+    100% {
+        transform: translateY(6px);
+    }
+}
+
+.puerta-tirador {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: #8a7a60;
+    border-radius: 50%;
+    right: 15%;
+    top: 50%;
+    box-shadow: 0 0 3px rgb(200 180 120 / 40%);
+}
+
+.puerta-brillo {
     position: absolute;
     inset: -4px;
-    border-radius: 6px 6px 0 0;
-    background: transparent;
-    box-shadow: 0 0 12px rgb(200 50 50 / 30%);
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0 0 12px rgb(var(--puerta-accent-rgb) / 25%);
     animation: respiracion-puerta 3s ease-in-out infinite;
     pointer-events: none;
 }
@@ -1423,61 +2014,57 @@ h1 {
     }
 }
 
-/* Tirador de la puerta */
-.puerta::after {
-    content: '';
-    position: absolute;
-    width: 6px;
-    height: 6px;
-    background: #8a7a60;
-    border-radius: 50%;
-    right: 10px;
-    top: 50%;
-    box-shadow: 0 0 3px rgb(200 180 120 / 40%);
-}
-
 .puerta-numero {
+    position: absolute;
+    bottom: -22px;
+    left: 50%;
+    transform: translateX(-50%);
     font-family: var(--font-display);
-    font-size: 1.4rem;
+    font-size: 1.1rem;
     font-weight: bold;
-    color: rgb(200 180 150 / 60%);
-    text-shadow: 0 0 5px rgb(200 50 50 / 30%);
-    z-index: 1;
+    color: rgb(var(--puerta-accent-rgb) / 60%);
+    text-shadow: 0 0 5px rgb(var(--puerta-accent-rgb) / 30%);
     pointer-events: none;
 }
 
 /* Posiciones de las puertas */
 .puerta-izquierda {
-    left: 2.5%;
+    left: 2%;
 }
 
 .puerta-derecha {
-    right: 2.5%;
+    right: 2%;
 }
 
-/* Puertas 1 y 2 — más cerca de la entrada (abajo) */
-.puerta-1 {
-    top: 60%;
+/* --- Sistema de proximidad --- */
+
+.puerta-cerca .puerta-hoja {
+    transform: perspective(200px) rotateY(-8deg);
+    box-shadow: inset 0 0 10px rgb(0 0 0 / 30%);
 }
 
-.puerta-2 {
-    top: 60%;
-}
-
-/* Puertas 3 y 4 — más al fondo (arriba) */
-.puerta-3 {
-    top: 23.3%;
-}
-
-.puerta-4 {
-    top: 23.3%;
-}
-
-.puerta:hover {
+.puerta-cerca .puerta-brillo {
     box-shadow:
-        inset 0 0 15px rgb(0 0 0 / 50%),
-        0 0 20px rgb(200 50 50 / 50%),
-        0 0 40px rgb(200 50 50 / 20%);
+        0 0 16px rgb(var(--puerta-accent-rgb) / 40%),
+        0 0 30px rgb(var(--puerta-accent-rgb) / 15%);
+    animation-duration: 1.5s;
+}
+
+.puerta-cerca .puerta-numero {
+    color: var(--puerta-accent);
+    text-shadow: 0 0 8px rgb(var(--puerta-accent-rgb) / 50%);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .puerta-cerca:hover .puerta-hoja {
+        transform: perspective(200px) rotateY(-12deg);
+    }
+
+    .puerta-cerca:hover .puerta-brillo {
+        box-shadow:
+            0 0 22px rgb(var(--puerta-accent-rgb) / 50%),
+            0 0 40px rgb(var(--puerta-accent-rgb) / 25%);
+    }
 }
 
 /* --- Personaje jugador --- */
@@ -1486,8 +2073,27 @@ h1 {
     position: absolute;
     width: 12.5%;
     aspect-ratio: 1;
-    z-index: 4;
-    transition: box-shadow 0.3s;
+    z-index: 9;
+    contain: layout style;
+}
+
+.jugador-luz {
+    position: absolute;
+    inset: -80%;
+    background: radial-gradient(ellipse at 50% 50%, rgb(255 220 150 / 8%) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.jugador-sombra {
+    position: absolute;
+    bottom: -15%;
+    left: 10%;
+    width: 80%;
+    height: 30%;
+    background: radial-gradient(ellipse at 50% 50%, rgb(0 0 0 / 40%) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    transition: transform 0.15s;
 }
 
 #personaje-jugador img {
@@ -1497,9 +2103,26 @@ h1 {
     object-fit: cover;
     border: 2px solid #888;
     box-shadow: 0 0 10px rgb(0 0 0 / 60%);
+    position: relative;
+    will-change: transform;
 }
 
-/* Brillo del personaje según selección — se aplica con JS */
+/* Animación de caminar */
+#personaje-jugador.moviendo img {
+    animation: jugador-bobbing 0.3s ease-in-out infinite alternate;
+}
+
+@keyframes jugador-bobbing {
+    0% {
+        transform: translateY(0);
+    }
+
+    100% {
+        transform: translateY(-2px);
+    }
+}
+
+/* Brillo del personaje según selección */
 #personaje-jugador.jugador-lina img {
     border-color: #9b59b6;
     box-shadow: 0 0 12px rgb(155 89 182 / 50%);
@@ -3039,6 +3662,7 @@ h1 {
 
 .toast-contenedor {
     position: fixed;
+
     /* Anclar al borde derecho del área de juego (800px centrado) */
     right: max(10px, calc(50vw - 400px + 10px));
     top: 50%;
@@ -3908,6 +4532,25 @@ h1 {
 
 /* --- Tablet (481–768px) --- */
 @media (width <= 768px) {
+    /* Pasillo tablet */
+    .puerta {
+        width: 19%;
+        height: 18%;
+    }
+
+    .antorcha {
+        display: none;
+    }
+
+    .polvo-7,
+    .polvo-8,
+    .polvo-11,
+    .polvo-12,
+    .polvo-13,
+    .polvo-14 {
+        display: none;
+    }
+
     #juego {
         padding: 30px 16px;
     }
@@ -4041,6 +4684,41 @@ h1 {
 
 /* --- Mobile (≤480px) --- */
 @media (width <= 480px) {
+    /* Pasillo mobile */
+    .puerta {
+        width: 22%;
+        height: 20%;
+    }
+
+    /* Touch target expandido */
+    .puerta::after {
+        content: '';
+        position: absolute;
+        inset: -10px;
+    }
+
+    .telarana,
+    .pasillo-ventana {
+        display: none;
+    }
+
+    .polvo-5,
+    .polvo-6,
+    .polvo-7,
+    .polvo-8,
+    .polvo-9,
+    .polvo-10,
+    .polvo-11,
+    .polvo-12,
+    .polvo-13,
+    .polvo-14 {
+        display: none;
+    }
+
+    .niebla-capa-2 {
+        display: none;
+    }
+
     #juego {
         padding: 20px 12px;
     }
@@ -4292,6 +4970,20 @@ h1 {
 
 /* --- Pantallas muy pequeñas (≤360px) --- */
 @media (width <= 360px) {
+    /* Pasillo pantallas pequeñas */
+    .puerta {
+        width: 24%;
+        height: 22%;
+    }
+
+    .polvo {
+        display: none;
+    }
+
+    .deco-cuadro {
+        display: none;
+    }
+
     .libro-villanos {
         max-height: calc(78vh - 20px);
     }
@@ -4363,5 +5055,17 @@ h1 {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
+    }
+
+    /* Pasillo: sin entreapertura de puerta ni efectos decorativos */
+    .puerta-cerca .puerta-hoja {
+        transform: none;
+    }
+
+    .polvo,
+    .antorcha-llama,
+    .niebla-capa,
+    .ventana-estrella {
+        display: none;
     }
 }
