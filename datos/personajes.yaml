@@ -171,9 +171,9 @@ Orejas:
     img: assets/img/personajes/orejas.webp
     clase: jugador-orejas
     descripcion: |
-        Una oreja le llega al suelo, la otra apunta al cielo. Dientes chuecos, patas tan largas que tropieza consigo mismo. "Ahí va Orejas, el que parece que lo armaron con piezas sobrantes", decían de pequeño. Pero nunca se amargó. Simplemente sonreía y seguía su camino.
+        Una oreja le llega al suelo, la otra apunta al cielo. Dientes chuecos, patas tan largas que tropieza consigo mismo. "Ahí va Orejas, el que parece que lo armaron con piezas sobrantes", decían de pequeño. Pero nunca se amargó. Simplemente sonreía y seguía su camino. Contra todo pronóstico, PomPom, la coneja más hermosa de la pradera, se enamoró de él.
 
-        Cada mañana sale al campo con su azadón y una bolsa remendada veinte veces, buscando zanahorias para sus quince hijos. Silba mientras trabaja, una melodía torcida igual que sus dientes, pero llena de alegría. Su mejor amigo es Don Topo, el viejo topo ciego de al lado, que le dijo una vez: "tú no eres feo, Orejas... es que yo no veo".
+        Cada mañana sale al campo con su azadón y una bolsa remendada veinte veces, buscando zanahorias para PomPom y sus quince hijos. Silba mientras trabaja, una melodía torcida igual que sus dientes, pero llena de alegría. Su mejor amigo es Don Topo, el viejo topo ciego de al lado, que le dijo una vez: "tú no eres feo, Orejas... es que yo no veo".
     edad: 35
     velocidad: 6
     velAtaque: 5
