@@ -25,18 +25,18 @@ integran como una de las mejoras principales.
 
 ## Tabla de prioridades
 
-| # | Mejora | Esfuerzo | Impacto | Categoria | Estado |
-|---|--------|----------|---------|-----------|--------|
-| 1 | Tipografia con personalidad | Bajo | Alto | Visual | Hecho (502556d) |
-| 2 | Diseno responsivo y controles tactiles | Alto | Alto | Accesibilidad | Hecho (04359a0, ae2eb0f, 2229db7, 32f67c9) |
-| 3 | Tutorial interactivo de onboarding | Medio | Alto | UX | Pendiente |
-| 4 | Feedback visual de dano mejorado | Bajo | Alto | Game feel | Hecho (a53c449) |
-| 5 | Transiciones cinematicas entre pantallas | Medio | Medio | Visual / UX | Hecho (e087662) |
-| 6 | Paleta de colores unica por habitacion | Bajo | Medio | Visual | Hecho (f6dbef9) |
-| 7 | Barra de vida con microinteracciones | Bajo | Medio | UI / Game feel | Hecho (e7348e2) |
-| 8 | Modal de puerta con identidad de habitacion | Bajo | Medio | UI / UX | Hecho (078e656) |
-| 9 | Notificaciones toast para eventos | Bajo | Medio | UX / Feedback | Hecho (9c14825) |
-| 10 | Inventario visual con slots | Medio | Medio | UI / Game feel | Hecho (dac6233) |
+| #   | Mejora                                      | Esfuerzo | Impacto | Categoria      | Estado                                     |
+| --- | ------------------------------------------- | -------- | ------- | -------------- | ------------------------------------------ |
+| 1   | Tipografia con personalidad                 | Bajo     | Alto    | Visual         | Hecho (502556d)                            |
+| 2   | Diseno responsivo y controles tactiles      | Alto     | Alto    | Accesibilidad  | Hecho (04359a0, ae2eb0f, 2229db7, 32f67c9) |
+| 3   | Tutorial interactivo de onboarding          | Medio    | Alto    | UX             | Pendiente                                  |
+| 4   | Feedback visual de dano mejorado            | Bajo     | Alto    | Game feel      | Hecho (a53c449)                            |
+| 5   | Transiciones cinematicas entre pantallas    | Medio    | Medio   | Visual / UX    | Hecho (e087662)                            |
+| 6   | Paleta de colores unica por habitacion      | Bajo     | Medio   | Visual         | Hecho (f6dbef9)                            |
+| 7   | Barra de vida con microinteracciones        | Bajo     | Medio   | UI / Game feel | Hecho (e7348e2)                            |
+| 8   | Modal de puerta con identidad de habitacion | Bajo     | Medio   | UI / UX        | Hecho (078e656)                            |
+| 9   | Notificaciones toast para eventos           | Bajo     | Medio   | UX / Feedback  | Hecho (9c14825)                            |
+| 10  | Inventario visual con slots                 | Medio    | Medio   | UI / Game feel | Hecho (dac6233)                            |
 
 ---
 
@@ -87,11 +87,11 @@ El codigo esta bien preparado:
 
 ### Breakpoints
 
-| Zona | Viewport | Notas |
-|------|----------|-------|
-| Movil | <= 480px | 1 columna, escalar pasillo/laberinto |
-| Tablet | 481-768px | Transicion suave |
-| Desktop | >= 769px | Sin cambios |
+| Zona    | Viewport  | Notas                                |
+| ------- | --------- | ------------------------------------ |
+| Movil   | <= 480px  | 1 columna, escalar pasillo/laberinto |
+| Tablet  | 481-768px | Transicion suave                     |
+| Desktop | >= 769px  | Sin cambios                          |
 
 ### Paso 2.1: Seleccion de personaje responsiva (CSS only)
 
@@ -161,17 +161,18 @@ En `estado.js` — nueva funcion `calcularTamCelda()`:
 
 ```js
 const VALORES_BASE = {
-    TAM_CELDA: 30, TAM_JUGADOR: 22, TAM_TRASGO: 20,
-    VELOCIDAD: 3, VELOCIDAD_TRASGO: 2,
-    MARGEN_COLISION: 2, TOLERANCIA_ESQUINA: 8,
+    TAM_CELDA: 30,
+    TAM_JUGADOR: 22,
+    TAM_TRASGO: 20,
+    VELOCIDAD: 3,
+    VELOCIDAD_TRASGO: 2,
+    MARGEN_COLISION: 2,
+    TOLERANCIA_ESQUINA: 8,
 };
 
 export function calcularTamCelda() {
     const contenedor = document.getElementById('juego');
-    const maxAncho = Math.min(
-        contenedor.clientWidth - 20,
-        VALORES_BASE.TAM_CELDA * CONFIG.COLS
-    );
+    const maxAncho = Math.min(contenedor.clientWidth - 20, VALORES_BASE.TAM_CELDA * CONFIG.COLS);
     CONFIG.TAM_CELDA = Math.max(Math.floor(maxAncho / CONFIG.COLS), 16);
 
     const escala = CONFIG.TAM_CELDA / VALORES_BASE.TAM_CELDA;
@@ -241,14 +242,14 @@ Integracion con input existente (enfoque directo, sin refactor):
 
 ### Archivos afectados (mejora 2)
 
-| Archivo | Cambios | Riesgo |
-|---------|---------|--------|
-| `estilos.css` | Media queries, unidades relativas, estilos D-pad | Bajo |
-| `js/juego.js` | tamPersonaje/velocidad dinamicos, montar D-pad | Medio |
-| `js/habitaciones/habitacion1/estado.js` | `calcularTamCelda()` | Medio |
-| `js/habitaciones/habitacion1/index.js` | Llamar calcularTamCelda, montar D-pad | Bajo |
-| `js/habitaciones/habitacion2.js` | Dimensiones canvas dinamicas | Bajo |
-| `js/componentes/controlesTouch.js` | **Nuevo** — D-pad virtual | Medio |
+| Archivo                                 | Cambios                                          | Riesgo |
+| --------------------------------------- | ------------------------------------------------ | ------ |
+| `estilos.css`                           | Media queries, unidades relativas, estilos D-pad | Bajo   |
+| `js/juego.js`                           | tamPersonaje/velocidad dinamicos, montar D-pad   | Medio  |
+| `js/habitaciones/habitacion1/estado.js` | `calcularTamCelda()`                             | Medio  |
+| `js/habitaciones/habitacion1/index.js`  | Llamar calcularTamCelda, montar D-pad            | Bajo   |
+| `js/habitaciones/habitacion2.js`        | Dimensiones canvas dinamicas                     | Bajo   |
+| `js/componentes/controlesTouch.js`      | **Nuevo** — D-pad virtual                        | Medio  |
 
 ---
 
@@ -284,7 +285,7 @@ respuesta visceral que comunique urgencia.
 **Solucion:** Tres capas de feedback simultaneo, todo CSS puro:
 
 1. **Screen shake** — vibracion de 0.3s del contenedor con `transform:
-   translate()` aleatorio
+translate()` aleatorio
 2. **Vineta roja** — overlay con `box-shadow: inset` rojo que hace flash
 3. **Numeros de dano mejorados** — mas grandes, fuente decorativa (la del paso 1),
    sombra de texto, escala inicial grande que se reduce al subir
@@ -328,10 +329,26 @@ identidad propia.
 **Solucion:** Variables CSS con scope por habitacion:
 
 ```css
-.habitacion-1 { --hab-pared: #2a1a3e; --hab-fondo: #1a0a2e; --hab-accent: #bb86fc; }
-.habitacion-2 { --hab-pared: #1a3e1a; --hab-fondo: #0a1e0a; --hab-accent: #6bfc86; }
-.habitacion-3 { --hab-pared: #3e1a1a; --hab-fondo: #2e0a0a; --hab-accent: #e94560; }
-.habitacion-4 { --hab-pared: #1a1a3e; --hab-fondo: #0a0a2e; --hab-accent: #5eeadb; }
+.habitacion-1 {
+    --hab-pared: #2a1a3e;
+    --hab-fondo: #1a0a2e;
+    --hab-accent: #bb86fc;
+}
+.habitacion-2 {
+    --hab-pared: #1a3e1a;
+    --hab-fondo: #0a1e0a;
+    --hab-accent: #6bfc86;
+}
+.habitacion-3 {
+    --hab-pared: #3e1a1a;
+    --hab-fondo: #2e0a0a;
+    --hab-accent: #e94560;
+}
+.habitacion-4 {
+    --hab-pared: #1a1a3e;
+    --hab-fondo: #0a0a2e;
+    --hab-accent: #5eeadb;
+}
 ```
 
 Identidades: Fantasmal (purpura), Toxica (verde), Infernal (rojo), Acuatica
@@ -444,12 +461,12 @@ inventario de videojuego.
 
 ## Archivos nuevos
 
-| Archivo | Descripcion |
-|---------|-------------|
-| `js/componentes/controlesTouch.js` | D-pad virtual para dispositivos touch |
-| `js/componentes/transicion.js` | Transiciones cinematicas entre pantallas |
-| `js/componentes/tutorial.js` | Sistema de onboarding con tooltips |
-| `js/componentes/toast.js` | Notificaciones toast para eventos |
+| Archivo                            | Descripcion                              |
+| ---------------------------------- | ---------------------------------------- |
+| `js/componentes/controlesTouch.js` | D-pad virtual para dispositivos touch    |
+| `js/componentes/transicion.js`     | Transiciones cinematicas entre pantallas |
+| `js/componentes/tutorial.js`       | Sistema de onboarding con tooltips       |
+| `js/componentes/toast.js`          | Notificaciones toast para eventos        |
 
 ## Reporte visual
 

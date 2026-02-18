@@ -10,24 +10,24 @@ base de código reveló problemas de rendimiento en tres categorías: **assets p
 
 ### Inventario de assets (problema principal)
 
-| Asset | Tamaño | Formato |
-|-------|--------|---------|
-| pandajuro.png | 1,899 KB | PNG |
-| rose.png | 1,680 KB | PNG |
-| lina.png | 1,470 KB | PNG |
-| siniestra.png | 1,019 KB | PNG |
-| trasgo.png | 1,013 KB | PNG |
-| cuadro-castillo.png | 985 KB | PNG |
-| errante.png | 964 KB | PNG |
-| profano.png | 757 KB | PNG |
-| hana.png | 637 KB | PNG |
-| kira.png | 623 KB | PNG |
-| donbu.png | 608 KB | PNG |
-| cuadro-retrato.png | 464 KB | PNG |
-| **Total imágenes** | **~10.6 MB** | **Todo PNG** |
-| Total JS (25 archivos) | ~150 KB | Sin minificar |
-| estilos.css | 51.4 KB | Sin minificar |
-| Fuentes (2 woff2) | 55 KB | Correcto |
+| Asset                  | Tamaño       | Formato       |
+| ---------------------- | ------------ | ------------- |
+| pandajuro.png          | 1,899 KB     | PNG           |
+| rose.png               | 1,680 KB     | PNG           |
+| lina.png               | 1,470 KB     | PNG           |
+| siniestra.png          | 1,019 KB     | PNG           |
+| trasgo.png             | 1,013 KB     | PNG           |
+| cuadro-castillo.png    | 985 KB       | PNG           |
+| errante.png            | 964 KB       | PNG           |
+| profano.png            | 757 KB       | PNG           |
+| hana.png               | 637 KB       | PNG           |
+| kira.png               | 623 KB       | PNG           |
+| donbu.png              | 608 KB       | PNG           |
+| cuadro-retrato.png     | 464 KB       | PNG           |
+| **Total imágenes**     | **~10.6 MB** | **Todo PNG**  |
+| Total JS (25 archivos) | ~150 KB      | Sin minificar |
+| estilos.css            | 51.4 KB      | Sin minificar |
+| Fuentes (2 woff2)      | 55 KB        | Correcto      |
 
 **El 98% del peso de la app son imágenes PNG sin optimizar.**
 
@@ -98,6 +98,7 @@ npx @squoosh/cli --webp '{quality:80}' assets/img/**/*.png
 ```
 
 Estructura resultante:
+
 ```
 assets/img/personajes/
 ├── lina.webp          (~150-200 KB vs 1,470 KB)
@@ -112,13 +113,13 @@ assets/img/personajes/
 Las imágenes de personajes se muestran a ~100-150px pero pesan 1-2 MB porque son
 mucho más grandes. Generar versiones al tamaño máximo real de display:
 
-| Uso | Tamaño máximo display | Resolución óptima (@2x retina) |
-|-----|----------------------|-------------------------------|
-| Avatar en tarjeta selección | ~120px | 240px |
-| Avatar en barra superior | ~40px | 80px |
-| Avatar en combate | ~100px | 200px |
-| Enemigos | ~100px | 200px |
-| Cuadros del pasillo | ~150px | 300px |
+| Uso                         | Tamaño máximo display | Resolución óptima (@2x retina) |
+| --------------------------- | --------------------- | ------------------------------ |
+| Avatar en tarjeta selección | ~120px                | 240px                          |
+| Avatar en barra superior    | ~40px                 | 80px                           |
+| Avatar en combate           | ~100px                | 200px                          |
+| Enemigos                    | ~100px                | 200px                          |
+| Cuadros del pasillo         | ~150px                | 300px                          |
 
 #### 1.3 Lazy loading para imágenes no visibles
 
@@ -147,6 +148,7 @@ elemento.style.transform = `translate(${x}px, ${y}px)`;
 ```
 
 **Archivos a modificar**:
+
 - `js/juego.js` — `actualizarPosicion()` del pasillo
 - `js/habitaciones/habitacion1/index.js` — `actualizarPosicion()` del jugador
 - `js/habitaciones/habitacion1/trasgo.js` — `actualizarTrasgo()`
@@ -184,6 +186,7 @@ function detectarColisionPuertas() {
 ```
 
 **Lo mismo aplica para**:
+
 - `getVelocidad()` → cachear `pasillo.clientWidth`
 - `getTamPersonaje()` → cachear `personajeJugador.offsetWidth`
 
@@ -231,6 +234,7 @@ export function renderizar3D(...) {
 
 `shadowBlur` en Canvas 2D ejecuta un desenfoque gaussiano por cada operación de dibujo.
 En sprites se ejecuta por cada sprite visible cada frame. Alternativas:
+
 - Pre-renderizar el glow en un canvas offscreen por sprite
 - Usar un pseudo-glow con `globalAlpha` + fillRect más grande detrás del emoji
 - Simplemente eliminar el glow (mínimo impacto visual)
@@ -243,12 +247,17 @@ const sprites = [];
 sprites.push({ x, y, emoji, color });
 
 // DESPUÉS — preallocar y reutilizar con contador
-const _sprites = new Array(MAX_SPRITES);  // preallocar objetos
+const _sprites = new Array(MAX_SPRITES); // preallocar objetos
 let _spriteCount = 0;
-function resetSprites() { _spriteCount = 0; }
+function resetSprites() {
+    _spriteCount = 0;
+}
 function pushSprite(x, y, emoji, color) {
     const s = _sprites[_spriteCount];
-    s.x = x; s.y = y; s.emoji = emoji; s.color = color;
+    s.x = x;
+    s.y = y;
+    s.emoji = emoji;
+    s.color = color;
     _spriteCount++;
 }
 ```
@@ -262,9 +271,7 @@ Mismo patrón para `cercanas[]` en `particulas.js:159-166`.
 ctx.fillStyle = 'rgba(0,0,0,' + oscuridad.toFixed(2) + ')';
 
 // DESPUÉS — LUT de strings pre-generados
-const SOMBRAS = Array.from({ length: 101 }, (_, i) =>
-    'rgba(0,0,0,' + (i / 100).toFixed(2) + ')'
-);
+const SOMBRAS = Array.from({ length: 101 }, (_, i) => 'rgba(0,0,0,' + (i / 100).toFixed(2) + ')');
 ctx.fillStyle = SOMBRAS[Math.round(oscuridad * 100)];
 ```
 
@@ -280,6 +287,7 @@ que reduzca `numRayos` a la mitad (duplicando `anchoFranja`), lo que reduce
 las llamadas al canvas API de ~320 a ~160 por frame.
 
 **Archivos a modificar**:
+
 - `js/motor3d/raycaster.js` — zBuffer, LUT de colores
 - `js/motor3d/sprites.js` — eliminar shadowBlur
 - `js/motor3d/minimapa.js` — eliminar shadowBlur
@@ -297,8 +305,13 @@ las llamadas al canvas API de ~320 a ~160 por frame.
 ```css
 /* ANTES — box-shadow no va al compositor */
 @keyframes pulso {
-    0%, 100% { box-shadow: 0 0 15px rgba(...); }
-    50% { box-shadow: 0 0 30px rgba(...); }
+    0%,
+    100% {
+        box-shadow: 0 0 15px rgba(...);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(...);
+    }
 }
 
 /* DESPUÉS — pseudo-elemento con opacity */
@@ -311,8 +324,13 @@ las llamadas al canvas API de ~320 a ~160 por frame.
     animation: pulso-opacity 1.5s infinite;
 }
 @keyframes pulso-opacity {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; }
+    0%,
+    100% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1;
+    }
 }
 ```
 
@@ -322,7 +340,9 @@ Aplicar el mismo patrón a `trasgo-respirar`.
 
 ```css
 /* ANTES */
-.barra-vida-relleno { transition: width 0.3s; }
+.barra-vida-relleno {
+    transition: width 0.3s;
+}
 
 /* DESPUÉS */
 .barra-vida-relleno {
@@ -335,9 +355,15 @@ Aplicar el mismo patrón a `trasgo-respirar`.
 #### 3.3 Agregar `contain` a pantallas autocontenidas
 
 ```css
-#laberinto { contain: layout paint; }
-#pasillo { contain: layout paint; }
-.habitacion-2-contenedor { contain: layout paint; }
+#laberinto {
+    contain: layout paint;
+}
+#pasillo {
+    contain: layout paint;
+}
+.habitacion-2-contenedor {
+    contain: layout paint;
+}
 ```
 
 Esto le dice al navegador que los cambios dentro del contenedor no afectan el
@@ -375,11 +401,13 @@ npm install -D esbuild
 ```
 
 Workflow `.github/workflows/deploy.yml`:
+
 - Trigger: push a `main`
 - Steps: `npm ci` → `npm run build` → `actions/deploy-pages` sobre `dist/`
 - Agregar `dist/` al `.gitignore` (no commitear archivos generados)
 
 Resultado del build:
+
 - Bundlea 25 archivos JS en 1 (elimina 24 requests HTTP)
 - Minifica JS (~150 KB → ~60-70 KB)
 - Minifica CSS (~51 KB → ~30-35 KB)
@@ -387,13 +415,19 @@ Resultado del build:
 #### 4.2 Agregar meta tags para web pública
 
 ```html
-<meta name="description" content="La Casa del Terror - Un juego web de aventura y misterio para toda la familia">
-<meta name="theme-color" content="#1a0a2e">
-<meta property="og:title" content="La Casa del Terror">
-<meta property="og:description" content="Juego web de aventura y misterio">
-<meta property="og:image" content="https://mglasner.github.io/la-casa-del-terror/assets/img/og-preview.png">
-<meta property="og:url" content="https://mglasner.github.io/la-casa-del-terror/">
-<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<meta
+    name="description"
+    content="La Casa del Terror - Un juego web de aventura y misterio para toda la familia"
+/>
+<meta name="theme-color" content="#1a0a2e" />
+<meta property="og:title" content="La Casa del Terror" />
+<meta property="og:description" content="Juego web de aventura y misterio" />
+<meta
+    property="og:image"
+    content="https://mglasner.github.io/la-casa-del-terror/assets/img/og-preview.png"
+/>
+<meta property="og:url" content="https://mglasner.github.io/la-casa-del-terror/" />
+<link rel="icon" type="image/png" href="assets/img/favicon.png" />
 ```
 
 **Nota**: La URL de `og:image` debe ser absoluta. Actualizar cuando el
@@ -402,8 +436,20 @@ dominio cambie al migrar de hosting.
 #### 4.3 Preload de assets críticos
 
 ```html
-<link rel="preload" href="assets/fonts/creepster-400-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="assets/fonts/quicksand-variable-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link
+    rel="preload"
+    href="assets/fonts/creepster-400-latin.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+/>
+<link
+    rel="preload"
+    href="assets/fonts/quicksand-variable-latin.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+/>
 ```
 
 **Archivo a modificar**: `index.html`
@@ -423,6 +469,7 @@ GitHub Pages ya sirve con gzip. Cuando se migre a un hosting con backend,
 verificar que gzip o brotli estén habilitados en el servidor.
 
 Impacto esperado con el build de Fase 4:
+
 - JS minificado: ~65 KB → ~20 KB gzip
 - CSS minificado: ~35 KB → ~10 KB gzip
 - Total código: ~30 KB gzip (vs ~200 KB sin minificar sin comprimir)
@@ -433,6 +480,7 @@ Impacto esperado con el build de Fase 4:
 que no cambian se resuelven con `304 Not Modified`.
 
 **Futuro (hosting con backend)**: Configurar cache diferenciado:
+
 ```
 assets/**/*  → Cache-Control: public, max-age=31536000, immutable
 dist/*.min.* → Cache-Control: public, max-age=31536000, immutable
@@ -465,6 +513,7 @@ const STATIC_ASSETS = [
 ```
 
 Beneficios:
+
 - Carga instantánea en segunda visita (cache local, no depende del servidor)
 - Compensar el cache de 10 min de GitHub Pages mientras se use
 - Preparado para backend: las rutas `/api/**` nunca se cachean
@@ -479,16 +528,16 @@ prefijo deberá actualizarse si el dominio/path cambia al migrar de hosting.
 
 ## Resumen de impacto esperado
 
-| Métrica | Actual | Después | Mejora |
-|---------|--------|---------|--------|
-| **Peso total imágenes** | ~10.6 MB | ~500 KB-1 MB | **90-95%** |
-| **Peso JS** | ~150 KB (25 requests) | ~65 KB (1 request) | **57% peso, 96% requests** |
-| **Allocaciones GC/frame** (hab2) | ~350+ objetos/strings | ~0 (preallocado) | **~100%** |
-| **Peso CSS** | ~51 KB | ~35 KB | **30%** |
-| **Total descarga** (con gzip) | ~11 MB+ | ~600 KB-1.1 MB | **~90%** |
-| **Reflows por frame** (pasillo) | 7+ | 0 | **100%** |
-| **Reflows por frame** (laberinto) | 2+ | 0 | **100%** |
-| **First Contentful Paint** | Lento (imágenes bloquean) | Rápido (preload fuentes, lazy imgs) | Significativo |
+| Métrica                           | Actual                    | Después                             | Mejora                     |
+| --------------------------------- | ------------------------- | ----------------------------------- | -------------------------- |
+| **Peso total imágenes**           | ~10.6 MB                  | ~500 KB-1 MB                        | **90-95%**                 |
+| **Peso JS**                       | ~150 KB (25 requests)     | ~65 KB (1 request)                  | **57% peso, 96% requests** |
+| **Allocaciones GC/frame** (hab2)  | ~350+ objetos/strings     | ~0 (preallocado)                    | **~100%**                  |
+| **Peso CSS**                      | ~51 KB                    | ~35 KB                              | **30%**                    |
+| **Total descarga** (con gzip)     | ~11 MB+                   | ~600 KB-1.1 MB                      | **~90%**                   |
+| **Reflows por frame** (pasillo)   | 7+                        | 0                                   | **100%**                   |
+| **Reflows por frame** (laberinto) | 2+                        | 0                                   | **100%**                   |
+| **First Contentful Paint**        | Lento (imágenes bloquean) | Rápido (preload fuentes, lazy imgs) | Significativo              |
 
 ## Orden de implementación recomendado
 

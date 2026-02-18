@@ -6,9 +6,9 @@ Los personajes se modelan como un objeto plano en `juego.js` (líneas 31-35):
 
 ```js
 const datosPersonajes = {
-    Lina:  { img: "assets/img/personajes/lina.png",  clase: "jugador-lina" },
-    "Rosé": { img: "assets/img/personajes/rose.png",  clase: "jugador-rose" },
-    PandaJuro: { img: "assets/img/personajes/pandajuro.png", clase: "jugador-pandajuro" }
+    Lina: { img: 'assets/img/personajes/lina.png', clase: 'jugador-lina' },
+    Rosé: { img: 'assets/img/personajes/rose.png', clase: 'jugador-rose' },
+    PandaJuro: { img: 'assets/img/personajes/pandajuro.png', clase: 'jugador-pandajuro' },
 };
 ```
 
@@ -101,59 +101,74 @@ Reemplaza el objeto `datosPersonajes` actual:
 
 ```js
 const PERSONAJES = {
-    Lina: new Personaje("Lina", 100, [
-        { nombre: "Golpe veloz", dano: 15, descripcion: "Un golpe rapido" },
-        { nombre: "Patada giratoria", dano: 25, descripcion: "Ataque poderoso" }
-    ], {
-        img: "assets/img/personajes/lina.png",
-        clase: "jugador-lina",
-        descripcion: "13 anos. Valiente e inteligente."
-    }),
+    Lina: new Personaje(
+        'Lina',
+        100,
+        [
+            { nombre: 'Golpe veloz', dano: 15, descripcion: 'Un golpe rapido' },
+            { nombre: 'Patada giratoria', dano: 25, descripcion: 'Ataque poderoso' },
+        ],
+        {
+            img: 'assets/img/personajes/lina.png',
+            clase: 'jugador-lina',
+            descripcion: '13 anos. Valiente e inteligente.',
+        }
+    ),
 
-    "Rosé": new Personaje("Rosé", 90, [
-        { nombre: "Rayo de luz", dano: 20, descripcion: "Destello cegador" },
-        { nombre: "Escudo brillante", dano: 10, descripcion: "Ataque defensivo" }
-    ], {
-        img: "assets/img/personajes/rose.png",
-        clase: "jugador-rose",
-        descripcion: "10 anos. Nunca se rinde."
-    }),
+    Rosé: new Personaje(
+        'Rosé',
+        90,
+        [
+            { nombre: 'Rayo de luz', dano: 20, descripcion: 'Destello cegador' },
+            { nombre: 'Escudo brillante', dano: 10, descripcion: 'Ataque defensivo' },
+        ],
+        {
+            img: 'assets/img/personajes/rose.png',
+            clase: 'jugador-rose',
+            descripcion: '10 anos. Nunca se rinde.',
+        }
+    ),
 
-    PandaJuro: new Personaje("PandaJuro", 120, [
-        { nombre: "Corte samurai", dano: 30, descripcion: "Un tajo devastador" },
-        { nombre: "Golpe de bambu", dano: 18, descripcion: "Golpe rapido con bambu" }
-    ], {
-        img: "assets/img/personajes/pandajuro.png",
-        clase: "jugador-pandajuro",
-        descripcion: "Furioso, leal y honorable."
-    })
+    PandaJuro: new Personaje(
+        'PandaJuro',
+        120,
+        [
+            { nombre: 'Corte samurai', dano: 30, descripcion: 'Un tajo devastador' },
+            { nombre: 'Golpe de bambu', dano: 18, descripcion: 'Golpe rapido con bambu' },
+        ],
+        {
+            img: 'assets/img/personajes/pandajuro.png',
+            clase: 'jugador-pandajuro',
+            descripcion: 'Furioso, leal y honorable.',
+        }
+    ),
 };
 ```
 
 ### Balance de personajes
 
-| Personaje | Vida | Ataque 1 | Ataque 2 | Estilo |
-|-----------|------|----------|----------|--------|
-| **Lina** | 100 | Golpe veloz (15) | Patada giratoria (25) | Equilibrada |
-| **Rose** | 90 | Rayo de luz (20) | Escudo brillante (10) | Especial / magica |
-| **PandaJuro** | 120 | Corte samurai (30) | Golpe de bambu (18) | Tanque / fuerza bruta |
+| Personaje     | Vida | Ataque 1           | Ataque 2              | Estilo                |
+| ------------- | ---- | ------------------ | --------------------- | --------------------- |
+| **Lina**      | 100  | Golpe veloz (15)   | Patada giratoria (25) | Equilibrada           |
+| **Rose**      | 90   | Rayo de luz (20)   | Escudo brillante (10) | Especial / magica     |
+| **PandaJuro** | 120  | Corte samurai (30) | Golpe de bambu (18)   | Tanque / fuerza bruta |
 
 ## Principios de diseno aplicados
 
-| Principio | Aplicacion |
-|---|---|
-| **Separar datos de vista** | Las clases manejan datos (vida, dano); el DOM muestra la UI |
-| **Single Responsibility** | `Entidad` maneja vida, `Personaje` agrega ataques, el codigo de UI es aparte |
-| **Abierto a extension** | Agregar defensa, velocidad, nivel es solo agregar propiedades |
-| **Composicion sobre herencia profunda** | Los ataques son objetos en un array, no subclases |
+| Principio                               | Aplicacion                                                                   |
+| --------------------------------------- | ---------------------------------------------------------------------------- |
+| **Separar datos de vista**              | Las clases manejan datos (vida, dano); el DOM muestra la UI                  |
+| **Single Responsibility**               | `Entidad` maneja vida, `Personaje` agrega ataques, el codigo de UI es aparte |
+| **Abierto a extension**                 | Agregar defensa, velocidad, nivel es solo agregar propiedades                |
+| **Composicion sobre herencia profunda** | Los ataques son objetos en un array, no subclases                            |
 
 ## Cambios necesarios en el codigo
 
 1. **Agregar clases** al inicio de `juego.js` (Entidad, Personaje, Enemigo)
 2. **Reemplazar** `datosPersonajes` por `PERSONAJES` usando las nuevas clases
 3. **Actualizar** las referencias en el codigo existente:
-   - `datos.img` y `datos.clase` siguen funcionando igual (son propiedades de Personaje)
-   - Guardar la instancia del personaje elegido (no solo el nombre)
+    - `datos.img` y `datos.clase` siguen funcionando igual (son propiedades de Personaje)
+    - Guardar la instancia del personaje elegido (no solo el nombre)
 4. **No tocar** la UI ni el HTML por ahora
 
 ## Extensibilidad futura

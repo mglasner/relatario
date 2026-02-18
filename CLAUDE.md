@@ -36,11 +36,11 @@ la-casa-del-terror/
 
 ## Personajes
 
-| Nombre | Descripción | Paleta |
-|--------|-------------|--------|
-| **Lina** | 13 años. Valiente e inteligente | Morado |
-| **Rosé** | 10 años. Inteligente, valiente, nunca se rinde | Verde |
-| **PandaJuro** | Panda samurái. Furioso, leal y honorable | Azul/Rojo |
+| Nombre        | Descripción                                    | Paleta    |
+| ------------- | ---------------------------------------------- | --------- |
+| **Lina**      | 13 años. Valiente e inteligente                | Morado    |
+| **Rosé**      | 10 años. Inteligente, valiente, nunca se rinde | Verde     |
+| **PandaJuro** | Panda samurái. Furioso, leal y honorable       | Azul/Rojo |
 
 ## Pantallas implementadas
 
@@ -64,14 +64,14 @@ El juego es apto para niños desde 7 años. Los villanos deben seguir estas regl
 
 El proyecto usa ESLint v9 (flat config), Prettier y Stylelint. Todas son devDependencies en `package.json`.
 
-| Comando | Qué hace |
-|---|---|
-| `npm run lint` | Verificar calidad JS con ESLint |
-| `npm run lint:fix` | Auto-corregir problemas JS |
-| `npm run lint:css` | Verificar calidad CSS con Stylelint |
-| `npm run lint:css:fix` | Auto-corregir problemas CSS |
-| `npm run format:check` | Verificar formateo con Prettier |
-| `npm run format` | Auto-formatear JS, CSS, HTML y JSON |
+| Comando                | Qué hace                            |
+| ---------------------- | ----------------------------------- |
+| `npm run lint`         | Verificar calidad JS con ESLint     |
+| `npm run lint:fix`     | Auto-corregir problemas JS          |
+| `npm run lint:css`     | Verificar calidad CSS con Stylelint |
+| `npm run lint:css:fix` | Auto-corregir problemas CSS         |
+| `npm run format:check` | Verificar formateo con Prettier     |
+| `npm run format`       | Auto-formatear JS, CSS, HTML y JSON |
 
 **Orden recomendado para corregir todo:**
 
@@ -101,13 +101,14 @@ BrowserSync sirve los archivos fuente directamente (hot-reload en http://localho
 
 esbuild genera la carpeta `dist/` con todo optimizado:
 
-| Paso | Entrada | Salida |
-|------|---------|--------|
-| `build:js` | `js/juego.js` + todos sus imports | `dist/juego.min.js` (~54 KB, 1 archivo) |
-| `build:css` | `estilos.css` | `dist/estilos.min.css` (~34 KB) |
-| `build:html` | `index.html`, `assets/`, `sw.js` | `dist/index.html` (rutas reescritas), `dist/assets/`, `dist/sw.js` |
+| Paso         | Entrada                           | Salida                                                             |
+| ------------ | --------------------------------- | ------------------------------------------------------------------ |
+| `build:js`   | `js/juego.js` + todos sus imports | `dist/juego.min.js` (~54 KB, 1 archivo)                            |
+| `build:css`  | `estilos.css`                     | `dist/estilos.min.css` (~34 KB)                                    |
+| `build:html` | `index.html`, `assets/`, `sw.js`  | `dist/index.html` (rutas reescritas), `dist/assets/`, `dist/sw.js` |
 
 El script `scripts/build-html.js` reescribe las rutas en el HTML:
+
 - `estilos.css` → `estilos.min.css`
 - `js/juego.js` → `juego.min.js`
 
@@ -133,7 +134,7 @@ Estrategias diferenciadas de cache para segunda visita instantánea:
 
 - **Assets estáticos** (JS, CSS, fuentes, imágenes): cache-first
 - **HTML** (navegación): network-first con fallback a cache
-- **`/api/**`** (futuro backend): network-only, nunca cachear
+- **`/api/**`\*\* (futuro backend): network-only, nunca cachear
 
 Incrementar `CACHE_NAME` en `sw.js` para invalidar el cache en actualizaciones.
 
