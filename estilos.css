@@ -616,6 +616,104 @@ h1 {
     }
 }
 
+/* PomPom - paleta rosa/crema */
+.personaje-pompom {
+    border-color: #7a4a5a;
+    background-color: #2a1520;
+}
+
+.personaje-pompom:hover {
+    border-color: #f8a5c2;
+}
+
+.personaje-pompom h3 {
+    color: #fcc2d7;
+}
+
+.personaje-pompom .avatar img {
+    border-color: #f8a5c2;
+}
+
+.personaje-pompom.seleccionado {
+    border-color: #fcc2d7;
+    box-shadow:
+        0 0 30px rgb(252 194 215 / 70%),
+        0 0 60px rgb(248 165 194 / 30%);
+    background-color: #351a28;
+}
+
+.personaje-pompom.seleccionado h3 {
+    animation: neon-pompom 1.5s ease-in-out infinite;
+}
+
+@keyframes neon-pompom {
+    0% {
+        color: #fcc2d7;
+        text-shadow: none;
+    }
+
+    50% {
+        color: #ffe0ec;
+        text-shadow:
+            0 0 10px #f8a5c2,
+            0 0 20px #f8a5c2;
+    }
+
+    100% {
+        color: #fcc2d7;
+        text-shadow: none;
+    }
+}
+
+/* Orejas - paleta naranja/tierra */
+.personaje-orejas {
+    border-color: #6b3a0a;
+    background-color: #2a1505;
+}
+
+.personaje-orejas:hover {
+    border-color: #e67e22;
+}
+
+.personaje-orejas h3 {
+    color: #f0a04b;
+}
+
+.personaje-orejas .avatar img {
+    border-color: #e67e22;
+}
+
+.personaje-orejas.seleccionado {
+    border-color: #f0a04b;
+    box-shadow:
+        0 0 30px rgb(240 160 75 / 70%),
+        0 0 60px rgb(230 126 34 / 30%);
+    background-color: #352010;
+}
+
+.personaje-orejas.seleccionado h3 {
+    animation: neon-orejas 1.5s ease-in-out infinite;
+}
+
+@keyframes neon-orejas {
+    0% {
+        color: #f0a04b;
+        text-shadow: none;
+    }
+
+    50% {
+        color: #ffcc80;
+        text-shadow:
+            0 0 10px #e67e22,
+            0 0 20px #e67e22;
+    }
+
+    100% {
+        color: #f0a04b;
+        text-shadow: none;
+    }
+}
+
 .personaje h3 {
     font-family: var(--font-display);
     color: var(--color-accent);
@@ -627,6 +725,10 @@ h1 {
     font-size: 0.85rem;
     color: var(--color-texto-secundario);
     margin-bottom: 10px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 /* --- Stats del personaje en la tarjeta --- */
@@ -808,6 +910,24 @@ h1 {
 .personaje-donbu .ataque-dano {
     color: #fcca6b;
     background-color: rgb(212 160 82 / 15%);
+}
+
+.personaje-pompom .barra-vida-relleno {
+    background: linear-gradient(90deg, #f8a5c2, #fcc2d7);
+}
+
+.personaje-pompom .ataque-dano {
+    color: #fcc2d7;
+    background-color: rgb(248 165 194 / 15%);
+}
+
+.personaje-orejas .barra-vida-relleno {
+    background: linear-gradient(90deg, #e67e22, #f0a04b);
+}
+
+.personaje-orejas .ataque-dano {
+    color: #f0a04b;
+    background-color: rgb(230 126 34 / 15%);
 }
 
 .personaje-pandajuro .barra-vida-relleno {
@@ -1111,6 +1231,9 @@ h1 {
     box-shadow: 0 0 40px rgb(0 0 0 / 50%);
     animation: modal-aparecer 0.3s ease;
     max-width: min(340px, 90vw);
+    height: min(520px, 80vh);
+    display: flex;
+    flex-direction: column;
 }
 
 .modal-personaje-contenido .avatar img {
@@ -1126,6 +1249,9 @@ h1 {
 
 .modal-personaje-contenido .descripcion {
     margin-bottom: 12px;
+    display: block;
+    -webkit-line-clamp: unset;
+    white-space: pre-line;
 }
 
 /* --- Tabs en modal de personaje --- */
@@ -1163,14 +1289,36 @@ h1 {
 
 .modal-personaje-paneles {
     display: grid;
+    grid-template-rows: 1fr;
+    flex: 1;
+    min-height: 0;
 }
 
 .modal-personaje-panel {
     grid-area: 1 / 1;
-    display: flex;
-    flex-direction: column;
     visibility: hidden;
     opacity: 0;
+    overflow-y: auto;
+    padding-right: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--p-color, rgb(255 255 255 / 20%)) transparent;
+}
+
+.modal-personaje-panel::-webkit-scrollbar {
+    width: 5px;
+}
+
+.modal-personaje-panel::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.modal-personaje-panel::-webkit-scrollbar-thumb {
+    background: var(--p-color, rgb(255 255 255 / 20%));
+    border-radius: 4px;
+}
+
+.modal-personaje-panel::-webkit-scrollbar-thumb:hover {
+    background: rgb(255 255 255 / 35%);
 }
 
 .modal-personaje-panel-activo {
@@ -1198,6 +1346,7 @@ h1 {
     font-style: italic;
     text-align: left;
     padding: 4px 0;
+    white-space: pre-line;
 }
 
 .modal-personaje-botones {
@@ -2151,6 +2300,16 @@ h1 {
 #personaje-jugador.jugador-donbu img {
     border-color: #d4a052;
     box-shadow: 0 0 12px rgb(212 160 82 / 50%);
+}
+
+#personaje-jugador.jugador-pompom img {
+    border-color: #f8a5c2;
+    box-shadow: 0 0 12px rgb(248 165 194 / 50%);
+}
+
+#personaje-jugador.jugador-orejas img {
+    border-color: #e67e22;
+    box-shadow: 0 0 12px rgb(230 126 34 / 50%);
 }
 
 /* --- Controles hint --- */
@@ -3364,6 +3523,16 @@ h1 {
 .jugador-laberinto.jugador-donbu img {
     border-color: #d4a052;
     box-shadow: 0 0 10px rgb(212 160 82 / 50%);
+}
+
+.jugador-laberinto.jugador-pompom img {
+    border-color: #f8a5c2;
+    box-shadow: 0 0 10px rgb(248 165 194 / 50%);
+}
+
+.jugador-laberinto.jugador-orejas img {
+    border-color: #e67e22;
+    box-shadow: 0 0 10px rgb(230 126 34 / 50%);
 }
 
 /* Mensaje de éxito */

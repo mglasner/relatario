@@ -81,7 +81,7 @@ function generarDatos(datos) {
         ...(datos.tier ? [`tier: '${datos.tier}',`] : []),
         `img: '${datos.img}',`,
         `clase: '${datos.clase}',`,
-        `descripcion: '${datos.descripcion.replace(/'/g, "\\'")}',`,
+        `descripcion: '${datos.descripcion.replace(/'/g, "\\'").replace(/\n/g, "\\n")}',`,
         `edad: ${datos.edad},`,
         `velocidad: ${datos.velocidad},`,
         `velAtaque: ${datos.velAtaque},`,
