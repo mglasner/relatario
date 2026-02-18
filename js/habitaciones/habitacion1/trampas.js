@@ -149,7 +149,7 @@ export function actualizarTrampasLentas() {
 
 // Detecta si el jugador pisa una trampa de lentitud activa
 export function detectarTrampasLentas() {
-    if (est.velocidadActual < CONFIG.VELOCIDAD) return;
+    if (est.velocidadActual < est.velocidadBase) return;
 
     const celda = getCeldaJugador();
     const ahora = Date.now();
@@ -167,7 +167,7 @@ export function detectarTrampasLentas() {
 
 // Aplica reducción de velocidad temporal
 export function aplicarLentitud(reduccion, duracion) {
-    est.velocidadActual = CONFIG.VELOCIDAD * (1 - reduccion);
+    est.velocidadActual = est.velocidadBase * (1 - reduccion);
 
     // Feedback visual
     est.elementoJugador.classList.add('jugador-lento');
@@ -187,7 +187,7 @@ export function aplicarLentitud(reduccion, duracion) {
     // Restaurar velocidad tras la duración
     if (est.timerLentitud) clearTimeout(est.timerLentitud);
     est.timerLentitud = setTimeout(function () {
-        est.velocidadActual = CONFIG.VELOCIDAD;
+        est.velocidadActual = est.velocidadBase;
         est.elementoJugador.classList.remove('jugador-lento');
         est.timerLentitud = null;
     }, duracion);

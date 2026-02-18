@@ -115,12 +115,18 @@ export function iniciarHabitacion1(jugadorRef, callback, dpadRef) {
     colocarTrampas();
     colocarTrampasLentas();
 
-    // Resetear velocidad
-    est.velocidadActual = CONFIG.VELOCIDAD;
+    // Velocidad según atributo del personaje (7 = referencia)
+    est.velocidadBase = CONFIG.VELOCIDAD * (est.jugador.velocidad / 7);
+    est.velocidadActual = est.velocidadBase;
     if (est.timerLentitud) {
         clearTimeout(est.timerLentitud);
         est.timerLentitud = null;
     }
+
+    // Escala visual según estatura (1.55 = referencia, no afecta colisiones)
+    const ESCALA_BASE = 1.45;
+    const ESTATURA_REF = 1.55;
+    est.escalaVisual = ESCALA_BASE * (est.jugador.estatura / ESTATURA_REF);
 
     // Colocar al Trasgo
     iniciarTrasgo();
@@ -276,7 +282,7 @@ function moverEnLaberinto(dx, dy) {
 }
 
 function actualizarPosicion() {
-    est.elementoJugador.style.transform = `translate(${est.posX}px, ${est.posY}px)`;
+    est.elementoJugador.style.transform = `translate(${est.posX}px, ${est.posY}px) scale(${est.escalaVisual})`;
 }
 
 // --- Detección de llave y salida ---

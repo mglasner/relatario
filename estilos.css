@@ -2296,11 +2296,10 @@ h1 {
     opacity: 0.6;
 }
 
-/* Jugador dentro del laberinto */
+/* Jugador dentro del laberinto (escala visual se aplica desde JS según estatura) */
 .jugador-laberinto {
     position: absolute;
     z-index: 5;
-    transform: scale(1.45);
 }
 
 .jugador-laberinto img {
