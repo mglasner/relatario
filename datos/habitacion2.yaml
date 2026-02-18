@@ -1,0 +1,54 @@
+# ============================================
+# Configuración de la Habitación 2 — El Laberinto 3D
+# Vista pseudo-3D con raycasting estilo Doom
+# El jugador debe encontrar la llave y volver a la salida
+# ============================================
+
+# --- Información general de la habitación ---
+meta:
+    titulo: "Habitación 2 — El Laberinto 3D"
+    itemInventario: llave-habitacion-3       # ID del item que se agrega al inventario
+    timeoutExito: 1500                       # ms antes de volver al pasillo tras escapar
+
+# --- Textos mostrados en pantalla ---
+textos:
+    indicadorBusqueda: "🔑 Encuentra la llave"
+    indicadorLlaveObtenida: "🔑 ¡Llave obtenida! Vuelve a la salida"
+    toastLlave: "¡Llave encontrada!"
+    mensajeExito: "¡Escapaste con la llave!"
+
+# --- Dimensiones del laberinto ---
+# ⚠ filas y columnas deben ser IMPARES para que el algoritmo de generación funcione.
+# Un laberinto más pequeño que el de habitación 1 (13×13 vs 17×17) porque la vista 3D
+# ya es más difícil de navegar.
+laberinto:
+    filas: 13                # alto del grid (celdas)
+    columnas: 13             # ancho del grid (celdas)
+    atajos: 6                # paredes eliminadas para crear rutas alternativas
+
+# --- Trampas de fuego 🔥 ---
+# Casillas que ciclan on/off y hacen daño al pisar.
+# En 3D se ven como partículas de fuego en el suelo.
+# ⚠ cantidadMax no debe exceder las celdas libres del laberinto (~40 en un 13×13).
+trampasFuego:
+    cantidadMin: 6           # mínimo de trampas generadas
+    cantidadMax: 10          # máximo de trampas generadas
+    distanciaMinEntrada: 2   # distancia Manhattan mínima desde la entrada (zona segura)
+    periodoMin: 1500         # ms — ciclo más rápido activa↔inactiva
+    periodoMax: 3500         # ms — ciclo más lento activa↔inactiva
+    desfaseMax: 3000         # ms — desfase aleatorio para que no parpadeen sincronizadas
+    cooldown: 1000           # ms entre golpes consecutivos de la misma trampa
+    danoMin: 5               # daño mínimo por activación
+    danoMax: 10              # daño máximo por activación
+
+# --- Rendimiento / fallback de texturas ---
+# El motor 3D mide el framerate y desactiva texturas si el dispositivo es lento.
+# ⚠ Estos 3 valores trabajan juntos: warmupFrames define cuántos frames ignorar
+# antes de empezar a medir, umbralFrameLento es el tiempo máximo aceptable por frame,
+# y framesLentosParaFallback cuántos frames lentos consecutivos se toleran antes
+# de desactivar texturas.
+rendimiento:
+    warmupFrames: 30             # frames iniciales ignorados (warm-up del motor)
+    umbralFrameLento: 33         # ms — frame > este valor cuenta como "lento" (~30fps)
+    framesLentosParaFallback: 10 # frames lentos consecutivos antes de desactivar texturas
+    flashDano: 6                 # frames que dura el flash rojo al recibir daño

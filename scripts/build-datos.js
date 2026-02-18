@@ -191,6 +191,24 @@ const SCHEMA_HABITACION1 = {
     render: ['tamCeldaBase'],
 };
 
+const SCHEMA_HABITACION2 = {
+    meta: ['titulo', 'itemInventario', 'timeoutExito'],
+    textos: ['indicadorBusqueda', 'indicadorLlaveObtenida', 'toastLlave', 'mensajeExito'],
+    laberinto: ['filas', 'columnas', 'atajos'],
+    trampasFuego: [
+        'cantidadMin',
+        'cantidadMax',
+        'distanciaMinEntrada',
+        'periodoMin',
+        'periodoMax',
+        'desfaseMax',
+        'cooldown',
+        'danoMin',
+        'danoMax',
+    ],
+    rendimiento: ['warmupFrames', 'umbralFrameLento', 'framesLentosParaFallback', 'flashDano'],
+};
+
 // Valida una habitación contra su schema
 function validarHabitacion(datos, archivo, schema) {
     const errores = [];
@@ -248,6 +266,18 @@ async function main() {
         const hab1Fmt = await prettier.format(hab1JS, configPrettier);
         writeFileSync('js/habitaciones/habitacion1/config.js', hab1Fmt);
         console.log('js/habitaciones/habitacion1/config.js generado');
+    }
+
+    // Habitación 2
+    const hab2Archivo = 'datos/habitacion2.yaml';
+    if (existsSync(hab2Archivo)) {
+        const hab2Yaml = readFileSync(hab2Archivo, 'utf-8');
+        const hab2Data = yaml.load(hab2Yaml);
+        validarHabitacion(hab2Data, 'habitacion2.yaml', SCHEMA_HABITACION2);
+        const hab2JS = generarConfigJS(hab2Data);
+        const hab2Fmt = await prettier.format(hab2JS, configPrettier);
+        writeFileSync('js/habitaciones/config-habitacion2.js', hab2Fmt);
+        console.log('js/habitaciones/config-habitacion2.js generado');
     }
 }
 

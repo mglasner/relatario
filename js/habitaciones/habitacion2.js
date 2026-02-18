@@ -2,6 +2,7 @@
 // Vista pseudo-3D con raycasting estilo Doom
 // El jugador debe encontrar la llave y volver a la salida
 
+import { CFG } from './config-habitacion2.js';
 import { generarMapa, encontrarPuntoLejano } from '../laberinto.js';
 import { lanzarToast } from '../componentes/toast.js';
 import { FOV, canvas, calcularDimensiones, COLORES } from '../motor3d/config.js';
@@ -38,11 +39,11 @@ import {
     limpiarHUD,
 } from '../motor3d/hudPrimeraPersona.js';
 
-// --- Constantes del laberinto ---
+// --- Constantes del laberinto (desde config YAML) ---
 
-const FILAS = 13;
-const COLS = 13;
-const ATAJOS = 6;
+const FILAS = CFG.laberinto.filas;
+const COLS = CFG.laberinto.columnas;
+const ATAJOS = CFG.laberinto.atajos;
 
 // --- Estado del módulo ---
 
@@ -119,7 +120,7 @@ function crearPantalla(esTouch) {
 
     const titulo = document.createElement('h2');
     titulo.className = 'titulo-habitacion';
-    titulo.textContent = 'Habitación 2 — El Laberinto 3D';
+    titulo.textContent = CFG.meta.titulo;
 
     cabecera.appendChild(btnHuir);
     cabecera.appendChild(titulo);
@@ -185,12 +186,12 @@ function detectarLlave() {
 
     if (celdaY === llaveFila && celdaX === llaveCol) {
         tieneLlave = true;
-        indicador.textContent = '\uD83D\uDD11 \u00A1Llave obtenida! Vuelve a la salida';
+        indicador.textContent = CFG.textos.indicadorLlaveObtenida;
         indicador.classList.add('llave-obtenida');
 
-        jugador.inventario.push('llave-habitacion-3');
+        jugador.inventario.push(CFG.meta.itemInventario);
         document.dispatchEvent(new Event('inventario-cambio'));
-        lanzarToast('\u00A1Llave encontrada!', '\uD83D\uDD11', 'item');
+        lanzarToast(CFG.textos.toastLlave, '\uD83D\uDD11', 'item');
     }
 }
 
@@ -202,14 +203,14 @@ function detectarSalida() {
 
     if (celdaY === entradaFila && celdaX === entradaCol) {
         activo = false;
-        mensajeExito.textContent = '\u00A1Escapaste con la llave!';
+        mensajeExito.textContent = CFG.textos.mensajeExito;
         mensajeExito.classList.remove('oculto');
-        lanzarToast('\u00A1Escapaste con la llave!', '\uD83D\uDEAA', 'exito');
+        lanzarToast(CFG.textos.mensajeExito, '\uD83D\uDEAA', 'exito');
 
         setTimeout(function () {
             limpiarHabitacion2();
             callbackSalir();
-        }, 1500);
+        }, CFG.meta.timeoutExito);
     }
 }
 
@@ -219,12 +220,11 @@ function loop(ahora) {
     if (!activo) return;
 
     // Medición de rendimiento para fallback de texturas
-    // Ignorar los primeros 30 frames (warmup) y requerir 10 frames lentos consecutivos
-    if (ultimoFrame > 0 && frameCount > 30) {
+    if (ultimoFrame > 0 && frameCount > CFG.rendimiento.warmupFrames) {
         const dt = ahora - ultimoFrame;
-        if (dt > 33) {
+        if (dt > CFG.rendimiento.umbralFrameLento) {
             framesLentos++;
-            if (framesLentos >= 10 && usarTexturas) {
+            if (framesLentos >= CFG.rendimiento.framesLentosParaFallback && usarTexturas) {
                 usarTexturas = false;
             }
         } else {
@@ -241,7 +241,7 @@ function loop(ahora) {
     // Trampas de fuego
     const danoTrampa = detectarTrampas3D(estado.x, estado.y, jugador);
     if (danoTrampa > 0) {
-        flashDano = 6;
+        flashDano = CFG.rendimiento.flashDano;
     }
 
     // Iluminación dinámica (recalcular cada 3 frames)
@@ -449,7 +449,7 @@ export function iniciarHabitacion2(jugadorRef, callback, dpadRef) {
     minimapBase = crearMinimapBase(mapa, FILAS, COLS, canvas.anchoMini, canvas.altoMini);
 
     // Resetear indicador
-    indicador.textContent = '\uD83D\uDD11 Encuentra la llave';
+    indicador.textContent = CFG.textos.indicadorBusqueda;
     indicador.classList.remove('llave-obtenida');
     mensajeExito.classList.add('oculto');
 

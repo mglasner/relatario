@@ -5,18 +5,20 @@
 import { mezclar } from '../laberinto.js';
 import { lanzarToast } from '../componentes/toast.js';
 import { FOV, canvas } from './config.js';
+import { CFG } from '../habitaciones/config-habitacion2.js';
 
 // --- Estado del módulo ---
 
 let trampas = [];
-const COOLDOWN = 1000; // 1 segundo entre golpes
 const RADIO_CULLING = 6;
 
 // --- Generación ---
 
-// Coloca 6-10 trampas en corredores del laberinto
+// Coloca trampas en corredores del laberinto según config YAML
 export function generarTrampas3D(mapa, filas, cols, entradaFila, entradaCol, llaveFila, llaveCol) {
-    const numTrampas = 6 + Math.floor(Math.random() * 5);
+    const cfg = CFG.trampasFuego;
+    const numTrampas =
+        cfg.cantidadMin + Math.floor(Math.random() * (cfg.cantidadMax - cfg.cantidadMin + 1));
     const celdasLibres = [];
 
     for (let f = 1; f < filas - 1; f++) {
@@ -24,7 +26,8 @@ export function generarTrampas3D(mapa, filas, cols, entradaFila, entradaCol, lla
             if (mapa[f][c] !== 0) continue;
             if (f === entradaFila && c === entradaCol) continue;
             if (f === llaveFila && c === llaveCol) continue;
-            if (Math.abs(f - entradaFila) + Math.abs(c - entradaCol) <= 2) continue;
+            if (Math.abs(f - entradaFila) + Math.abs(c - entradaCol) <= cfg.distanciaMinEntrada)
+                continue;
             celdasLibres.push([f, c]);
         }
     }
@@ -36,8 +39,8 @@ export function generarTrampas3D(mapa, filas, cols, entradaFila, entradaCol, lla
         trampas.push({
             fila: celdasLibres[i][0],
             col: celdasLibres[i][1],
-            periodo: 1500 + Math.floor(Math.random() * 2000),
-            desfase: Math.floor(Math.random() * 3000),
+            periodo: cfg.periodoMin + Math.floor(Math.random() * (cfg.periodoMax - cfg.periodoMin)),
+            desfase: Math.floor(Math.random() * cfg.desfaseMax),
             ultimoGolpe: 0,
         });
     }
@@ -58,11 +61,13 @@ export function detectarTrampas3D(jugadorX, jugadorY, jugador) {
     const celdaY = Math.floor(jugadorY);
     const ahora = Date.now();
 
+    const cfg = CFG.trampasFuego;
     for (let i = 0; i < trampas.length; i++) {
         const t = trampas[i];
         if (celdaY === t.fila && celdaX === t.col && esTrampaActiva(t)) {
-            if (ahora - t.ultimoGolpe >= COOLDOWN) {
-                const dano = 5 + Math.floor(Math.random() * 6);
+            if (ahora - t.ultimoGolpe >= cfg.cooldown) {
+                const dano =
+                    cfg.danoMin + Math.floor(Math.random() * (cfg.danoMax - cfg.danoMin + 1));
                 t.ultimoGolpe = ahora;
                 jugador.recibirDano(dano);
                 document.dispatchEvent(new Event('vida-cambio'));
