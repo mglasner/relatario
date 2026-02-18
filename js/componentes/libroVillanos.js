@@ -21,13 +21,15 @@ function generarDetalle(nombre) {
     const contenido = crearElemento('div', 'libro-detalle-contenido');
     contenido.className = 'libro-detalle-contenido ' + datos.clase;
 
-    // Avatar circular
+    // Avatar circular con marco ornamental
+    const marco = crearElemento('div', 'libro-avatar-marco');
     const avatarDiv = crearElemento('div', 'avatar');
     const img = document.createElement('img');
     img.src = datos.img;
     img.alt = nombre;
     avatarDiv.appendChild(img);
-    contenido.appendChild(avatarDiv);
+    marco.appendChild(avatarDiv);
+    contenido.appendChild(marco);
 
     // Nombre + badge de tier
     const cabecera = crearElemento('div', 'libro-detalle-cabecera');
@@ -44,8 +46,9 @@ function generarDetalle(nombre) {
     }
     contenido.appendChild(cabecera);
 
-    // Descripción y stats
+    // Descripción, separador y stats
     contenido.appendChild(crearElemento('p', 'descripcion', datos.descripcion));
+    contenido.appendChild(crearElemento('div', 'libro-separador-stats'));
     contenido.appendChild(crearElemento('div', 'stats'));
     llenarStats(contenido, datos);
 
@@ -58,7 +61,7 @@ function construirLibro() {
     let indiceActual = 0;
     let transicionEnCurso = false;
 
-    const libro = crearElemento('div', 'libro-villanos');
+    const libro = crearElemento('div', 'libro-villanos ' + ENEMIGOS[nombres[0]].clase);
 
     // --- Página izquierda: índice ---
     const paginaIzq = crearElemento('div', 'libro-pagina libro-pagina-izq');
@@ -102,11 +105,19 @@ function construirLibro() {
     const ornamentoInf = crearElemento('div', 'libro-ornamento');
     paginaIzq.appendChild(ornamentoInf);
 
-    // --- Lomo ---
+    // --- Lomo con costuras ---
     const lomo = crearElemento('div', 'libro-lomo');
+    for (let i = 0; i < 3; i++) {
+        lomo.appendChild(crearElemento('div', 'libro-lomo-costura'));
+    }
 
     // --- Página derecha: detalle ---
     const paginaDer = crearElemento('div', 'libro-pagina libro-pagina-der');
+
+    // Esquinas ornamentales
+    ['tl', 'tr', 'bl', 'br'].forEach(function (pos) {
+        paginaDer.appendChild(crearElemento('div', 'libro-esquina libro-esquina-' + pos));
+    });
 
     const detalleWrap = crearElemento('div', 'libro-detalle-wrap');
     detalleWrap.appendChild(generarDetalle(nombres[0]));
@@ -159,6 +170,9 @@ function construirLibro() {
             const nuevoContenido = generarDetalle(nombres[nuevoIndice]);
             nuevoContenido.classList.add('libro-fade-in');
             detalleWrap.appendChild(nuevoContenido);
+
+            // Propagar clase villano al libro
+            libro.className = 'libro-villanos ' + ENEMIGOS[nombres[nuevoIndice]].clase;
 
             indiceActual = nuevoIndice;
             actualizarIndice();

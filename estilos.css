@@ -707,6 +707,28 @@ h1 {
     transition: transform 0.3s;
 }
 
+.stat-vel-ataque {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 2px 8px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.stat-vel-ataque .stat-label {
+    grid-column: 1 / -1;
+}
+
+.barra-vel-ataque-relleno {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #e05a8a, #f472b6);
+    border-radius: 3px;
+    transform-origin: left;
+    transition: transform 0.3s;
+}
+
 /* Ataques */
 .stat-atributos {
     margin-top: 6px;
@@ -890,6 +912,11 @@ h1 {
 
 /* Siniestra — rojo/negro */
 .villano-siniestra {
+    --v-color: #f44;
+    --v-oscuro: #8b0000;
+    --v-glow: rgb(255 50 50 / 40%);
+    --v-tenue: rgb(255 68 68 / 12%);
+
     border-color: #4a0a0a;
     background-color: #1a0808;
 }
@@ -914,6 +941,11 @@ h1 {
 
 /* Trasgo — negro/gris */
 .villano-trasgo {
+    --v-color: #888;
+    --v-oscuro: #555;
+    --v-glow: rgb(150 150 150 / 30%);
+    --v-tenue: rgb(150 150 150 / 12%);
+
     border-color: #333;
     background-color: #111118;
 }
@@ -938,6 +970,11 @@ h1 {
 
 /* El Profano — azul/negro */
 .villano-profano {
+    --v-color: #48c;
+    --v-oscuro: #1a3a6b;
+    --v-glow: rgb(50 100 200 / 40%);
+    --v-tenue: rgb(68 136 204 / 12%);
+
     border-color: #0a1a3a;
     background-color: #080e1a;
 }
@@ -962,6 +999,11 @@ h1 {
 
 /* El Errante — verde/negro */
 .villano-errante {
+    --v-color: #4c4;
+    --v-oscuro: #2a6b2a;
+    --v-glow: rgb(50 200 50 / 40%);
+    --v-tenue: rgb(68 204 68 / 12%);
+
     border-color: #0a4a0a;
     background-color: #081a08;
 }
@@ -2998,17 +3040,21 @@ h1 {
    LIBRO DE VILLANOS — Bestiario con índice y detalle
    ============================================================ */
 
-/* Layout del libro */
+/* Layout del libro — grimorio antiguo */
 .libro-villanos {
     display: flex;
-    max-width: 700px;
+    width: 700px;
+    height: 680px;
+    max-width: 100%;
     margin: 0 auto;
     border-radius: 8px;
     overflow: hidden;
+    border: 2px solid rgb(255 215 0 / 25%);
     box-shadow:
         0 8px 32px rgb(0 0 0 / 50%),
-        0 0 12px rgb(233 69 96 / 15%);
+        0 0 18px var(--v-glow, rgb(233 69 96 / 15%));
     animation: libro-entrada 0.5s ease;
+    transition: box-shadow 0.5s;
 }
 
 @keyframes libro-entrada {
@@ -3025,13 +3071,17 @@ h1 {
 
 /* Páginas */
 .libro-pagina {
-    min-height: 380px;
     padding: 20px;
 }
 
 .libro-pagina-izq {
     flex: 0 0 200px;
-    background: linear-gradient(135deg, #1a1028 0%, #12101e 50%, #0d0b16 100%);
+    background:
+        repeating-linear-gradient(135deg, rgb(120 100 70 / 2%) 0, transparent 2px, transparent 8px),
+        radial-gradient(ellipse at 20% 80%, rgb(80 60 30 / 8%) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgb(60 50 25 / 6%) 0%, transparent 50%),
+        linear-gradient(to right, transparent 70%, rgb(0 0 0 / 15%)),
+        linear-gradient(135deg, #1c1510 0%, #18120d 50%, #140f0a 100%);
     border-right: none;
     display: flex;
     flex-direction: column;
@@ -3039,42 +3089,96 @@ h1 {
 
 .libro-pagina-der {
     flex: 1;
-    background: linear-gradient(135deg, #16131e 0%, #110f1a 50%, #0d0b14 100%);
+    position: relative;
+    padding: 28px 32px;
+    background:
+        repeating-linear-gradient(135deg, rgb(120 100 70 / 2%) 0, transparent 2px, transparent 8px),
+        radial-gradient(ellipse at 70% 30%, rgb(80 60 30 / 8%) 0%, transparent 60%),
+        radial-gradient(ellipse at 30% 70%, rgb(60 50 25 / 6%) 0%, transparent 50%),
+        linear-gradient(to left, transparent 70%, rgb(0 0 0 / 12%)),
+        linear-gradient(135deg, #1c1510 0%, #18120d 50%, #140f0a 100%);
     display: flex;
     flex-direction: column;
 }
 
-/* Lomo decorativo */
+/* Tintado del villano en página derecha */
+.libro-pagina-der::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        ellipse at center 30%,
+        var(--v-tenue, transparent) 0%,
+        transparent 70%
+    );
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Lomo decorativo — cuero cálido */
 .libro-lomo {
     flex: 0 0 22px;
     background: linear-gradient(
         90deg,
-        #1a1020 0%,
-        #2a1830 30%,
-        #3a2040 50%,
-        #2a1830 70%,
-        #1a1020 100%
+        #1a1008 0%,
+        #2a1c10 30%,
+        #3a2818 50%,
+        #2a1c10 70%,
+        #1a1008 100%
     );
     box-shadow:
         inset 2px 0 6px rgb(0 0 0 / 50%),
         inset -2px 0 6px rgb(0 0 0 / 50%);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    padding: 20px 0;
 }
 
-/* Título del libro */
+/* Costuras doradas del lomo */
+.libro-lomo-costura {
+    height: 1px;
+    margin: 0 3px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgb(255 215 0 / 30%),
+        rgb(255 215 0 / 50%),
+        rgb(255 215 0 / 30%),
+        transparent
+    );
+}
+
+/* Título del libro — dorado */
 .libro-titulo {
     font-family: var(--font-display);
-    color: var(--color-accent);
+    color: var(--color-dorado);
     font-size: 1.15rem;
-    text-align: center;
+    text-align: left;
+    padding-left: 10px;
     margin: 0 0 8px;
-    text-shadow: 0 0 10px rgb(233 69 96 / 40%);
+    text-shadow:
+        0 0 8px rgb(255 215 0 / 30%),
+        0 1px 2px rgb(0 0 0 / 60%);
 }
 
-/* Ornamentos decorativos */
+/* Ornamentos decorativos — dorados con diamante */
 .libro-ornamento {
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgb(233 69 96 / 30%), transparent);
+    background: linear-gradient(90deg, transparent, rgb(255 215 0 / 30%), transparent);
     margin: 6px 0;
+    position: relative;
+}
+
+.libro-ornamento::after {
+    content: '\25C6';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.5rem;
+    color: rgb(255 215 0 / 40%);
+    line-height: 1;
 }
 
 /* Índice */
@@ -3091,47 +3195,75 @@ h1 {
 .libro-indice-item {
     padding: 8px 10px;
     font-size: 0.8rem;
-    color: var(--color-texto-secundario);
+    color: rgb(180 165 140);
     border-radius: 6px;
+    border-left: 2px solid transparent;
     cursor: pointer;
+    text-align: left;
     transition:
         background-color 0.2s,
-        color 0.2s;
+        color 0.2s,
+        border-color 0.2s;
     outline: none;
 }
 
 .libro-indice-item:hover {
     background-color: rgb(255 255 255 / 5%);
-    color: var(--color-texto);
+    color: rgb(220 200 170);
 }
 
 .libro-indice-item:focus-visible {
-    outline: 2px dashed rgb(255 255 255 / 50%);
+    outline: 2px dashed rgb(255 215 0 / 40%);
     outline-offset: -2px;
 }
 
 .libro-indice-activo {
-    background-color: rgb(233 69 96 / 15%);
-    color: var(--color-accent);
+    background-color: var(--v-tenue, rgb(233 69 96 / 15%));
+    color: var(--v-color, var(--color-accent));
+    border-left-color: var(--v-color, var(--color-accent));
     font-weight: bold;
 }
 
 /* Contenido del villano */
 .libro-detalle-wrap {
     flex: 1;
+    position: relative;
+    z-index: 1;
 }
 
 .libro-detalle-contenido {
     text-align: center;
+    padding: 16px 20px;
+}
+
+/* Marco ornamental del avatar */
+.libro-avatar-marco {
+    display: inline-block;
+    position: relative;
+    border-radius: 50%;
+    padding: 4px;
+    border: 2px solid rgb(255 215 0 / 30%);
+    box-shadow: 0 0 14px var(--v-glow, rgb(233 69 96 / 20%));
+    margin-bottom: 6px;
+    transition: box-shadow 0.5s;
+}
+
+.libro-avatar-marco::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 1px solid rgb(255 215 0 / 12%);
+    pointer-events: none;
 }
 
 .libro-detalle-contenido .avatar {
-    margin-bottom: 6px;
+    margin-bottom: 0;
 }
 
 .libro-detalle-contenido .avatar img {
-    width: 90px;
-    height: 90px;
+    width: 120px;
+    height: 120px;
 }
 
 .libro-detalle-cabecera {
@@ -3140,9 +3272,13 @@ h1 {
 
 .libro-detalle-cabecera h3 {
     font-family: var(--font-display);
-    color: #999;
-    font-size: 1.3rem;
+    color: var(--v-color, #999);
+    font-size: 1.4rem;
     margin: 4px 0 2px;
+    text-shadow: 0 0 10px var(--v-glow, transparent);
+    transition:
+        color 0.5s,
+        text-shadow 0.5s;
 }
 
 .libro-detalle-cabecera .tier-badge {
@@ -3153,13 +3289,91 @@ h1 {
 
 .libro-detalle-contenido .descripcion {
     font-size: 0.8rem;
-    color: #777;
+    color: rgb(200 185 160);
+    font-style: italic;
     margin-bottom: 8px;
+    max-height: 3.6em;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(255 215 0 / 25%) transparent;
+}
+
+/* Scrollbar estilizado para descripción */
+.libro-detalle-contenido .descripcion::-webkit-scrollbar {
+    width: 4px;
+}
+
+.libro-detalle-contenido .descripcion::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.libro-detalle-contenido .descripcion::-webkit-scrollbar-thumb {
+    background: rgb(255 215 0 / 25%);
+    border-radius: 2px;
+}
+
+.libro-detalle-contenido .descripcion::-webkit-scrollbar-thumb:hover {
+    background: rgb(255 215 0 / 40%);
+}
+
+/* Separador entre descripción y stats */
+.libro-separador-stats {
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        var(--v-tenue, rgb(255 255 255 / 8%)),
+        transparent
+    );
+    margin: 4px 0 8px;
 }
 
 .libro-detalle-contenido .stats {
     text-align: left;
-    padding-top: 8px;
+    padding-top: 0;
+}
+
+/* Esquinas ornamentales doradas */
+.libro-esquina {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: 1;
+    transition: opacity 0.3s;
+}
+
+.libro-villanos:hover .libro-esquina {
+    opacity: 0.7;
+}
+
+.libro-esquina-tl {
+    top: 8px;
+    left: 8px;
+    border-top: 2px solid rgb(255 215 0 / 50%);
+    border-left: 2px solid rgb(255 215 0 / 50%);
+}
+
+.libro-esquina-tr {
+    top: 8px;
+    right: 8px;
+    border-top: 2px solid rgb(255 215 0 / 50%);
+    border-right: 2px solid rgb(255 215 0 / 50%);
+}
+
+.libro-esquina-bl {
+    bottom: 8px;
+    left: 8px;
+    border-bottom: 2px solid rgb(255 215 0 / 50%);
+    border-left: 2px solid rgb(255 215 0 / 50%);
+}
+
+.libro-esquina-br {
+    bottom: 8px;
+    right: 8px;
+    border-bottom: 2px solid rgb(255 215 0 / 50%);
+    border-right: 2px solid rgb(255 215 0 / 50%);
 }
 
 /* Crossfade */
@@ -3203,15 +3417,18 @@ h1 {
     gap: 12px;
     padding-top: 10px;
     margin-top: auto;
+    border-top: 1px solid rgb(255 215 0 / 10%);
+    position: relative;
+    z-index: 1;
 }
 
 .libro-nav-btn {
     width: 32px;
     height: 32px;
-    border: 2px solid rgb(255 255 255 / 15%);
+    border: 2px solid rgb(255 215 0 / 20%);
     border-radius: 50%;
     background-color: transparent;
-    color: var(--color-texto-secundario);
+    color: rgb(200 185 160);
     font-size: 1.1rem;
     cursor: pointer;
     display: flex;
@@ -3224,9 +3441,9 @@ h1 {
 }
 
 .libro-nav-btn:hover:not(:disabled) {
-    border-color: var(--color-accent);
-    color: var(--color-accent);
-    background-color: rgb(233 69 96 / 10%);
+    border-color: var(--v-color, var(--color-accent));
+    color: var(--v-color, var(--color-accent));
+    background-color: var(--v-tenue, rgb(233 69 96 / 10%));
 }
 
 .libro-nav-btn:disabled {
@@ -3236,7 +3453,8 @@ h1 {
 
 .libro-nav-contador {
     font-size: 0.75rem;
-    color: var(--color-texto-tenue);
+    color: rgb(180 165 140);
+    font-style: italic;
     min-width: 40px;
     text-align: center;
 }
@@ -3305,26 +3523,22 @@ h1 {
 /* Glow normal */
 @keyframes libro-glow {
     from {
-        filter: drop-shadow(0 4px 8px rgb(0 0 0 / 40%))
-            drop-shadow(0 0 10px rgb(140 50 180 / 35%));
+        filter: drop-shadow(0 4px 8px rgb(0 0 0 / 40%)) drop-shadow(0 0 10px rgb(140 50 180 / 35%));
     }
 
     to {
-        filter: drop-shadow(0 4px 8px rgb(0 0 0 / 40%))
-            drop-shadow(0 0 16px rgb(233 69 96 / 45%));
+        filter: drop-shadow(0 4px 8px rgb(0 0 0 / 40%)) drop-shadow(0 0 16px rgb(233 69 96 / 45%));
     }
 }
 
 /* Glow intenso (hover) */
 @keyframes libro-glow-intenso {
     from {
-        filter: drop-shadow(0 4px 12px rgb(0 0 0 / 50%))
-            drop-shadow(0 0 20px rgb(140 50 180 / 60%));
+        filter: drop-shadow(0 4px 12px rgb(0 0 0 / 50%)) drop-shadow(0 0 20px rgb(140 50 180 / 60%));
     }
 
     to {
-        filter: drop-shadow(0 4px 12px rgb(0 0 0 / 50%))
-            drop-shadow(0 0 24px rgb(233 69 96 / 70%));
+        filter: drop-shadow(0 4px 12px rgb(0 0 0 / 50%)) drop-shadow(0 0 24px rgb(233 69 96 / 70%));
     }
 }
 
@@ -3438,8 +3652,7 @@ h1 {
     animation: modal-aparecer 0.3s ease;
     max-height: 90vh;
     max-width: min(700px, calc(100vw - 40px));
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: hidden auto;
     border-radius: 10px;
 }
 
@@ -3559,12 +3772,25 @@ h1 {
     }
 
     .libro-detalle-contenido .avatar img {
-        width: 75px;
-        height: 75px;
+        width: 100px;
+        height: 100px;
+    }
+
+    .libro-avatar-marco {
+        padding: 3px;
+    }
+
+    .libro-esquina {
+        width: 16px;
+        height: 16px;
+    }
+
+    .libro-lomo {
+        flex: 0 0 20px;
     }
 
     .libro-detalle-cabecera h3 {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
     }
 
     .libro-modal-cuerpo {
@@ -3696,11 +3922,11 @@ h1 {
     .libro-villanos {
         flex-direction: column;
         max-width: 100%;
+        height: auto;
     }
 
     .libro-pagina-izq {
         flex: none;
-        min-height: auto;
         padding: 12px;
     }
 
@@ -3723,28 +3949,40 @@ h1 {
         padding: 5px 8px;
         font-size: 0.7rem;
         text-align: center;
+        border-left: none;
+        border-bottom: 2px solid transparent;
+    }
+
+    .libro-indice-activo {
+        border-left-color: transparent;
+        border-bottom-color: var(--v-color, var(--color-accent));
     }
 
     .libro-lomo {
         flex: 0 0 4px;
     }
 
+    .libro-lomo-costura {
+        display: none;
+    }
+
     .libro-pagina-der {
-        min-height: auto;
         padding: 14px;
     }
 
     .libro-detalle-contenido .avatar img {
-        width: 70px;
-        height: 70px;
+        width: 90px;
+        height: 90px;
+    }
+
+    .libro-esquina {
+        width: 14px;
+        height: 14px;
+        opacity: 0.3;
     }
 
     .libro-detalle-cabecera h3 {
         font-size: 1.1rem;
-    }
-
-    .libro-pagina {
-        min-height: auto;
     }
 
     .libro-boton img {

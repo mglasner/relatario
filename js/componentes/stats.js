@@ -40,6 +40,19 @@ export function llenarStats(tarjeta, datos) {
         stats.appendChild(statVel);
     }
 
+    // Barra de velocidad de ataque (escala: 10 = 100%)
+    if (datos.velAtaque !== undefined) {
+        const statVelAtk = crearElemento('div', 'stat-vel-ataque');
+        statVelAtk.appendChild(crearElemento('span', 'stat-label', 'Vel. Ataque'));
+        const barraFondoVA = crearElemento('div', 'barra-vida-fondo');
+        const barraRellenoVA = crearElemento('div', 'barra-vel-ataque-relleno');
+        barraRellenoVA.style.transform = 'scaleX(' + datos.velAtaque / 10 + ')';
+        barraFondoVA.appendChild(barraRellenoVA);
+        statVelAtk.appendChild(barraFondoVA);
+        statVelAtk.appendChild(crearElemento('span', 'stat-valor', datos.velAtaque.toString()));
+        stats.appendChild(statVelAtk);
+    }
+
     // Atributos extra (edad, estatura)
     if (datos.edad !== undefined || datos.estatura !== undefined) {
         const statAtributos = crearElemento('div', 'stat-atributos');
