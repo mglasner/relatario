@@ -32,8 +32,9 @@ function dibujarSprite(ctx, sprite, zBuffer, jugadorX, jugadorY, angulo) {
     const colCentral = Math.floor(screenX / canvas.anchoFranja);
     if (colCentral >= 0 && colCentral < canvas.numRayos && distPerp >= zBuffer[colCentral]) return;
 
-    // Tamaño del emoji según distancia
-    const fontSize = Math.min(Math.max((canvas.alto / distPerp) * 0.4, 10), 60);
+    // Tamaño del emoji según distancia (escala opcional por sprite)
+    const escala = sprite.escala || 1;
+    const fontSize = Math.min(Math.max((canvas.alto / distPerp) * 0.4 * escala, 10), 60);
 
     // Offset vertical según z del sprite (0=suelo, 1=techo, 0.5=centro)
     const alturaPared = canvas.alto / distPerp;

@@ -19,6 +19,7 @@ import {
     inicializarEmisores,
     actualizarParticulas,
     renderizarParticulas,
+    renderizarFuegoAntorchas,
     limpiarParticulas,
 } from '../motor3d/particulas.js';
 import { precalcularMapaLuz } from '../motor3d/iluminacion.js';
@@ -76,8 +77,8 @@ let ultimoFrame = 0;
 let framesLentos = 0;
 let flashDano = 0;
 
-// Pool de sprites preallocado para el loop (llave + puerta + ~30 decoraciones + ~10 trampas inactivas)
-const MAX_SPRITES_LOOP = 50;
+// Pool de sprites preallocado para el loop (llave + puerta + ~15 decoraciones + ~10 trampas inactivas)
+const MAX_SPRITES_LOOP = 30;
 const _sprites = Array.from({ length: MAX_SPRITES_LOOP }, () => ({
     x: 0,
     y: 0,
@@ -245,7 +246,7 @@ function loop(ahora) {
 
     // Actualizar decoraciones y partículas
     if (decoraciones) {
-        actualizarDecoraciones(decoraciones, ahora);
+        actualizarDecoraciones(decoraciones, ahora, mapa, FILAS, COLS);
     }
     actualizarParticulas(ahora, decoraciones ? decoraciones.antorchas : [], estado.x, estado.y);
     actualizarFuegoTrampas(estado.x, estado.y);
@@ -321,11 +322,19 @@ function loop(ahora) {
 
     // Partículas (después de sprites, encima de todo)
     renderizarParticulas(ctx3D, zBuffer, estado.x, estado.y, estado.angulo);
+    renderizarFuegoAntorchas(
+        ctx3D,
+        zBuffer,
+        decoraciones ? decoraciones.antorchas : [],
+        estado.x,
+        estado.y,
+        estado.angulo
+    );
     renderizarFuegoTrampas(ctx3D, zBuffer, estado.x, estado.y, estado.angulo);
 
     // Flash rojo de daño por trampas
     if (flashDano > 0) {
-        ctx3D.fillStyle = 'rgba(255, 0, 0, ' + (flashDano / 10) + ')';
+        ctx3D.fillStyle = 'rgba(255, 0, 0, ' + flashDano / 10 + ')';
         ctx3D.fillRect(0, 0, canvas.ancho, canvas.alto);
         flashDano--;
     }

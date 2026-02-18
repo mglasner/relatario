@@ -1,13 +1,16 @@
-// Motor 3D — Decoraciones ambientales (antorchas, telarañas, murciélagos)
+// Motor 3D — Decoraciones ambientales (antorchas, telarañas, murciélagos, ratas)
 
 // Límites para rendimiento
 const MAX_ANTORCHAS = 20;
 const MAX_TELARANAS = 8;
-const MAX_MURCIELAGOS = 2;
+const MAX_MURCIELAGOS = 5;
+const MAX_RATAS = 4;
 const RADIO_CULLING = 6;
 
-// Frames de animación para antorchas
-const FRAMES_ANTORCHA = ['\uD83D\uDD25', '\uD83D\uDD25'];
+// Referencia al mapa para colisiones de ratas
+let _mapa = null;
+let _filas = 0;
+let _cols = 0;
 
 // Verifica si una celda es corredor (no pared)
 function esCorredor(mapa, fila, col, filas, cols) {
@@ -44,6 +47,12 @@ export function generarDecoraciones(mapa, filas, cols) {
     const antorchas = [];
     const telaranas = [];
     const murcielagos = [];
+    const ratas = [];
+
+    // Guardar referencia al mapa para colisiones de ratas
+    _mapa = mapa;
+    _filas = filas;
+    _cols = cols;
 
     // --- Antorchas: ~15% de paredes junto a corredores ---
     const candidatasAntorcha = [];
@@ -114,7 +123,7 @@ export function generarDecoraciones(mapa, filas, cols) {
             const largoV =
                 esCorredor(mapa, f - 1, c, filas, cols) && esCorredor(mapa, f + 1, c, filas, cols);
 
-            if ((largoH || largoV) && hashPos(c, f, 3333) < 0.08) {
+            if ((largoH || largoV) && hashPos(c, f, 3333) < 0.15) {
                 murcielagos.push({
                     x: c + 0.5,
                     y: f + 0.5,
@@ -130,18 +139,50 @@ export function generarDecoraciones(mapa, filas, cols) {
         }
     }
 
-    return { antorchas, telaranas, murcielagos };
+    // --- Ratas: en corredores aleatorios (no cerca de entrada/llave) ---
+    const candidatasRata = [];
+    for (let f = 2; f < filas - 2; f++) {
+        for (let c = 2; c < cols - 2; c++) {
+            if (mapa[f][c] !== 0) continue;
+            const h = hashPos(c, f, 8888);
+            if (h < 0.12) {
+                candidatasRata.push({ f, c, h });
+            }
+        }
+    }
+    // Ordenar por hash para selección distribuida
+    candidatasRata.sort((a, b) => a.h - b.h);
+    for (let i = 0; i < Math.min(candidatasRata.length, MAX_RATAS); i++) {
+        const { f, c } = candidatasRata[i];
+        // Dirección inicial aleatoria
+        const dirIdx = Math.floor(hashPos(c, f, 9999) * 4);
+        const dirOpciones = [
+            [0, 1],
+            [0, -1],
+            [1, 0],
+            [-1, 0],
+        ];
+        const dir = dirOpciones[dirIdx];
+        ratas.push({
+            x: c + 0.5,
+            y: f + 0.5,
+            z: 0.05,
+            dx: dir[0],
+            dy: dir[1],
+            tiempoCambio: 0,
+            intervaloCambio: 2000 + hashPos(c, f, 1111) * 2000, // 2-4s
+        });
+    }
+
+    return { antorchas, telaranas, murcielagos, ratas };
 }
 
 // Actualiza animaciones de decoraciones
-export function actualizarDecoraciones(decs, ahora) {
-    // Animar frames de antorchas
-    for (const antorcha of decs.antorchas) {
-        if (ahora - antorcha.tiempoFrame > 200) {
-            antorcha.frame = (antorcha.frame + 1) % FRAMES_ANTORCHA.length;
-            antorcha.tiempoFrame = ahora;
-        }
-    }
+export function actualizarDecoraciones(decs, ahora, mapa, filas, cols) {
+    // Usar mapa pasado o el guardado
+    const m = mapa || _mapa;
+    const nf = filas || _filas;
+    const nc = cols || _cols;
 
     // Mover murciélagos con movimiento sinusoidal
     const t = ahora / 1000;
@@ -155,10 +196,63 @@ export function actualizarDecoraciones(decs, ahora) {
         // Aleteo vertical sutil
         bat.z = 0.75 + Math.sin(t * 3 + bat.fase) * 0.05;
     }
+
+    // Mover ratas por los corredores
+    if (m && decs.ratas) {
+        for (const rata of decs.ratas) {
+            // Cambiar dirección periódicamente
+            if (ahora - rata.tiempoCambio > rata.intervaloCambio) {
+                rata.tiempoCambio = ahora;
+                rata.intervaloCambio = 2000 + Math.random() * 2000;
+                // Nueva dirección aleatoria
+                const opciones = [
+                    [0, 1],
+                    [0, -1],
+                    [1, 0],
+                    [-1, 0],
+                ];
+                const idx = Math.floor(Math.random() * 4);
+                rata.dx = opciones[idx][0];
+                rata.dy = opciones[idx][1];
+            }
+
+            // Mover
+            const nuevaX = rata.x + rata.dx * 0.015;
+            const nuevaY = rata.y + rata.dy * 0.015;
+
+            // Verificar colisión con paredes
+            const celdaX = Math.floor(nuevaX);
+            const celdaY = Math.floor(nuevaY);
+
+            if (
+                celdaX >= 0 &&
+                celdaX < nc &&
+                celdaY >= 0 &&
+                celdaY < nf &&
+                m[celdaY][celdaX] === 0
+            ) {
+                rata.x = nuevaX;
+                rata.y = nuevaY;
+            } else {
+                // Chocó con pared: cambiar dirección inmediatamente
+                rata.tiempoCambio = ahora;
+                const opciones = [
+                    [0, 1],
+                    [0, -1],
+                    [1, 0],
+                    [-1, 0],
+                ];
+                const idx = Math.floor(Math.random() * 4);
+                rata.dx = opciones[idx][0];
+                rata.dy = opciones[idx][1];
+            }
+        }
+    }
 }
 
 // Pool de sprites preallocado para evitar allocaciones por frame
-const MAX_SPRITES_DECO = MAX_ANTORCHAS + MAX_TELARANAS + MAX_MURCIELAGOS;
+// Sin antorchas: solo telarañas + murciélagos + ratas
+const MAX_SPRITES_DECO = MAX_TELARANAS + MAX_MURCIELAGOS + MAX_RATAS;
 const _spritesPool = Array.from({ length: MAX_SPRITES_DECO }, () => ({
     x: 0,
     y: 0,
@@ -171,23 +265,10 @@ const _spritesResult = { sprites: _spritesPool, count: 0 };
 
 // Convierte decoraciones a sprites para renderizar (con culling por distancia)
 // Retorna { sprites, count } donde count indica cuántos slots están activos
+// NOTA: Las antorchas ya no se renderizan como sprites emoji — se usan partículas de fuego
 export function obtenerSpritesDecoraciones(decs, jugadorX, jugadorY) {
     let idx = 0;
     const radioSq = RADIO_CULLING * RADIO_CULLING;
-
-    // Antorchas
-    for (const a of decs.antorchas) {
-        const dx = a.x - jugadorX;
-        const dy = a.y - jugadorY;
-        if (dx * dx + dy * dy > radioSq) continue;
-
-        const s = _spritesPool[idx++];
-        s.x = a.x;
-        s.y = a.y;
-        s.z = 0.55;
-        s.emoji = FRAMES_ANTORCHA[a.frame];
-        s.color = '#ff8800';
-    }
 
     // Telarañas
     for (const t of decs.telaranas) {
@@ -201,6 +282,7 @@ export function obtenerSpritesDecoraciones(decs, jugadorX, jugadorY) {
         s.z = t.z;
         s.emoji = '\uD83D\uDD78\uFE0F';
         s.color = '#888888';
+        s.escala = 1;
     }
 
     // Murciélagos
@@ -215,6 +297,24 @@ export function obtenerSpritesDecoraciones(decs, jugadorX, jugadorY) {
         s.z = b.z;
         s.emoji = '\uD83E\uDD87';
         s.color = '#6633aa';
+        s.escala = 1;
+    }
+
+    // Ratas
+    if (decs.ratas) {
+        for (const r of decs.ratas) {
+            const dx = r.x - jugadorX;
+            const dy = r.y - jugadorY;
+            if (dx * dx + dy * dy > radioSq) continue;
+
+            const s = _spritesPool[idx++];
+            s.x = r.x;
+            s.y = r.y;
+            s.z = r.z;
+            s.emoji = '\uD83D\uDC00';
+            s.color = '#8B7355';
+            s.escala = 0.6;
+        }
     }
 
     _spritesResult.count = idx;
