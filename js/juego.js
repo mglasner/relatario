@@ -12,6 +12,7 @@ import { crearControlesTouch } from './componentes/controlesTouch.js';
 import { crearToast } from './componentes/toast.js';
 import { crearLibroVillanos } from './componentes/libroVillanos.js';
 import { crearLibroHeroes } from './componentes/libroHeroes.js';
+import { crearLibrosPasillo } from './componentes/librosPasillo.js';
 
 // --- Estados del juego (máquina de estados) ---
 
@@ -111,6 +112,7 @@ const modalSalir = crearModalSalir(contenedorJuego);
 const transicion = crearTransicion();
 const dpad = crearControlesTouch();
 const toast = crearToast();
+const librosPasillo = crearLibrosPasillo(contenedorJuego);
 
 // Ocultar hint de teclado en dispositivos touch
 const esTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
@@ -168,6 +170,7 @@ function ejecutarCambioEstado(anterior, nuevo, datos) {
         estado.loopActivo = false;
         limpiarProximidadPuertas();
         dpad.ocultar();
+        librosPasillo.ocultar();
     } else if (anterior === ESTADOS.HABITACION) {
         const hab = habitaciones[estado.habitacionActual];
         if (hab) hab.limpiar();
@@ -231,6 +234,8 @@ function ejecutarCambioEstado(anterior, nuevo, datos) {
         // Activar D-pad touch apuntando a las teclas del pasillo
         dpad.setTeclasRef(movimiento.teclas);
         dpad.mostrar();
+
+        librosPasillo.mostrar();
 
         estado.loopActivo = true;
         requestAnimationFrame(gameLoop);
@@ -307,15 +312,12 @@ document.addEventListener('keydown', function (e) {
         return;
     }
 
-    // En pantalla de selección, el Heroario maneja sus propias teclas
-    if (estado.estadoActual === ESTADOS.SELECCION) {
-        // Si el modal del libro de villanos está abierto, no interceptar teclas
-        const libroModal = document.querySelector('.libro-modal');
-        if (libroModal && !libroModal.classList.contains('oculto')) return;
-        return;
-    }
+    // En pantalla de selección, el Heroario y Villanario manejan sus propias teclas
+    if (estado.estadoActual === ESTADOS.SELECCION) return;
 
     if (e.key === 'Escape' && estado.estadoActual === ESTADOS.PASILLO) {
+        // Si hay un libro abierto, dejar que el libro lo maneje
+        if (librosPasillo.estaAbierto()) return;
         modalSalir.mostrar();
         return;
     }

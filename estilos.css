@@ -4442,6 +4442,39 @@ h1 {
     background-color: rgb(233 69 96 / 15%);
 }
 
+/* --- Libros del pasillo (Heroario + Villanario lateral) --- */
+
+.libros-pasillo {
+    position: absolute;
+    right: 6px;
+    bottom: 8px;
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+
+.libros-pasillo-boton {
+    margin-left: 0;
+    margin-top: 0;
+    padding: 4px;
+}
+
+.libros-pasillo-boton img {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+}
+
+.libros-pasillo-boton .libro-boton-texto {
+    font-size: 0.6rem;
+}
+
+.libro-modal-cuerpo .libro-heroes {
+    flex: 1;
+    height: auto;
+    min-height: 0;
+}
+
 /* ============================================================
    RESPONSIVE — Selección de personaje
    ============================================================ */
@@ -4861,6 +4894,26 @@ h1 {
 
     .libro-boton-texto {
         font-size: 0.6rem;
+    }
+
+    .libros-pasillo {
+        right: 4px;
+        bottom: 4px;
+        gap: 4px;
+    }
+
+    .libros-pasillo-boton {
+        padding: 2px;
+    }
+
+    .libros-pasillo-boton img {
+        width: 36px;
+        height: 36px;
+        border-radius: 6px;
+    }
+
+    .libros-pasillo-boton .libro-boton-texto {
+        font-size: 0.5rem;
     }
 
     .libro-modal-cuerpo {

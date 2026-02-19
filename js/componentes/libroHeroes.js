@@ -6,7 +6,7 @@ import { llenarStats } from './stats.js';
 import { crearLibro, crearCabecera } from './libro.js';
 
 // Genera el contenido de detalle para un héroe (2 paneles + tabs)
-function generarDetalle(nombre, tabInicial) {
+export function generarDetalleHeroe(nombre, tabInicial) {
     const datos = PERSONAJES[nombre];
     const clasePersonaje = datos.clase.replace('jugador-', 'personaje-');
     const mostrarStats = tabInicial === 'stats';
@@ -139,7 +139,7 @@ function generarIntro() {
 }
 
 // Entidades adaptadas para el libro: clase debe ser personaje-X (no jugador-X)
-function adaptarEntidades() {
+export function adaptarEntidades() {
     const adaptado = {};
     Object.keys(PERSONAJES).forEach(function (nombre) {
         const datos = PERSONAJES[nombre];
@@ -154,7 +154,7 @@ export function crearLibroHeroes(contenedor) {
 
     const { libro, manejarTecladoLibro, getNombreActual } = crearLibro({
         entidades: entidades,
-        generarDetalle: generarDetalle,
+        generarDetalle: generarDetalleHeroe,
         claseRaiz: 'libro-heroes',
         titulo: 'Heroario',
         subtitulo: 'Elige tu personaje',

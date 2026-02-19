@@ -8,7 +8,7 @@ import { crearLibro, crearCabecera } from './libro.js';
 // Orden fijo por tier (esbirro → élite → pesadilla → leyenda)
 const ORDEN_TIER = ['esbirro', 'elite', 'pesadilla', 'leyenda'];
 
-function ordenarPorTier(nombres) {
+export function ordenarPorTier(nombres) {
     return nombres.slice().sort(function (a, b) {
         const tierA = ORDEN_TIER.indexOf(ENEMIGOS[a].tier);
         const tierB = ORDEN_TIER.indexOf(ENEMIGOS[b].tier);
@@ -17,7 +17,7 @@ function ordenarPorTier(nombres) {
 }
 
 // Genera el contenido de detalle para un villano (2 paneles + tabs)
-function generarDetalle(nombre, tabInicial) {
+export function generarDetalleVillano(nombre, tabInicial) {
     const datos = ENEMIGOS[nombre];
     const mostrarStats = tabInicial === 'stats';
     const contenido = crearElemento('div', 'libro-detalle-contenido');
@@ -167,7 +167,7 @@ function generarDetalle(nombre, tabInicial) {
 }
 
 // Separador entre tiers en el índice
-function necesitaSeparador(nombres, i) {
+export function necesitaSeparador(nombres, i) {
     if (i === 0) return false;
     const tierAnterior = ENEMIGOS[nombres[i - 1]].tier;
     const tierActual = ENEMIGOS[nombres[i]].tier;
@@ -175,7 +175,7 @@ function necesitaSeparador(nombres, i) {
 }
 
 // Texto del item del índice con emoji de tier
-function textoItemIndice(nombre, datos) {
+export function textoItemIndice(nombre, datos) {
     if (datos.tier && TIERS[datos.tier]) {
         return TIERS[datos.tier].emoji + ' ' + nombre;
     }
@@ -222,7 +222,7 @@ export function crearLibroVillanos(contenedor) {
     // Construir el libro e insertarlo
     const { libro, manejarTecladoLibro } = crearLibro({
         entidades: ENEMIGOS,
-        generarDetalle: generarDetalle,
+        generarDetalle: generarDetalleVillano,
         claseRaiz: 'libro-villanos',
         ordenar: ordenarPorTier,
         crearItemIndice: textoItemIndice,
