@@ -4714,11 +4714,15 @@ h1 {
 
     .libro-pagina-der {
         padding: 12px;
+    }
+
+    /* Fondo plano del personaje solo cuando hay uno activo (no en Bienvenida) */
+    :not(.libro-en-inicio) > .libro-pagina-der {
         background: none;
         background-color: inherit;
     }
 
-    .libro-pagina-der::before {
+    :not(.libro-en-inicio) > .libro-pagina-der::before {
         display: none;
     }
 
