@@ -3959,6 +3959,14 @@ h1 {
     font-size: 0.85rem;
 }
 
+/* Variables de color para la página de inicio (sin entidad activa) */
+.libro-en-inicio {
+    --v-color: rgb(230 200 160 / 95%);
+    --v-oscuro: rgb(180 155 120);
+    --v-glow: rgb(230 200 160 / 30%);
+    --v-tenue: rgb(230 200 160 / 10%);
+}
+
 /* Ocultar botón Empezar en la página de inicio */
 .libro-en-inicio .libro-heroes-empezar {
     display: none;
