@@ -17,6 +17,12 @@ export const CFG = {
         alerta: 5,
         margenAdvertencia: 3,
     },
+    curacion: {
+        parMin: 1,
+        parMax: 3,
+        victoriaMin: 8,
+        victoriaMax: 12,
+    },
     tiempos: {
         volteo: 500,
         noMatch: 800,

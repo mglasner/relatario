@@ -108,6 +108,13 @@ function actualizarIndicador() {
     }
 }
 
+// Curar al jugador un valor aleatorio entre min y max (sin exceder vidaMax)
+function curar(min, max) {
+    const cantidad = Math.floor(Math.random() * (max - min + 1)) + min;
+    jugador.vidaActual = Math.min(jugador.vidaActual + cantidad, jugador.vidaMax);
+    document.dispatchEvent(new Event('vida-cambio'));
+}
+
 // Derrota inminente: no alcanzan los intentos para los pares que faltan
 function derrotaInminente() {
     const paresRestantes = totalPares - paresEncontrados;
@@ -145,6 +152,9 @@ function onClickGrilla(e) {
         paresEncontrados++;
         lanzarToast(CFG.textos.toastMatch, '\u2728', 'exito');
 
+        // Curar al jugador al encontrar un par
+        curar(CFG.curacion.parMin, CFG.curacion.parMax);
+
         intentosRestantes--;
         actualizarIndicador();
         primeraCarta = null;
@@ -180,6 +190,10 @@ function onClickGrilla(e) {
 function victoria() {
     jugador.inventario.push(CFG.meta.itemInventario);
     document.dispatchEvent(new Event('inventario-cambio'));
+
+    // Curación bonus por ganar la partida
+    curar(CFG.curacion.victoriaMin, CFG.curacion.victoriaMax);
+
     lanzarToast(CFG.textos.toastVictoria, '\uD83D\uDD11', 'item');
 
     setTimeout(function () {

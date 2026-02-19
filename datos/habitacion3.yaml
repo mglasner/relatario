@@ -23,6 +23,13 @@ intentos:
     alerta: 5                # umbral para alerta visual (pulsing rojo)
     margenAdvertencia: 3     # margen de turnos sobrantes para lanzar toast
 
+# --- Curación al encontrar pares ---
+curacion:
+    parMin: 1                # vida mínima al encontrar un par
+    parMax: 3                # vida máxima al encontrar un par
+    victoriaMin: 8           # vida mínima al ganar la partida
+    victoriaMax: 12          # vida máxima al ganar la partida
+
 # --- Tiempos de animación (ms) ---
 tiempos:
     volteo: 500              # ms animación de flip

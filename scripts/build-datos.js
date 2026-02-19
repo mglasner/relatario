@@ -213,6 +213,7 @@ const SCHEMA_HABITACION3 = {
     meta: ['titulo', 'itemInventario', 'tiempoVictoria'],
     tablero: ['filas', 'columnas', 'numHeroes', 'numVillanos'],
     intentos: ['max', 'alerta', 'margenAdvertencia'],
+    curacion: ['parMin', 'parMax', 'victoriaMin', 'victoriaMax'],
     tiempos: ['volteo', 'noMatch'],
     textos: ['indicador', 'toastMatch', 'toastVictoria', 'toastAdvertencia'],
 };
