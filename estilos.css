@@ -1834,6 +1834,13 @@ h1 {
     animation: flotar-icono 2.5s ease-in-out infinite;
 }
 
+.modal-puerta-icono-img {
+    width: 4.5rem;
+    height: 4.5rem;
+    object-fit: contain;
+    border-radius: 12px;
+}
+
 @keyframes flotar-icono {
     0%,
     100% {
@@ -3503,9 +3510,7 @@ h1 {
         linear-gradient(135deg, #1c1510 0%, #18120d 50%, #140f0a 100%);
     display: flex;
     flex-direction: column;
-    overflow: hidden auto;
-    scrollbar-width: thin;
-    scrollbar-color: rgb(255 215 0 / 25%) transparent;
+    overflow: hidden;
 }
 
 /* Tintado del villano en página derecha */
@@ -3668,11 +3673,15 @@ h1 {
 /* Contenido del villano */
 .libro-detalle-wrap {
     flex: 1;
+    min-height: 0;
     position: relative;
     z-index: 1;
     display: flex;
     flex-direction: column;
     perspective: 1200px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(255 215 0 / 25%) transparent;
 }
 
 .libro-detalle-contenido {
@@ -3962,13 +3971,10 @@ h1 {
     align-items: center;
     justify-content: center;
     gap: 12px;
-    padding: 10px 0;
-    margin-top: auto;
+    padding: 10px 0 12px;
+    flex-shrink: 0;
     border-top: 1px solid rgb(255 215 0 / 10%);
-    position: sticky;
-    bottom: 0;
     z-index: 2;
-    background: linear-gradient(to top, #140f0a 70%, rgb(20 15 10 / 95%) 85%, transparent);
 }
 
 .libro-nav-btn {
@@ -4701,7 +4707,6 @@ h1 {
 
     .libro-pagina-der {
         padding: 12px;
-        padding-bottom: 48px;
     }
 
     .libro-detalle-contenido {

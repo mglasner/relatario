@@ -21,11 +21,11 @@ const HABITACIONES = {
         fondo: '#1a3e1a',
     },
     3: {
-        icono: '🔥',
-        nombre: 'La Cámara Secreta',
+        iconoImg: 'assets/img/habitaciones/memorice-icon.webp',
+        nombre: 'El Memorice',
         nivel: 'Nivel 3',
-        descripcion: 'Algo arde detrás de esta puerta... ¿te atreves a mirar?',
-        boton: 'Entrar',
+        descripcion: 'Cartas boca abajo cubren la mesa... ¿podrás recordar dónde está cada par?',
+        boton: 'Voltear cartas',
         accent: '#e94560',
         fondo: '#3e1a1a',
     },
@@ -147,7 +147,17 @@ export function crearModalPuerta(contenedor) {
             puertaActiva = numeroPuerta;
             const hab = HABITACIONES[numeroPuerta] || HAB_DEFAULT;
 
-            iconoDiv.textContent = hab.icono;
+            // Ícono: imagen o emoji
+            iconoDiv.textContent = '';
+            if (hab.iconoImg) {
+                const img = document.createElement('img');
+                img.src = hab.iconoImg;
+                img.alt = hab.nombre;
+                img.className = 'modal-puerta-icono-img';
+                iconoDiv.appendChild(img);
+            } else {
+                iconoDiv.textContent = hab.icono;
+            }
             nivelSpan.textContent = hab.nivel;
             titulo.textContent = hab.nombre;
             mensaje.textContent = hab.descripcion;
