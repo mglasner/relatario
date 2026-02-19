@@ -91,7 +91,7 @@ function generarIntro() {
         crearElemento(
             'h2',
             'libro-intro-game-titulo',
-            '\ud83c\udfe1 La Casa del Terror \ud83d\udc7b'
+            '\ud83c\udfe1 La Mansi\u00f3n de Aventuras \ud83d\udc7b'
         )
     );
     contenido.appendChild(crearElemento('div', 'libro-ornamento'));
