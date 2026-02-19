@@ -15,7 +15,7 @@ const ENEMIGOS = {
             img: 'assets/img/enemigos/siniestra.webp',
             clase: 'villano-siniestra',
             descripcion:
-                'Nadie sabe quién fue Siniestra antes de convertirse en espectro, pero los rumores dicen que era una hechicera que hizo un trato con las sombras... y las sombras no cumplieron su parte. Ahora vaga furiosa por los pasillos, dejando un rastro de llamas oscuras que se apagan solas al amanecer. Si escuchas un susurro helado detrás de ti, ya es demasiado tarde para correr.',
+                'Nadie sabe quién fue Siniestra antes de convertirse en espectro, pero los rumores dicen que era una hechicera que hizo un trato con las sombras... y las sombras no cumplieron su parte.\n\nAhora vaga furiosa por los pasillos, dejando un rastro de llamas oscuras que se apagan solas al amanecer. Si escuchas un susurro helado detrás de ti, ya es demasiado tarde para correr.',
             edad: 500,
             velocidad: 5,
             velAtaque: 3,
@@ -35,7 +35,7 @@ const ENEMIGOS = {
             img: 'assets/img/enemigos/trasgo.webp',
             clase: 'villano-trasgo',
             descripcion:
-                'Trasgo es el villano que nadie se toma en serio... y eso le enfurece muchísimo. Este pequeño duende verde lleva siglos intentando dar miedo, pero siempre tropieza con sus propias trampas. Una vez intentó asustar a un gato y terminó trepado a un árbol pidiendo ayuda. Eso sí, no te confíes: de vez en cuando le sale una travesura que realmente duele.',
+                'Trasgo es el villano que nadie se toma en serio... y eso le enfurece muchísimo. Este pequeño duende verde lleva siglos intentando dar miedo, pero siempre tropieza con sus propias trampas.\n\nUna vez intentó asustar a un gato y terminó trepado a un árbol pidiendo ayuda. Eso sí, no te confíes: de vez en cuando le sale una travesura que realmente duele.',
             edad: 120,
             velocidad: 6,
             velAtaque: 7,
@@ -59,7 +59,7 @@ const ENEMIGOS = {
             img: 'assets/img/enemigos/errante.webp',
             clase: 'villano-errante',
             descripcion:
-                'El Errante lleva mil años caminando sin descanso por los rincones más oscuros de La Casa del Terror. Dicen que busca algo que perdió hace siglos, pero nadie sabe qué es. Lo único seguro es que no le gusta que lo interrumpan: cada intruso que se cruza en su camino recibe una mordida tóxica como advertencia. Lento pero implacable, siempre te encuentra.',
+                'El Errante lleva mil años caminando sin descanso por los rincones más oscuros de La Casa del Terror. Dicen que busca algo que perdió hace siglos, pero nadie sabe qué es.\n\nLo único seguro es que no le gusta que lo interrumpan: cada intruso que se cruza en su camino recibe una mordida tóxica como advertencia. Lento pero implacable, siempre te encuentra.',
             edad: 1000,
             velocidad: 3,
             velAtaque: 3,
@@ -83,7 +83,7 @@ const ENEMIGOS = {
             img: 'assets/img/enemigos/profano.webp',
             clase: 'villano-profano',
             descripcion:
-                'El Profano es una sombra con forma humana que se desliza entre las paredes sin hacer ruido. Fue el guardián de un templo olvidado, pero algo lo corrompió y ahora solo obedece a la oscuridad. Aparece cuando menos lo esperas, siempre detrás de ti, siempre en silencio. Los más valientes juran haber visto sus ojos brillar en la negrura un segundo antes de sentir el frío de su cuchillada sombría.',
+                'El Profano es una sombra con forma humana que se desliza entre las paredes sin hacer ruido. Fue el guardián de un templo olvidado, pero algo lo corrompió y ahora solo obedece a la oscuridad.\n\nAparece cuando menos lo esperas, siempre detrás de ti, siempre en silencio. Los más valientes juran haber visto sus ojos brillar en la negrura un segundo antes de sentir el frío de su cuchillada sombría.',
             edad: 800,
             velocidad: 4,
             velAtaque: 3,
