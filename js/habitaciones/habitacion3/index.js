@@ -79,6 +79,12 @@ function actualizarIndicador() {
     }
 }
 
+// Derrota inminente: no alcanzan los intentos para los pares que faltan
+function derrotaInminente() {
+    const paresRestantes = totalPares - paresEncontrados;
+    return intentosRestantes < paresRestantes;
+}
+
 function onClickGrilla(e) {
     if (bloqueado) return;
 
@@ -115,9 +121,11 @@ function onClickGrilla(e) {
         primeraCarta = null;
         bloqueado = false;
 
-        // Victoria
+        // Victoria o derrota inminente
         if (paresEncontrados >= totalPares) {
             victoria();
+        } else if (derrotaInminente()) {
+            derrota();
         }
     } else {
         // No match — voltear de vuelta después de un delay
@@ -132,8 +140,8 @@ function onClickGrilla(e) {
             actualizarIndicador();
             bloqueado = false;
 
-            // Derrota
-            if (intentosRestantes <= 0) {
+            // Derrota inminente
+            if (derrotaInminente()) {
                 derrota();
             }
         }, CONFIG.tiempoNoMatch);
