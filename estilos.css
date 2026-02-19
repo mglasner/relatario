@@ -4519,6 +4519,7 @@ h1 {
         flex-direction: column;
         max-width: 100%;
         height: calc(80vh - 20px);
+        position: relative;
     }
 
     .libro-pagina-izq {
@@ -4565,6 +4566,24 @@ h1 {
         display: none;
     }
 
+    /* Botón Empezar: barra fija al fondo del libro en mobile */
+    .libro-heroes-empezar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        margin: 0;
+        border-radius: 0 0 12px 12px;
+        padding: 10px 0;
+        font-size: 0.9rem;
+        z-index: 5;
+        box-shadow: 0 -4px 12px rgb(0 0 0 / 40%);
+    }
+
+    .libro-en-inicio .libro-heroes-empezar {
+        display: none;
+    }
+
     .libro-lomo {
         display: none;
     }
@@ -4575,6 +4594,7 @@ h1 {
 
     .libro-pagina-der {
         padding: 12px;
+        padding-bottom: 48px;
     }
 
     .libro-detalle-contenido {
