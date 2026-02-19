@@ -229,10 +229,11 @@ export const HABITACIONES_HEROARIO = [
                 nivel: 4,
                 icono: '\uD83C\uDF0A',
                 parrafos: [
-                    'Nadie sabe qu\u00E9 hay al fondo del abismo. Solo se escuchan ecos lejanos y el sonido de agua cayendo en la oscuridad...',
-                    'Esta habitaci\u00F3n a\u00FAn guarda sus secretos. Los constructores de la mansi\u00F3n no han terminado de prepararla.',
+                    'Un abismo sin fondo se extiende ante ti. Plataformas flotantes son tu \u00FAnico camino. \u00A1Un paso en falso y caer\u00E1s al vac\u00EDo!',
+                    'Esbirros patrullan las plataformas y un temible boss te espera al final. Salta sobre los enemigos para derrotarlos, pero cuidado con tocarlos de lado.',
+                    'Derrota al boss para abrir la salida y conseguir la llave.',
                 ],
-                tip: 'Pr\u00F3ximamente... \u00A1Prep\u00E1rate para lo desconocido!',
+                tip: 'Salta sobre los enemigos para hacerles da\u00F1o. Usa las plataformas y no mires abajo.',
             });
         },
     },

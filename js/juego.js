@@ -3,6 +3,7 @@ import { PERSONAJES } from './personajes.js';
 import { iniciarHabitacion1, limpiarHabitacion1 } from './habitaciones/habitacion1/index.js';
 import { iniciarHabitacion2, limpiarHabitacion2 } from './habitaciones/habitacion2.js';
 import { iniciarHabitacion3, limpiarHabitacion3 } from './habitaciones/habitacion3/index.js';
+import { iniciarHabitacion4, limpiarHabitacion4 } from './habitaciones/habitacion4/index.js';
 import { crearBarraSuperior } from './componentes/barraSuperior.js';
 import { crearModalPuerta } from './componentes/modalPuerta.js';
 import { crearModalDerrota } from './componentes/modalDerrota.js';
@@ -32,6 +33,7 @@ function registrarHabitacion(numero, modulo) {
 registrarHabitacion('1', { iniciar: iniciarHabitacion1, limpiar: limpiarHabitacion1 });
 registrarHabitacion('2', { iniciar: iniciarHabitacion2, limpiar: limpiarHabitacion2 });
 registrarHabitacion('3', { iniciar: iniciarHabitacion3, limpiar: limpiarHabitacion3 });
+registrarHabitacion('4', { iniciar: iniciarHabitacion4, limpiar: limpiarHabitacion4 });
 
 // --- Heroario y Villanario ---
 
