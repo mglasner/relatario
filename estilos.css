@@ -3971,6 +3971,19 @@ h1 {
     width: 100%;
     padding: 8px 0;
     font-size: 0.85rem;
+    background-color: var(--v-oscuro, #3a2818);
+    box-shadow: 0 0 12px var(--v-glow, rgb(230 200 160 / 30%));
+}
+
+.libro-heroes-empezar::after {
+    box-shadow:
+        0 0 20px var(--v-glow, rgb(230 200 160 / 40%)),
+        0 0 40px var(--v-glow, rgb(230 200 160 / 15%));
+}
+
+.libro-heroes-empezar:hover {
+    background-color: var(--v-color, #4a3828);
+    box-shadow: 0 0 18px var(--v-glow, rgb(230 200 160 / 50%));
 }
 
 /* Variables de color para la página de inicio (sin entidad activa) */
