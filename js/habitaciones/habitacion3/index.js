@@ -113,6 +113,8 @@ function curar(min, max) {
     const cantidad = Math.floor(Math.random() * (max - min + 1)) + min;
     jugador.vidaActual = Math.min(jugador.vidaActual + cantidad, jugador.vidaMax);
     document.dispatchEvent(new Event('vida-cambio'));
+    const texto = CFG.textos.toastCuracion.replace('{cantidad}', cantidad);
+    lanzarToast(texto, '\uD83D\uDC9A', 'exito');
 }
 
 // Derrota inminente: no alcanzan los intentos para los pares que faltan

@@ -32,5 +32,6 @@ export const CFG = {
         toastMatch: '¡Par encontrado!',
         toastVictoria: '¡Memorice completado!',
         toastAdvertencia: '¡Quedan pocos turnos!',
+        toastCuracion: '+{cantidad} vida',
     },
 };

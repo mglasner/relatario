@@ -215,7 +215,7 @@ const SCHEMA_HABITACION3 = {
     intentos: ['max', 'alerta', 'margenAdvertencia'],
     curacion: ['parMin', 'parMax', 'victoriaMin', 'victoriaMax'],
     tiempos: ['volteo', 'noMatch'],
-    textos: ['indicador', 'toastMatch', 'toastVictoria', 'toastAdvertencia'],
+    textos: ['indicador', 'toastMatch', 'toastVictoria', 'toastAdvertencia', 'toastCuracion'],
 };
 
 // Valida una habitación contra su schema
