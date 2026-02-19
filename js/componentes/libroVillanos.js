@@ -34,23 +34,25 @@ function crearCabecera(nombre, datos, claseAvatar) {
 }
 
 // Genera el contenido de detalle para un villano (2 paneles + tabs)
-function generarDetalle(nombre) {
+function generarDetalle(nombre, tabInicial) {
     const datos = ENEMIGOS[nombre];
+    const mostrarStats = tabInicial === 'stats';
     const contenido = crearElemento('div', 'libro-detalle-contenido');
     contenido.className = 'libro-detalle-contenido ' + datos.clase;
+    contenido._tabActivo = mostrarStats ? 'stats' : 'perfil';
 
     // --- Tabs ---
     const tabs = crearElemento('div', 'libro-tabs');
-    const tabPerfil = crearElemento('button', 'libro-tab libro-tab-activo', 'Perfil');
+    const tabPerfil = crearElemento('button', 'libro-tab' + (mostrarStats ? '' : ' libro-tab-activo'), 'Perfil');
     tabPerfil.type = 'button';
-    const tabStats = crearElemento('button', 'libro-tab', 'Habilidades');
+    const tabStats = crearElemento('button', 'libro-tab' + (mostrarStats ? ' libro-tab-activo' : ''), 'Habilidades');
     tabStats.type = 'button';
     tabs.appendChild(tabPerfil);
     tabs.appendChild(tabStats);
     contenido.appendChild(tabs);
 
     // --- Panel Perfil ---
-    const panelPerfil = crearElemento('div', 'libro-panel libro-panel-activo');
+    const panelPerfil = crearElemento('div', 'libro-panel' + (mostrarStats ? '' : ' libro-panel-activo'));
     panelPerfil.appendChild(crearCabecera(nombre, datos));
     panelPerfil.appendChild(crearElemento('div', 'libro-ornamento'));
     panelPerfil.appendChild(
@@ -59,7 +61,7 @@ function generarDetalle(nombre) {
     contenido.appendChild(panelPerfil);
 
     // --- Panel Habilidades ---
-    const panelStats = crearElemento('div', 'libro-panel');
+    const panelStats = crearElemento('div', 'libro-panel' + (mostrarStats ? ' libro-panel-activo' : ''));
     panelStats.appendChild(crearCabecera(nombre, datos, 'libro-avatar-mini'));
     panelStats.appendChild(crearElemento('div', 'stats'));
 
@@ -154,12 +156,14 @@ function generarDetalle(nombre) {
         tabStats.classList.remove('libro-tab-activo');
         panelPerfil.classList.add('libro-panel-activo');
         panelStats.classList.remove('libro-panel-activo');
+        contenido._tabActivo = 'perfil';
     });
     tabStats.addEventListener('click', function () {
         tabStats.classList.add('libro-tab-activo');
         tabPerfil.classList.remove('libro-tab-activo');
         panelStats.classList.add('libro-panel-activo');
         panelPerfil.classList.remove('libro-panel-activo');
+        contenido._tabActivo = 'stats';
     });
 
     return contenido;
@@ -291,8 +295,9 @@ function construirLibro() {
         }
 
         setTimeout(function () {
+            const tabAnterior = contenidoActual && contenidoActual._tabActivo || 'perfil';
             detalleWrap.replaceChildren();
-            const nuevoContenido = generarDetalle(nombres[nuevoIndice]);
+            const nuevoContenido = generarDetalle(nombres[nuevoIndice], tabAnterior);
             nuevoContenido.classList.add('libro-fade-in');
             detalleWrap.appendChild(nuevoContenido);
 
