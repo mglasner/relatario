@@ -3453,7 +3453,6 @@ h1 {
     border-radius: 8px;
     overflow: hidden;
     border: 2px solid rgb(255 215 0 / 25%);
-    background-color: #140f0a;
     box-shadow:
         0 8px 32px rgb(0 0 0 / 50%),
         0 0 18px var(--v-glow, rgb(233 69 96 / 15%));
