@@ -6,6 +6,7 @@ import { iniciarHabitacion3, limpiarHabitacion3 } from './habitaciones/habitacio
 import { crearBarraSuperior } from './componentes/barraSuperior.js';
 import { crearModalPuerta } from './componentes/modalPuerta.js';
 import { crearModalDerrota } from './componentes/modalDerrota.js';
+import { crearModalSalir } from './componentes/modalSalir.js';
 import { crearTransicion } from './componentes/transicion.js';
 import { crearControlesTouch } from './componentes/controlesTouch.js';
 import { crearToast } from './componentes/toast.js';
@@ -106,6 +107,7 @@ const contenedorJuego = document.getElementById('juego');
 const barra = crearBarraSuperior(contenedorJuego);
 const modal = crearModalPuerta(contenedorJuego);
 const modalDerrota = crearModalDerrota();
+const modalSalir = crearModalSalir(contenedorJuego);
 const transicion = crearTransicion();
 const dpad = crearControlesTouch();
 const toast = crearToast();
@@ -272,7 +274,16 @@ function volverASeleccion() {
     cambiarEstado(ESTADOS.SELECCION);
 }
 
-document.getElementById('btn-volver').addEventListener('click', volverASeleccion);
+document.getElementById('btn-volver').addEventListener('click', function () {
+    if (!modalSalir.estaAbierto()) {
+        modalSalir.mostrar();
+    }
+});
+
+// Callbacks del modal de salir
+modalSalir.onConfirmar(function () {
+    volverASeleccion();
+});
 
 // Callback del modal de derrota: limpiar habitación y volver a selección
 modalDerrota.onAceptar(function () {
@@ -285,6 +296,10 @@ document.addEventListener('keydown', function (e) {
     // Si algún modal está abierto, delegar al componente
     if (modalDerrota.estaAbierto()) {
         modalDerrota.manejarTecla(e);
+        return;
+    }
+    if (modalSalir.estaAbierto()) {
+        modalSalir.manejarTecla(e);
         return;
     }
     if (modal.estaAbierto()) {
@@ -301,7 +316,7 @@ document.addEventListener('keydown', function (e) {
     }
 
     if (e.key === 'Escape' && estado.estadoActual === ESTADOS.PASILLO) {
-        volverASeleccion();
+        modalSalir.mostrar();
         return;
     }
 
