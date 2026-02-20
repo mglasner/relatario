@@ -5116,12 +5116,12 @@ body:has(.libro-modal:not(.oculto)) .dpad-contenedor {
     }
 
     /* Fondo plano del personaje solo cuando hay uno activo (no en Bienvenida ni habitaciones) */
-    :not(.libro-en-inicio):not(.libro-en-extra) > .libro-pagina-der {
+    :not(.libro-en-inicio, .libro-en-extra) > .libro-pagina-der {
         background: none;
         background-color: inherit;
     }
 
-    :not(.libro-en-inicio):not(.libro-en-extra) > .libro-pagina-der::before {
+    :not(.libro-en-inicio, .libro-en-extra) > .libro-pagina-der::before {
         display: none;
     }
 
