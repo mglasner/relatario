@@ -43,6 +43,11 @@
     --radio-boton: 8px;
 }
 
+html {
+    overflow: hidden;
+    overscroll-behavior: none;
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -4188,6 +4193,15 @@ body:has(.libro-modal:not(.oculto)) .dpad-contenedor {
     list-style: none;
 }
 
+/* Tabs de sección e indicador de scroll (ocultos en desktop) */
+.libro-indice-secciones {
+    display: none;
+}
+
+.libro-scroll-hint {
+    display: none;
+}
+
 /* --- Página de bienvenida del Heroario --- */
 .libro-intro {
     text-align: center;
@@ -4886,10 +4900,115 @@ body:has(.libro-modal:not(.oculto)) .dpad-contenedor {
         display: none;
     }
 
+    /* Section tabs visibles en mobile */
+    .libro-indice-secciones {
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 6px 0 4px;
+    }
+
+    .libro-seccion-tab {
+        background: rgb(255 215 0 / 8%);
+        border: 1px solid rgb(255 215 0 / 15%);
+        border-radius: 14px;
+        color: rgb(180 165 140 / 60%);
+        font-family: var(--font-display);
+        font-size: 0.6rem;
+        padding: 4px 10px;
+        cursor: pointer;
+        transition:
+            color 0.2s,
+            border-color 0.2s,
+            background 0.2s;
+        letter-spacing: 0.03em;
+    }
+
+    .libro-seccion-tab-activo {
+        background: rgb(255 215 0 / 12%);
+        border-color: var(--v-color, var(--color-dorado));
+        color: var(--v-color, var(--color-dorado));
+    }
+
+    .libro-pagina-izq {
+        overflow: hidden;
+    }
+
+    /* Wrapper del índice con hints de scroll */
+    .libro-indice-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .libro-scroll-hint {
+        display: block;
+        flex-shrink: 0;
+        color: var(--v-color, var(--color-dorado));
+        font-size: 0.85rem;
+        line-height: 1;
+        padding: 4px 0;
+        border-bottom: 2px solid transparent;
+        pointer-events: none;
+        opacity: 0.6;
+        text-shadow: 0 0 8px rgb(255 215 0 / 30%);
+        animation: libro-hint-pulso 2s ease-in-out infinite;
+        transition: opacity 0.3s;
+    }
+
+    .libro-scroll-hint-izq {
+        animation-name: libro-hint-pulso-izq;
+    }
+
+    .libro-scroll-hint-der {
+        animation-name: libro-hint-pulso-der;
+    }
+
+    .libro-scroll-hint-oculto {
+        animation: none;
+        opacity: 0;
+    }
+
+    @keyframes libro-hint-pulso-izq {
+        0%,
+        100% {
+            opacity: 0.4;
+            transform: translateX(0);
+        }
+
+        50% {
+            opacity: 0.8;
+            transform: translateX(-2px);
+        }
+    }
+
+    @keyframes libro-hint-pulso-der {
+        0%,
+        100% {
+            opacity: 0.4;
+            transform: translateX(0);
+        }
+
+        50% {
+            opacity: 0.8;
+            transform: translateX(2px);
+        }
+    }
+
+    /* Índice: scroll horizontal de una línea */
     .libro-indice {
-        flex-flow: row wrap;
-        gap: 4px;
+        flex-flow: row nowrap;
+        gap: 6px;
         margin: 4px 0;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        min-width: 0;
+    }
+
+    .libro-indice::-webkit-scrollbar {
+        display: none;
     }
 
     .libro-indice-item {
@@ -4898,6 +5017,8 @@ body:has(.libro-modal:not(.oculto)) .dpad-contenedor {
         text-align: center;
         border-left: none;
         border-bottom: 2px solid transparent;
+        white-space: nowrap;
+        flex-shrink: 0;
     }
 
     .libro-indice-activo {
@@ -4905,14 +5026,9 @@ body:has(.libro-modal:not(.oculto)) .dpad-contenedor {
         border-bottom-color: var(--v-color, var(--color-accent));
     }
 
-    .libro-indice-sep {
-        width: 1px;
-        height: auto;
-        margin: 2px 4px;
-        background: linear-gradient(180deg, transparent, rgb(255 215 0 / 25%), transparent);
-    }
-
-    .libro-indice-sep::after {
+    /* Ocultar separadores y labels de sección (reemplazados por section tabs) */
+    .libro-indice-sep,
+    .libro-indice-seccion {
         display: none;
     }
 
@@ -5123,6 +5239,11 @@ body:has(.libro-modal:not(.oculto)) .dpad-contenedor {
     .libro-indice-item {
         padding: 3px 5px;
         font-size: 0.6rem;
+    }
+
+    .libro-seccion-tab {
+        font-size: 0.55rem;
+        padding: 3px 8px;
     }
 }
 

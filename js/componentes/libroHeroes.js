@@ -264,6 +264,7 @@ export function crearLibroHeroes(contenedor) {
         tituloEntidades: 'Héroes',
         paginaInicio: {
             textoIndice: '\u2726 Bienvenida',
+            textoSeccion: 'Bienvenida',
             generarContenido: generarIntro,
         },
         pieContenido: function (paginaDer, obtenerNombreActual) {

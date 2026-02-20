@@ -229,6 +229,12 @@ export function crearLibroVillanos(contenedor) {
         crearSeparador: necesitaSeparador,
         titulo: 'Villanario',
         subtitulo: 'La enciclopedia de villanos',
+        gruposEntidades: ORDEN_TIER.map(function (tier) {
+            return { id: tier, texto: TIERS[tier].emoji + ' ' + TIERS[tier].label };
+        }),
+        getGrupoEntidad: function (nombre, datos) {
+            return datos.tier || 'esbirro';
+        },
     });
     cuerpo.appendChild(libro);
     overlay.appendChild(cuerpo);

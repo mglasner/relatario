@@ -21,7 +21,7 @@ export function crearCabecera(nombre, datos, claseAvatar) {
 }
 
 // Construye un libro completo (índice + detalle + navegación)
-// opciones: { entidades, generarDetalle, claseRaiz, ordenar, crearItemIndice, crearSeparador, titulo, subtitulo, pieContenido, paginaInicio }
+// opciones: { entidades, generarDetalle, claseRaiz, ordenar, crearItemIndice, crearSeparador, titulo, subtitulo, pieContenido, paginaInicio, gruposEntidades, getGrupoEntidad }
 export function crearLibro(opciones) {
     const entidades = opciones.entidades;
     const generarDetalle = opciones.generarDetalle;
@@ -48,6 +48,8 @@ export function crearLibro(opciones) {
     const paginasExtras = opciones.paginasExtras || [];
     const tituloExtras = opciones.tituloExtras || '';
     const tituloEntidades = opciones.tituloEntidades || '';
+    const gruposEntidades = opciones.gruposEntidades || null;
+    const getGrupoEntidad = opciones.getGrupoEntidad || null;
 
     const nombres = ordenar(Object.keys(entidades));
     // Offset: intro (si existe) + páginas extras
@@ -93,9 +95,7 @@ export function crearLibro(opciones) {
     const claseInicial = getClasePorIndice(0);
     const libro = crearElemento(
         'div',
-        claseRaiz +
-            (claseInicial ? ' ' + claseInicial : '') +
-            clasePagina(0)
+        claseRaiz + (claseInicial ? ' ' + claseInicial : '') + clasePagina(0)
     );
 
     // --- Página izquierda: índice ---
@@ -110,12 +110,50 @@ export function crearLibro(opciones) {
 
     paginaIzq.appendChild(crearElemento('div', 'libro-ornamento'));
 
+    // --- Section tabs (navegación en dos niveles para mobile) ---
+    const secciones = [];
+    if (paginaInicio) {
+        secciones.push({ id: 'inicio', texto: paginaInicio.textoSeccion || '\u2726' });
+    }
+    if (paginasExtras.length) {
+        secciones.push({ id: 'extras', texto: tituloExtras || 'Extras' });
+    }
+    if (gruposEntidades && gruposEntidades.length) {
+        gruposEntidades.forEach(function (g) {
+            secciones.push({ id: 'grupo-' + g.id, texto: g.texto });
+        });
+    } else if (nombres.length) {
+        secciones.push({ id: 'entidades', texto: tituloEntidades || 'Personajes' });
+    }
+
+    let seccionActiva = secciones.length > 0 ? secciones[0].id : null;
+    let divSecciones = null;
+
+    if (secciones.length >= 2) {
+        divSecciones = crearElemento('div', 'libro-indice-secciones');
+        secciones.forEach(function (sec, i) {
+            const tab = crearElemento(
+                'button',
+                'libro-seccion-tab' + (i === 0 ? ' libro-seccion-tab-activo' : ''),
+                sec.texto
+            );
+            tab.type = 'button';
+            tab.dataset.seccion = sec.id;
+            tab.addEventListener('click', function () {
+                filtrarSeccion(sec.id);
+            });
+            divSecciones.appendChild(tab);
+        });
+        paginaIzq.appendChild(divSecciones);
+    }
+
     const listaIndice = crearElemento('ul', 'libro-indice');
 
     // Item de página de inicio (si existe)
     if (paginaInicio) {
         const itemInicio = crearElemento('li', 'libro-indice-item libro-indice-inicio');
         itemInicio.dataset.indice = '0';
+        itemInicio.dataset.seccion = 'inicio';
         itemInicio.tabIndex = 0;
         itemInicio.textContent = paginaInicio.textoIndice;
         itemInicio.classList.add('libro-indice-activo');
@@ -151,6 +189,7 @@ export function crearLibro(opciones) {
             const indiceGlobal = extraInicio + j;
             const item = crearElemento('li', 'libro-indice-item libro-indice-extra');
             item.dataset.indice = String(indiceGlobal);
+            item.dataset.seccion = 'extras';
             item.tabIndex = 0;
             item.textContent = extra.textoIndice;
 
@@ -195,6 +234,11 @@ export function crearLibro(opciones) {
         const item = crearElemento('li', 'libro-indice-item');
         item.dataset.nombre = nombre;
         item.dataset.indice = indiceGlobal;
+        if (gruposEntidades && getGrupoEntidad) {
+            item.dataset.seccion = 'grupo-' + getGrupoEntidad(nombre, datos);
+        } else {
+            item.dataset.seccion = 'entidades';
+        }
         item.tabIndex = 0;
         item.textContent = crearItemIndice(nombre, datos);
 
@@ -213,7 +257,21 @@ export function crearLibro(opciones) {
 
         listaIndice.appendChild(item);
     });
-    paginaIzq.appendChild(listaIndice);
+    // Wrapper para el índice + indicadores de scroll horizontal
+    const indiceWrap = crearElemento('div', 'libro-indice-wrap');
+    const hintIzq = crearElemento('span', 'libro-scroll-hint libro-scroll-hint-izq', '\u2039');
+    const hintDer = crearElemento('span', 'libro-scroll-hint libro-scroll-hint-der', '\u203A');
+    hintIzq.setAttribute('aria-hidden', 'true');
+    hintDer.setAttribute('aria-hidden', 'true');
+    indiceWrap.appendChild(hintIzq);
+    indiceWrap.appendChild(listaIndice);
+    indiceWrap.appendChild(hintDer);
+    paginaIzq.appendChild(indiceWrap);
+
+    // Actualizar hints según posición de scroll
+    listaIndice.addEventListener('scroll', function () {
+        actualizarScrollHints();
+    });
 
     // Pie de contenido opcional (ej: botón Empezar del Heroario)
     if (pieContenido) {
@@ -275,6 +333,93 @@ export function crearLibro(opciones) {
     libro.appendChild(lomo);
     libro.appendChild(paginaDer);
 
+    // --- Filtrado de secciones (mobile) ---
+    const mqMobile = window.matchMedia('(max-width: 480px)');
+
+    // Mostrar/ocultar hints de scroll según posición
+    let hintsActivos = false;
+
+    function actualizarScrollHints() {
+        if (!hintsActivos || !mqMobile.matches) {
+            hintIzq.classList.add('libro-scroll-hint-oculto');
+            hintDer.classList.add('libro-scroll-hint-oculto');
+            return;
+        }
+        const sl = listaIndice.scrollLeft;
+        const maxScroll = listaIndice.scrollWidth - listaIndice.clientWidth;
+        hintIzq.classList.toggle('libro-scroll-hint-oculto', sl < 4);
+        hintDer.classList.toggle('libro-scroll-hint-oculto', maxScroll - sl < 4);
+    }
+
+    function filtrarSeccion(seccionId) {
+        if (!divSecciones) return;
+        seccionActiva = seccionId;
+
+        // Actualizar tab activo
+        divSecciones.querySelectorAll('.libro-seccion-tab').forEach(function (tab) {
+            tab.classList.toggle('libro-seccion-tab-activo', tab.dataset.seccion === seccionId);
+        });
+
+        // En mobile: ocultar items que no coinciden
+        if (mqMobile.matches) {
+            const itemsVisibles = [];
+            listaIndice.querySelectorAll('.libro-indice-item').forEach(function (item) {
+                const visible = item.dataset.seccion === seccionId;
+                item.style.display = visible ? '' : 'none';
+                if (visible) itemsVisibles.push(item);
+            });
+            listaIndice
+                .querySelectorAll('.libro-indice-sep, .libro-indice-seccion')
+                .forEach(function (el) {
+                    el.style.display = 'none';
+                });
+
+            // Si la sección tiene un solo item, ocultar visualmente (conservar espacio)
+            if (itemsVisibles.length <= 1) {
+                listaIndice.style.visibility = 'hidden';
+                hintsActivos = false;
+                actualizarScrollHints();
+                if (itemsVisibles.length === 1) {
+                    const idx = parseInt(itemsVisibles[0].dataset.indice, 10);
+                    if (idx !== indiceActual) navegarA(idx);
+                }
+            } else {
+                listaIndice.style.visibility = '';
+                listaIndice.scrollLeft = 0;
+                hintsActivos = true;
+                actualizarScrollHints();
+            }
+        }
+    }
+
+    function mostrarTodos() {
+        listaIndice.style.visibility = '';
+        listaIndice.querySelectorAll('.libro-indice-item').forEach(function (item) {
+            item.style.display = '';
+        });
+        listaIndice
+            .querySelectorAll('.libro-indice-sep, .libro-indice-seccion')
+            .forEach(function (el) {
+                el.style.display = '';
+            });
+        hintsActivos = false;
+        actualizarScrollHints();
+    }
+
+    // Listener para cambio responsive
+    mqMobile.addEventListener('change', function (e) {
+        if (e.matches) {
+            filtrarSeccion(seccionActiva);
+        } else {
+            mostrarTodos();
+        }
+    });
+
+    // Aplicar filtro inicial si ya estamos en mobile
+    if (mqMobile.matches && divSecciones) {
+        filtrarSeccion(seccionActiva);
+    }
+
     // --- Navegación con crossfade ---
     function navegarA(nuevoIndice) {
         if (transicionEnCurso) return;
@@ -298,7 +443,8 @@ export function crearLibro(opciones) {
 
             // Propagar clase de la entidad al libro
             const claseEntidad = getClasePorIndice(nuevoIndice);
-            libro.className = claseRaiz + (claseEntidad ? ' ' + claseEntidad : '') + clasePagina(nuevoIndice);
+            libro.className =
+                claseRaiz + (claseEntidad ? ' ' + claseEntidad : '') + clasePagina(nuevoIndice);
 
             indiceActual = nuevoIndice;
             actualizarIndice();
@@ -311,11 +457,27 @@ export function crearLibro(opciones) {
     }
 
     function actualizarIndice() {
+        let itemActivo = null;
         const items = listaIndice.querySelectorAll('.libro-indice-item');
         items.forEach(function (item) {
             const idx = parseInt(item.dataset.indice, 10);
-            item.classList.toggle('libro-indice-activo', idx === indiceActual);
+            const activo = idx === indiceActual;
+            item.classList.toggle('libro-indice-activo', activo);
+            if (activo) itemActivo = item;
         });
+
+        // Auto-cambiar sección si el item activo pertenece a otra
+        if (itemActivo && divSecciones) {
+            const seccionItem = itemActivo.dataset.seccion;
+            if (seccionItem && seccionItem !== seccionActiva) {
+                filtrarSeccion(seccionItem);
+            }
+        }
+
+        // Auto-scroll al item activo en mobile
+        if (itemActivo && mqMobile.matches) {
+            itemActivo.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }
 
         btnAnterior.disabled = indiceActual === 0;
         btnSiguiente.disabled = indiceActual === totalPaginas - 1;
