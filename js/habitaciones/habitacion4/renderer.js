@@ -139,7 +139,7 @@ export function renderizarFlash(ctx, anchoCanvas, altoCanvas, flashAlpha) {
 }
 
 // Indicador de direccion del boss fuera de pantalla
-export function renderizarIndicadorBoss(ctx, bossX, camaraX, anchoCanvas, tiempo) {
+export function renderizarIndicadorBoss(ctx, bossX, bossAncho, camaraX, anchoCanvas, tiempo) {
     const screenX = bossX - camaraX;
 
     if (screenX > anchoCanvas) {
@@ -153,7 +153,7 @@ export function renderizarIndicadorBoss(ctx, bossX, camaraX, anchoCanvas, tiempo
         ctx.lineTo(anchoCanvas - 8, 145);
         ctx.closePath();
         ctx.fill();
-    } else if (screenX + 18 < 0) {
+    } else if (screenX + bossAncho < 0) {
         // Boss a la izquierda
         const pulso = 0.6 + Math.sin(tiempo * 0.008) * 0.3;
         ctx.fillStyle = 'rgba(187,134,252,' + pulso.toFixed(2) + ')';

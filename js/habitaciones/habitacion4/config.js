@@ -29,12 +29,10 @@ export const CFG = {
         knockbackY: -4,
     },
     enemigos: {
-        velocidadPatrulla: 1,
         stompMargen: 4,
         cooldownAtaque: 60,
     },
     boss: {
-        velocidadBase: 0.8,
         fasesCambio: [0.66, 0.33],
         velocidadFases: [1.0, 1.4],
     },
@@ -46,6 +44,23 @@ export const CFG = {
         colorEnemigo: '#e94560',
         colorBoss: '#bb86fc',
         colorMeta: '#6bfc86',
+    },
+    escalado: {
+        estaturaRef: 1.55, // Lina = escala 1.0
+        escalaMin: 0.55,
+        escalaMax: 1.35,
+        hitboxBaseW: 12,
+        hitboxBaseH: 14,
+        spriteBaseW: 48,
+        spriteBaseH: 60,
+        velAttrMin: 3, // atributo velocidad minimo
+        velAttrMax: 9, // atributo velocidad maximo
+        velPlatMin: 1.5, // px/frame para vel=3
+        velPlatMax: 3.5, // px/frame para vel=9
+        fuerzaSaltoBase: -7.5,
+        fuerzaSaltoFactor: 0.3, // cuanto se ajusta por escala
+        velPatrullaFactor: 0.4, // esbirros: velPlat * este factor
+        velBossFactor: 0.5, // boss: velPlat * este factor
     },
     camara: {
         shakeDecay: 0.9,

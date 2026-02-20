@@ -362,7 +362,7 @@ function renderFrame() {
     const bossInfo = obtenerInfoBoss();
     if (esBossVivo() && bossInfo) {
         actualizarHUDBoss(bossInfo.nombre, bossInfo.vidaActual / bossInfo.vidaMax);
-        renderizarIndicadorBoss(ctx, bossInfo.x, camX, anchoCanvas, tiempo);
+        renderizarIndicadorBoss(ctx, bossInfo.x, bossInfo.ancho, camX, anchoCanvas, tiempo);
     } else {
         ocultarHUDBoss();
     }

@@ -4,7 +4,14 @@
 import { CFG } from './config.js';
 import { resolverColisionX, resolverColisionY, esAbismo, esMeta } from './fisicas.js';
 import { obtenerSpawnJugador } from './nivel.js';
-import { obtenerSpriteJugador, obtenerDimensionesSprite } from './spritesPlat.js';
+import { obtenerSpriteJugador } from './spritesPlat.js';
+import {
+    calcularEscala,
+    calcularHitbox,
+    calcularSpriteDrawSize,
+    calcularVelocidadPlat,
+    calcularFuerzaSalto,
+} from './escaladoPlat.js';
 
 const FIS = CFG.fisicas;
 const TAM = CFG.tiles.tamano;
@@ -13,8 +20,12 @@ const SPR = CFG.sprites;
 // Estado del jugador platformer
 let x = 0;
 let y = 0;
-const ANCHO = 12;
-const ALTO = 14;
+let ancho = 12;
+let alto = 14;
+let spriteDrawW = 48;
+let spriteDrawH = 60;
+let velocidadMov = FIS.velocidadJugador;
+let fuerzaSaltoActual = FIS.fuerzaSalto;
 let vx = 0;
 let vy = 0;
 let direccion = 1; // 1=derecha, -1=izquierda
@@ -40,9 +51,20 @@ export function iniciarJugador(jugador, teclas) {
     teclasRef = teclas;
     colorJugador = jugador.colorHud || '#bb86fc';
 
+    // Calcular dimensiones y velocidad proporcionales
+    const esc = calcularEscala(jugador.estatura);
+    const hb = calcularHitbox(esc);
+    ancho = hb.ancho;
+    alto = hb.alto;
+    const sd = calcularSpriteDrawSize(esc);
+    spriteDrawW = sd.ancho;
+    spriteDrawH = sd.alto;
+    velocidadMov = calcularVelocidadPlat(jugador.velocidad);
+    fuerzaSaltoActual = calcularFuerzaSalto(esc);
+
     const spawn = obtenerSpawnJugador();
-    x = spawn.col * TAM + (TAM - ANCHO) / 2;
-    y = spawn.fila * TAM + (TAM - ALTO);
+    x = spawn.col * TAM + (TAM - ancho) / 2;
+    y = spawn.fila * TAM + (TAM - alto);
     vx = 0;
     vy = 0;
     direccion = 1;
@@ -75,14 +97,14 @@ export function actualizarJugador() {
         knockbackVx *= 0.85;
         if (Math.abs(knockbackVx) < 0.3) knockbackVx = 0;
     } else {
-        vx = inputX * FIS.velocidadJugador;
+        vx = inputX * velocidadMov;
     }
 
     // Direccion visual
     if (inputX !== 0) direccion = inputX;
 
     // Resolver colision X
-    x = resolverColisionX(x, y, ANCHO, ALTO, vx);
+    x = resolverColisionX(x, y, ancho, alto, vx);
 
     // Jump buffer: recordar intencion de saltar
     if (teclasRef['ArrowUp']) {
@@ -100,7 +122,7 @@ export function actualizarJugador() {
 
     // Saltar
     if (jumpBufferFrames > 0 && coyoteFrames > 0) {
-        vy = FIS.fuerzaSalto;
+        vy = fuerzaSaltoActual;
         jumpBufferFrames = 0;
         coyoteFrames = 0;
     }
@@ -110,7 +132,7 @@ export function actualizarJugador() {
     if (vy > FIS.velocidadMaxCaida) vy = FIS.velocidadMaxCaida;
 
     // Resolver colision Y
-    const resY = resolverColisionY(x, y, ANCHO, ALTO, vy);
+    const resY = resolverColisionY(x, y, ancho, alto, vy);
     y = resY.y;
     vy = resY.vy;
     estaEnSuelo = resY.enSuelo;
@@ -160,15 +182,15 @@ function actualizarEstado(inputX) {
 
 export function detectarAbismo() {
     // Verificar si el centro inferior del jugador esta en abismo
-    const centroX = x + ANCHO / 2;
-    const pieY = y + ALTO + 2;
+    const centroX = x + ancho / 2;
+    const pieY = y + alto + 2;
     return esAbismo(centroX, pieY);
 }
 
 export function detectarMetaTile() {
     // Verificar si el jugador toca un tile META
-    const centroX = x + ANCHO / 2;
-    const centroY = y + ALTO / 2;
+    const centroX = x + ancho / 2;
+    const centroY = y + alto / 2;
     return esMeta(centroX, centroY);
 }
 
@@ -229,17 +251,16 @@ export function renderizarJugador(ctx, camaraX) {
     // Intentar usar sprite
     const sprite = obtenerSpriteJugador(estado, frameAnim);
     if (sprite) {
-        const dim = obtenerDimensionesSprite();
-        // Centrar sprite visualmente sobre el hitbox (pies alineados, centrado horizontal)
-        const offX = drawX - (dim.ancho - ANCHO) / 2;
-        const offY = drawY - (dim.alto - ALTO);
+        // Centrar sprite escalado sobre el hitbox (pies alineados, centrado horizontal)
+        const offX = drawX - (spriteDrawW - ancho) / 2;
+        const offY = drawY - (spriteDrawH - alto);
         ctx.save();
         if (direccion < 0) {
-            ctx.translate(offX + dim.ancho, offY);
+            ctx.translate(offX + spriteDrawW, offY);
             ctx.scale(-1, 1);
-            ctx.drawImage(sprite, 0, 0);
+            ctx.drawImage(sprite, 0, 0, spriteDrawW, spriteDrawH);
         } else {
-            ctx.drawImage(sprite, offX, offY);
+            ctx.drawImage(sprite, offX, offY, spriteDrawW, spriteDrawH);
         }
         ctx.restore();
         return;
@@ -247,33 +268,33 @@ export function renderizarJugador(ctx, camaraX) {
 
     // Fallback: renderizado basico
     ctx.fillStyle = colorJugador;
-    ctx.fillRect(drawX, drawY, ANCHO, ALTO);
+    ctx.fillRect(drawX, drawY, ancho, alto);
 
     ctx.fillStyle = 'rgba(255,255,255,0.2)';
-    ctx.fillRect(drawX, drawY, ANCHO, 2);
+    ctx.fillRect(drawX, drawY, ancho, 2);
 
-    const ojoY = drawY + 4;
+    const ojoY = drawY + Math.round(alto * 0.29);
     ctx.fillStyle = '#fff';
     if (direccion > 0) {
-        ctx.fillRect(drawX + 6, ojoY, 3, 3);
-        ctx.fillRect(drawX + 10, ojoY, 2, 2);
+        ctx.fillRect(drawX + Math.round(ancho * 0.5), ojoY, 3, 3);
+        ctx.fillRect(drawX + Math.round(ancho * 0.83), ojoY, 2, 2);
     } else {
-        ctx.fillRect(drawX + 3, ojoY, 3, 3);
+        ctx.fillRect(drawX + Math.round(ancho * 0.25), ojoY, 3, 3);
         ctx.fillRect(drawX, ojoY, 2, 2);
     }
 
     ctx.fillStyle = '#111';
     if (direccion > 0) {
-        ctx.fillRect(drawX + 8, ojoY + 1, 1, 1);
-        ctx.fillRect(drawX + 11, ojoY + 1, 1, 1);
+        ctx.fillRect(drawX + Math.round(ancho * 0.67), ojoY + 1, 1, 1);
+        ctx.fillRect(drawX + Math.round(ancho * 0.92), ojoY + 1, 1, 1);
     } else {
-        ctx.fillRect(drawX + 4, ojoY + 1, 1, 1);
-        ctx.fillRect(drawX + 1, ojoY + 1, 1, 1);
+        ctx.fillRect(drawX + Math.round(ancho * 0.33), ojoY + 1, 1, 1);
+        ctx.fillRect(drawX + Math.round(ancho * 0.08), ojoY + 1, 1, 1);
     }
 }
 
 export function obtenerPosicion() {
-    return { x, y, ancho: ANCHO, alto: ALTO, vy, vx, estaEnSuelo, direccion };
+    return { x, y, ancho, alto, vy, vx, estaEnSuelo, direccion };
 }
 
 export function esInvulnerable() {

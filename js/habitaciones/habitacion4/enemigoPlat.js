@@ -11,11 +11,17 @@ import {
     obtenerColorBossFase,
     iniciarSpritesEnemigo,
 } from './spritesPlat.js';
+import {
+    calcularEscala,
+    calcularHitbox,
+    calcularSpriteDrawSize,
+    calcularVelocidadPlat,
+} from './escaladoPlat.js';
 
 const TAM = CFG.tiles.tamano;
-const ENE = CFG.enemigos;
 const BOSS = CFG.boss;
 const COL = CFG.render;
+const ESC = CFG.escalado;
 
 // --- Pool de esbirros disponibles ---
 
@@ -25,15 +31,12 @@ const ESBIRROS = Object.values(ENEMIGOS).filter(function (e) {
 
 // --- Clase Enemigo Platformer ---
 
-function crearEnemigo(col, fila, esBoss) {
-    const ancho = esBoss ? 18 : 12;
-    const alto = esBoss ? 18 : 12;
-
+function crearEnemigo(col, fila, esBossFlag) {
     // Seleccionar un esbirro aleatorio o el boss
     let datos;
     let vidaMax;
 
-    if (esBoss) {
+    if (esBossFlag) {
         // Buscar un elite para el boss
         const elites = Object.values(ENEMIGOS).filter(function (e) {
             return e.tier === 'elite';
@@ -49,23 +52,36 @@ function crearEnemigo(col, fila, esBoss) {
     let nombre = 'Esbirro';
     if (datos) {
         nombre = datos.nombre;
-    } else if (esBoss) {
+    } else if (esBossFlag) {
         nombre = 'Boss';
     }
+
+    // Calcular escala y dimensiones desde estatura del enemigo
+    const estatura = datos ? datos.estatura : esBossFlag ? 1.8 : 1.0;
+    const escalaEne = calcularEscala(estatura);
+    const hb = calcularHitbox(escalaEne);
+    const sd = calcularSpriteDrawSize(escalaEne);
+
+    // Calcular velocidad desde atributo velocidad del enemigo
+    const velAttr = datos ? datos.velocidad : 5;
+    const velPlat = calcularVelocidadPlat(velAttr);
+    const velFinal = esBossFlag ? velPlat * ESC.velBossFactor : velPlat * ESC.velPatrullaFactor;
 
     // Cargar sprite sheet del enemigo (si existe)
     iniciarSpritesEnemigo(nombre);
 
     return {
-        x: col * TAM + (TAM - ancho) / 2,
-        y: fila * TAM + (TAM - alto),
-        ancho,
-        alto,
+        x: col * TAM + (TAM - hb.ancho) / 2,
+        y: fila * TAM + (TAM - hb.alto),
+        ancho: hb.ancho,
+        alto: hb.alto,
+        spriteDrawW: sd.ancho,
+        spriteDrawH: sd.alto,
         vx: 0,
         vy: 0,
         direccion: 1,
-        velocidad: esBoss ? BOSS.velocidadBase : ENE.velocidadPatrulla,
-        esBoss,
+        velocidad: velFinal,
+        esBoss: esBossFlag,
         vivo: true,
         vidaActual: vidaMax,
         vidaMax,
@@ -159,35 +175,33 @@ export function actualizarEnemigos() {
     }
 }
 
-// Constantes de sprite sheet para centrado (48×60 sobre hitbox)
-const SPRITE_W = 48;
-const SPRITE_H = 60;
-
 export function renderizarEnemigos(ctx, camaraX) {
     for (let i = 0; i < enemigos.length; i++) {
         const e = enemigos[i];
+        const sdw = e.spriteDrawW;
+        const sdh = e.spriteDrawH;
 
         // Animacion de muerte: encogimiento
         if (!e.vivo) {
             if (e.framesMuerte > 0) {
-                const escala = e.framesMuerte / 20;
-                ctx.globalAlpha = escala;
+                const escalaMuerte = e.framesMuerte / 20;
+                ctx.globalAlpha = escalaMuerte;
 
                 // Si tiene sprite sheet, encoger el sprite completo
                 const sheetSprite = obtenerSpriteEnemigoSheet(e.nombre, 'golpeado', 0);
                 if (sheetSprite) {
-                    const sw = Math.round(SPRITE_W * escala);
-                    const sh = Math.round(SPRITE_H * escala);
+                    const sw = Math.round(sdw * escalaMuerte);
+                    const sh = Math.round(sdh * escalaMuerte);
                     const sx = Math.round(
-                        e.x - camaraX - (SPRITE_W - e.ancho) / 2 + (SPRITE_W * (1 - escala)) / 2
+                        e.x - camaraX - (sdw - e.ancho) / 2 + (sdw * (1 - escalaMuerte)) / 2
                     );
-                    const sy = Math.round(e.y - (SPRITE_H - e.alto) + SPRITE_H * (1 - escala));
+                    const sy = Math.round(e.y - (sdh - e.alto) + sdh * (1 - escalaMuerte));
                     ctx.drawImage(sheetSprite, sx, sy, sw, sh);
                 } else {
-                    const drawX = Math.round(e.x - camaraX + (e.ancho * (1 - escala)) / 2);
-                    const drawY = Math.round(e.y + e.alto * (1 - escala));
-                    const w = Math.round(e.ancho * escala);
-                    const h = Math.round(e.alto * escala);
+                    const drawX = Math.round(e.x - camaraX + (e.ancho * (1 - escalaMuerte)) / 2);
+                    const drawY = Math.round(e.y + e.alto * (1 - escalaMuerte));
+                    const w = Math.round(e.ancho * escalaMuerte);
+                    const h = Math.round(e.alto * escalaMuerte);
                     ctx.fillStyle = e.esBoss ? COL.colorBoss : COL.colorEnemigo;
                     ctx.fillRect(drawX, drawY, w, h);
                 }
@@ -205,16 +219,16 @@ export function renderizarEnemigos(ctx, camaraX) {
         // Intentar sprite sheet primero
         const spriteSheet = obtenerSpriteEnemigoSheet(e.nombre, estadoAnim, e.frameAnim);
         if (spriteSheet) {
-            // Centrar sprite 48×60 sobre hitbox (pies alineados, centrado horizontal)
-            const offX = hitboxX - (SPRITE_W - e.ancho) / 2;
-            const offY = hitboxY - (SPRITE_H - e.alto);
+            // Centrar sprite escalado sobre hitbox (pies alineados, centrado horizontal)
+            const offX = hitboxX - (sdw - e.ancho) / 2;
+            const offY = hitboxY - (sdh - e.alto);
             ctx.save();
             if (e.direccion < 0) {
-                ctx.translate(offX + SPRITE_W, offY);
+                ctx.translate(offX + sdw, offY);
                 ctx.scale(-1, 1);
-                ctx.drawImage(spriteSheet, 0, 0);
+                ctx.drawImage(spriteSheet, 0, 0, sdw, sdh);
             } else {
-                ctx.drawImage(spriteSheet, offX, offY);
+                ctx.drawImage(spriteSheet, offX, offY, sdw, sdh);
             }
             ctx.restore();
             continue;
@@ -253,7 +267,7 @@ export function renderizarEnemigos(ctx, camaraX) {
             ctx.fillStyle = 'rgba(255,255,255,0.15)';
             ctx.fillRect(hitboxX, hitboxY, e.ancho, 2);
 
-            const ojoY = hitboxY + (e.esBoss ? 5 : 3);
+            const ojoY = hitboxY + Math.round(e.alto * 0.3);
             ctx.fillStyle = '#fff';
             if (e.direccion > 0) {
                 ctx.fillRect(hitboxX + e.ancho - 5, ojoY, 2, 2);
