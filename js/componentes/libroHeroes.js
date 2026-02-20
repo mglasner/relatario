@@ -84,7 +84,7 @@ export function generarDetalleHeroe(nombre, tabInicial) {
 }
 
 // Genera la página de bienvenida del Heroario
-function generarIntro() {
+export function generarIntro() {
     const contenido = crearElemento('div', 'libro-detalle-contenido libro-intro');
 
     contenido.appendChild(

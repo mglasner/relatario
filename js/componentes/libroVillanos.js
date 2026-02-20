@@ -6,7 +6,7 @@ import { ENEMIGOS } from '../enemigos.js';
 import { crearLibro, crearCabecera } from './libro.js';
 
 // Orden fijo por tier (esbirro → élite → pesadilla → leyenda)
-const ORDEN_TIER = ['esbirro', 'elite', 'pesadilla', 'leyenda'];
+export const ORDEN_TIER = ['esbirro', 'elite', 'pesadilla', 'leyenda'];
 
 export function ordenarPorTier(nombres) {
     return nombres.slice().sort(function (a, b) {

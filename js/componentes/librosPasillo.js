@@ -3,13 +3,20 @@
 import { crearElemento } from '../utils.js';
 import { ENEMIGOS } from '../enemigos.js';
 import { crearLibro } from './libro.js';
-import { generarDetalleHeroe, adaptarEntidades, HABITACIONES_HEROARIO } from './libroHeroes.js';
+import {
+    generarDetalleHeroe,
+    generarIntro,
+    adaptarEntidades,
+    HABITACIONES_HEROARIO,
+} from './libroHeroes.js';
 import {
     generarDetalleVillano,
     ordenarPorTier,
     textoItemIndice,
     necesitaSeparador,
+    ORDEN_TIER,
 } from './libroVillanos.js';
+import { TIERS } from './stats.js';
 
 // Crea un botón flotante de libro con imagen, texto y chispas
 function crearBotonLibro(imgSrc, texto) {
@@ -106,6 +113,11 @@ export function crearLibrosPasillo(contenedor) {
         paginasExtras: HABITACIONES_HEROARIO,
         tituloExtras: 'Habitaciones',
         tituloEntidades: 'Héroes',
+        paginaInicio: {
+            textoIndice: '\u2726 Bienvenida',
+            textoSeccion: 'Bienvenida',
+            generarContenido: generarIntro,
+        },
     });
     const modalHeroes = crearModalLibro(heroario.libro, heroario.manejarTecladoLibro);
     contenedor.appendChild(modalHeroes.overlay);
@@ -125,6 +137,12 @@ export function crearLibrosPasillo(contenedor) {
         crearSeparador: necesitaSeparador,
         titulo: 'Villanario',
         subtitulo: 'La enciclopedia de villanos',
+        gruposEntidades: ORDEN_TIER.map(function (tier) {
+            return { id: tier, texto: TIERS[tier].emoji + ' ' + TIERS[tier].label };
+        }),
+        getGrupoEntidad: function (nombre, datos) {
+            return datos.tier || 'esbirro';
+        },
     });
     const modalVillanos = crearModalLibro(villanario.libro, villanario.manejarTecladoLibro);
     contenedor.appendChild(modalVillanos.overlay);

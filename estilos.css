@@ -4160,8 +4160,9 @@ body:has(.libro-modal:not(.oculto)) .dpad-contenedor {
     box-shadow: 0 0 18px var(--v-glow, rgb(230 200 160 / 50%));
 }
 
-/* Variables de color para la página de inicio (sin entidad activa) */
-.libro-en-inicio {
+/* Variables de color para páginas sin entidad activa (inicio y habitaciones) */
+.libro-en-inicio,
+.libro-en-extra {
     --v-color: rgb(230 200 160 / 95%);
     --v-oscuro: rgb(180 155 120);
     --v-glow: rgb(230 200 160 / 30%);
@@ -5069,13 +5070,13 @@ body:has(.libro-modal:not(.oculto)) .dpad-contenedor {
         padding: 12px;
     }
 
-    /* Fondo plano del personaje solo cuando hay uno activo (no en Bienvenida) */
-    :not(.libro-en-inicio) > .libro-pagina-der {
+    /* Fondo plano del personaje solo cuando hay uno activo (no en Bienvenida ni habitaciones) */
+    :not(.libro-en-inicio):not(.libro-en-extra) > .libro-pagina-der {
         background: none;
         background-color: inherit;
     }
 
-    :not(.libro-en-inicio) > .libro-pagina-der::before {
+    :not(.libro-en-inicio):not(.libro-en-extra) > .libro-pagina-der::before {
         display: none;
     }
 
