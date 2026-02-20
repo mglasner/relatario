@@ -1,19 +1,17 @@
-// Habitacion 4 — El Abismo: Creacion del DOM (pantalla, canvas, cabecera, HUD overlays)
+// Habitacion 4 — El Abismo: Creacion del DOM (pantalla, canvas, cabecera, HUD boss)
 
 import { CFG } from './config.js';
 
-// Referencias a overlays del HUD
-let hudObjetivo = null;
+// Referencias a overlay del boss
 let hudBossContenedor = null;
 let hudBossNombre = null;
 let hudBossVida = null;
 
 function calcularEscala(canvas) {
-    // Medir espacio real: desde el tope del canvas hasta el fondo del viewport
-    // Esto descuenta automaticamente barra superior, cabecera, padding, etc.
     const rect = canvas.getBoundingClientRect();
-    const disponibleAncho = window.innerWidth - 20;
-    const disponibleAlto = window.innerHeight - rect.top - 10;
+    // Descontar padding (10px x 2) + borde del canvas (3px x 2)
+    const disponibleAncho = window.innerWidth - 26;
+    const disponibleAlto = window.innerHeight - rect.top - 16;
 
     const escalaX = disponibleAncho / CFG.canvas.anchoBase;
     const escalaY = disponibleAlto / CFG.canvas.altoBase;
@@ -51,7 +49,7 @@ export function crearPantalla(esTouch, onHuir) {
     cabecera.appendChild(btnHuir);
     cabecera.appendChild(titulo);
 
-    // Wrapper para canvas + HUD overlays
+    // Wrapper para canvas + HUD boss overlay
     const wrapper = document.createElement('div');
     wrapper.className = 'plat-wrapper';
 
@@ -62,11 +60,7 @@ export function crearPantalla(esTouch, onHuir) {
     canvas.height = altoCanvas;
     const ctx = canvas.getContext('2d');
 
-    // HUD overlay: texto de objetivo (arriba)
-    hudObjetivo = document.createElement('div');
-    hudObjetivo.className = 'plat-hud-objetivo';
-
-    // HUD overlay: barra de boss (abajo)
+    // HUD overlay: barra de boss (abajo del canvas)
     hudBossContenedor = document.createElement('div');
     hudBossContenedor.className = 'plat-hud-boss';
     hudBossContenedor.style.display = 'none';
@@ -85,7 +79,6 @@ export function crearPantalla(esTouch, onHuir) {
     hudBossContenedor.appendChild(barraFondo);
 
     wrapper.appendChild(canvas);
-    wrapper.appendChild(hudObjetivo);
     wrapper.appendChild(hudBossContenedor);
 
     // Hint de controles (solo desktop)
@@ -107,17 +100,13 @@ export function crearPantalla(esTouch, onHuir) {
     juegoEl.appendChild(pantalla);
 
     const escala = calcularEscala(canvas);
-    canvas.style.width = Math.round(anchoCanvas * escala) + 'px';
-    canvas.style.height = Math.round(altoCanvas * escala) + 'px';
+    canvas.style.width = Math.floor(anchoCanvas * escala) + 'px';
+    canvas.style.height = Math.floor(altoCanvas * escala) + 'px';
 
     return { pantalla, canvas, ctx, escala };
 }
 
-// --- API para actualizar overlays del HUD ---
-
-export function actualizarHUDObjetivo(texto) {
-    if (hudObjetivo) hudObjetivo.textContent = texto;
-}
+// --- API para actualizar overlay del boss ---
 
 export function actualizarHUDBoss(nombre, ratio) {
     if (!hudBossContenedor) return;
@@ -125,7 +114,6 @@ export function actualizarHUDBoss(nombre, ratio) {
     hudBossNombre.textContent = nombre;
     hudBossVida.style.width = Math.round(ratio * 100) + '%';
 
-    // Color cambia segun fase
     if (ratio <= 0.33) {
         hudBossVida.style.backgroundColor = '#e94560';
     } else {
@@ -138,7 +126,6 @@ export function ocultarHUDBoss() {
 }
 
 export function limpiarDOM() {
-    hudObjetivo = null;
     hudBossContenedor = null;
     hudBossNombre = null;
     hudBossVida = null;

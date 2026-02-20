@@ -10,13 +10,7 @@ import {
     obtenerFilas,
     obtenerColumnas,
 } from './nivel.js';
-import {
-    crearPantalla,
-    actualizarHUDObjetivo,
-    actualizarHUDBoss,
-    ocultarHUDBoss,
-    limpiarDOM,
-} from './domPlat.js';
+import { crearPantalla, actualizarHUDBoss, ocultarHUDBoss, limpiarDOM } from './domPlat.js';
 import {
     iniciarCamara,
     actualizarCamara,
@@ -364,14 +358,9 @@ function renderFrame() {
 
     ctx.restore();
 
-    // HUD via overlays HTML (texto nitido a resolucion nativa)
-    const bossActivo = esBossVivo();
-    actualizarHUDObjetivo(
-        bossActivo ? 'Derrota al boss y encuentra la salida' : 'Boss derrotado! Busca la salida'
-    );
-
+    // HUD boss via overlay HTML (texto nitido a resolucion nativa)
     const bossInfo = obtenerInfoBoss();
-    if (bossActivo && bossInfo) {
+    if (esBossVivo() && bossInfo) {
         actualizarHUDBoss(bossInfo.nombre, bossInfo.vidaActual / bossInfo.vidaMax);
         renderizarIndicadorBoss(ctx, bossInfo.x, camX, anchoCanvas, tiempo);
     } else {
