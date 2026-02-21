@@ -11,8 +11,8 @@ meta:
 
 # --- Textos mostrados en pantalla ---
 textos:
-    indicadorBusqueda: "🔑 Encuentra la llave"          # texto superior al entrar
-    indicadorLlaveObtenida: "🔑 ¡Llave obtenida! Vuelve a la salida"
+    indicadorBusqueda: "Encuentra la llave"               # texto superior al entrar (icono de llave se agrega en JS)
+    indicadorLlaveObtenida: "¡Llave obtenida! Vuelve a la salida"
     toastLlave: "¡Llave encontrada!"                     # notificación al recoger llave
     mensajeExito: "¡Escapaste con la llave!"             # mensaje central al escapar
     toastElite: "¡{nombre} ha aparecido!"                 # {nombre} se reemplaza por el villano

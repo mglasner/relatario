@@ -149,7 +149,13 @@ export function iniciarHabitacion1(jugadorRef, callback, dpadRef) {
     actualizarPosicion();
 
     // Resetear indicador
-    est.indicador.textContent = CFG.textos.indicadorBusqueda;
+    est.indicador.replaceChildren();
+    const imgIndicador = document.createElement('img');
+    imgIndicador.src = 'assets/img/llaves/llave-laberinto.webp';
+    imgIndicador.alt = '';
+    imgIndicador.className = 'indicador-llave-img';
+    est.indicador.appendChild(imgIndicador);
+    est.indicador.appendChild(document.createTextNode(' ' + CFG.textos.indicadorBusqueda));
     est.indicador.classList.remove('llave-obtenida');
     est.mensajeExito.classList.add('oculto');
 
@@ -199,7 +205,10 @@ function renderizarLaberinto() {
     // Llave
     est.elementoLlave = document.createElement('div');
     est.elementoLlave.className = 'laberinto-llave';
-    est.elementoLlave.textContent = '🔑';
+    const imgLlave = document.createElement('img');
+    imgLlave.src = 'assets/img/llaves/llave-laberinto.webp';
+    imgLlave.alt = 'Llave';
+    est.elementoLlave.appendChild(imgLlave);
     est.elementoLlave.style.left = est.llaveCol * CONFIG.TAM_CELDA + 'px';
     est.elementoLlave.style.top = est.llaveFila * CONFIG.TAM_CELDA + 'px';
     est.elementoLlave.style.width = CONFIG.TAM_CELDA + 'px';
@@ -311,12 +320,24 @@ function detectarLlave() {
 
         est.elementoLlave.classList.add('llave-recogida');
 
-        est.indicador.textContent = CFG.textos.indicadorLlaveObtenida;
+        est.indicador.replaceChildren();
+        const imgObtenida = document.createElement('img');
+        imgObtenida.src = 'assets/img/llaves/llave-laberinto.webp';
+        imgObtenida.alt = '';
+        imgObtenida.className = 'indicador-llave-img';
+        est.indicador.appendChild(imgObtenida);
+        est.indicador.appendChild(
+            document.createTextNode(' ' + CFG.textos.indicadorLlaveObtenida)
+        );
         est.indicador.classList.add('llave-obtenida');
 
         est.jugador.inventario.push(CFG.meta.itemInventario);
         document.dispatchEvent(new Event('inventario-cambio'));
-        lanzarToast(CFG.textos.toastLlave, '🔑', 'item');
+        lanzarToast(
+            CFG.textos.toastLlave,
+            '<img src="assets/img/llaves/llave-laberinto.webp" alt="Llave" class="toast-llave-img">',
+            'item'
+        );
     }
 }
 

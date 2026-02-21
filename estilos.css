@@ -3105,9 +3105,28 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.4rem;
     animation: flotar-llave 2s ease-in-out infinite;
     z-index: 2;
+}
+
+.laberinto-llave img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 4px rgb(255 215 0 / 60%));
+}
+
+/* Icono de llave en el indicador de búsqueda */
+.indicador-llave-img {
+    height: 1.1em;
+    vertical-align: middle;
+    filter: drop-shadow(0 0 3px rgb(255 215 0 / 50%));
+}
+
+/* Icono de llave en el toast */
+.toast-llave-img {
+    height: 1.2em;
+    vertical-align: middle;
 }
 
 @keyframes flotar-llave {
