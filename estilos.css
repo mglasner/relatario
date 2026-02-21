@@ -5165,6 +5165,7 @@ body:has(.libro-modal:not(.oculto)) .dpad-der-contenedor {
     .libro-pagina-izq {
         flex: none;
         padding: 10px 12px;
+        overflow: hidden;
     }
 
     .libro-titulo {
@@ -5205,10 +5206,6 @@ body:has(.libro-modal:not(.oculto)) .dpad-der-contenedor {
         background: rgb(255 215 0 / 12%);
         border-color: var(--color-dorado);
         color: var(--color-dorado);
-    }
-
-    .libro-pagina-izq {
-        overflow: hidden;
     }
 
     /* Wrapper del índice con hints de scroll */
