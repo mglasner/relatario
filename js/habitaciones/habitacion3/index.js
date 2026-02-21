@@ -173,8 +173,10 @@ function onClickGrilla(e) {
 }
 
 function victoria() {
-    jugador.inventario.push(CFG.meta.itemInventario);
-    notificarInventarioCambio();
+    if (!jugador.inventario.includes(CFG.meta.itemInventario)) {
+        jugador.inventario.push(CFG.meta.itemInventario);
+        notificarInventarioCambio();
+    }
 
     // Curación bonus por ganar la partida
     curar(CFG.curacion.victoriaMin, CFG.curacion.victoriaMax);

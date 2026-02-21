@@ -22,8 +22,10 @@ export function detectarLlave() {
         est.indicador.appendChild(document.createTextNode(' ' + CFG.textos.indicadorLlaveObtenida));
         est.indicador.classList.add('llave-obtenida');
 
-        est.jugador.inventario.push(CFG.meta.itemInventario);
-        notificarInventarioCambio();
+        if (!est.jugador.inventario.includes(CFG.meta.itemInventario)) {
+            est.jugador.inventario.push(CFG.meta.itemInventario);
+            notificarInventarioCambio();
+        }
         actualizarHUDInventarioLocal();
         lanzarToast(
             CFG.textos.toastLlave,

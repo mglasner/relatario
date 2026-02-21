@@ -317,8 +317,10 @@ function detectarLlave() {
         est.indicador.appendChild(document.createTextNode(' ' + CFG.textos.indicadorLlaveObtenida));
         est.indicador.classList.add('llave-obtenida');
 
-        est.jugador.inventario.push(CFG.meta.itemInventario);
-        notificarInventarioCambio();
+        if (!est.jugador.inventario.includes(CFG.meta.itemInventario)) {
+            est.jugador.inventario.push(CFG.meta.itemInventario);
+            notificarInventarioCambio();
+        }
         lanzarToast(
             CFG.textos.toastLlave,
             '<img src="assets/img/llaves/llave-laberinto.webp" alt="Llave" class="toast-llave-img">',
