@@ -3516,7 +3516,8 @@ h1 {
     inset: -8px;
 }
 
-.dpad-btn:active {
+.dpad-btn:active,
+.dpad-btn.dpad-activo {
     background-color: rgb(233 69 96 / 40%);
     border-color: var(--color-accent);
     color: white;
