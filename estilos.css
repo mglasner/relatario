@@ -2473,21 +2473,33 @@ h1 {
     pointer-events: none;
 }
 
-.plat-hud-vida-fondo {
-    width: 80px;
-    height: 8px;
-    background: rgb(0 0 0 / 60%);
-    border-radius: 4px;
-    border: 1px solid rgb(94 234 219 / 30%);
-    overflow: hidden;
+/* Variante compacta para HUD in-canvas */
+.barra-vida-compacta {
+    gap: 4px;
+    flex: none;
+    min-width: 0;
 }
 
-.plat-hud-vida-relleno {
-    height: 100%;
-    width: 100%;
-    background: #5eeadb;
+.barra-vida-compacta .barra-vida-corazon {
+    font-size: 0.65rem;
+}
+
+.barra-vida-compacta .barra-vida-fondo {
+    width: 80px;
+    flex: none;
+    height: 8px;
+    border-radius: 4px;
+    border: 1px solid rgb(94 234 219 / 30%);
+    background: rgb(0 0 0 / 60%);
+}
+
+.barra-vida-compacta .barra-vida-relleno {
     border-radius: 3px;
-    transition: width 0.3s ease;
+}
+
+/* Desactivar shimmer en la variante compacta (muy pequeña) */
+.barra-vida-compacta .barra-vida-relleno::after {
+    display: none;
 }
 
 #pantalla-habitacion1 {

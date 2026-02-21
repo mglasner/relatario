@@ -1,6 +1,7 @@
 // Habitacion 4 — El Abismo: Creacion del DOM (pantalla, canvas, cabecera, HUD jugador, HUD boss)
 
 import { CFG } from './config.js';
+import { crearBarraVida } from '../../componentes/barraVida.js';
 
 // Referencias a overlay del boss
 let hudBossContenedor = null;
@@ -87,15 +88,11 @@ export function crearPantalla(esTouch, onHuir) {
     btnHuirCanvas.appendChild(imgHuirCanvas);
     btnHuirCanvas.addEventListener('click', onHuir);
 
-    // Barra de vida
-    const barraJugFondo = document.createElement('div');
-    barraJugFondo.className = 'plat-hud-vida-fondo';
-    hudJugadorVida = document.createElement('div');
-    hudJugadorVida.className = 'plat-hud-vida-relleno';
-    barraJugFondo.appendChild(hudJugadorVida);
+    // Barra de vida (componente reutilizable, variante compacta)
+    hudJugadorVida = crearBarraVida({ claseExtra: 'barra-vida-compacta' });
 
     hudJugadorContenedor.appendChild(btnHuirCanvas);
-    hudJugadorContenedor.appendChild(barraJugFondo);
+    hudJugadorContenedor.appendChild(hudJugadorVida.el);
 
     // HUD overlay: barra de boss (abajo del canvas)
     hudBossContenedor = document.createElement('div');
@@ -151,17 +148,7 @@ export function crearPantalla(esTouch, onHuir) {
 export function actualizarHUDJugador(vidaActual, vidaMax) {
     if (!hudJugadorVida || vidaActual === hudJugadorVidaAnterior) return;
     hudJugadorVidaAnterior = vidaActual;
-
-    const ratio = vidaMax > 0 ? vidaActual / vidaMax : 0;
-    hudJugadorVida.style.width = Math.round(ratio * 100) + '%';
-
-    if (ratio <= 0.25) {
-        hudJugadorVida.style.backgroundColor = '#e94560';
-    } else if (ratio <= 0.5) {
-        hudJugadorVida.style.backgroundColor = '#f0a500';
-    } else {
-        hudJugadorVida.style.backgroundColor = '#5eeadb';
-    }
+    hudJugadorVida.actualizar(vidaActual, vidaMax);
 }
 
 // --- API para actualizar overlay del boss ---

@@ -1,6 +1,8 @@
 // Componente: Barra superior del jugador
 // Muestra avatar, vida e inventario durante el juego
 
+import { crearBarraVida } from './barraVida.js';
+
 const ITEMS_INFO = {
     'llave-habitacion-2': {
         img: 'assets/img/llaves/llave-laberinto.webp',
@@ -42,28 +44,8 @@ export function crearBarraSuperior(contenedor) {
     jugadorDiv.appendChild(avatar);
     jugadorDiv.appendChild(nombre);
 
-    // Barra de vida
-    const vidaDiv = document.createElement('div');
-    vidaDiv.className = 'barra-vida-jugador';
-
-    const corazon = document.createElement('span');
-    corazon.className = 'barra-vida-corazon';
-    corazon.textContent = '\u2764\uFE0F';
-
-    const barraFondo = document.createElement('div');
-    barraFondo.className = 'barra-vida-fondo';
-
-    const barraRelleno = document.createElement('div');
-    barraRelleno.className = 'barra-vida-relleno';
-
-    const vidaTexto = document.createElement('span');
-    vidaTexto.className = 'barra-vida-texto';
-
-    barraFondo.appendChild(barraRelleno);
-    barraFondo.appendChild(vidaTexto);
-
-    vidaDiv.appendChild(corazon);
-    vidaDiv.appendChild(barraFondo);
+    // Barra de vida (componente reutilizable)
+    const barraVida = crearBarraVida({ mostrarTexto: true });
 
     // Inventario con slots
     const invDiv = document.createElement('div');
@@ -79,7 +61,7 @@ export function crearBarraSuperior(contenedor) {
 
     // Ensamblar
     el.appendChild(jugadorDiv);
-    el.appendChild(vidaDiv);
+    el.appendChild(barraVida.el);
     el.appendChild(invDiv);
     contenedor.prepend(el);
 
@@ -104,21 +86,7 @@ export function crearBarraSuperior(contenedor) {
         },
 
         actualizarVida: function (jugador) {
-            const porcentaje = Math.round((jugador.vidaActual / jugador.vidaMax) * 100);
-            barraRelleno.style.transform = 'scaleX(' + porcentaje / 100 + ')';
-            vidaTexto.textContent = jugador.vidaActual + '/' + jugador.vidaMax;
-
-            // Color dinámico: verde → amarillo → rojo
-            if (porcentaje > 60) {
-                barraRelleno.style.background = 'linear-gradient(90deg, #2ecc71, #6bfc86)';
-            } else if (porcentaje > 30) {
-                barraRelleno.style.background = 'linear-gradient(90deg, #f39c12, #f1c40f)';
-            } else {
-                barraRelleno.style.background = 'linear-gradient(90deg, #e74c3c, #e94560)';
-            }
-
-            // Estado de peligro (corazón late rápido)
-            vidaDiv.classList.toggle('barra-vida-peligro', porcentaje <= 25);
+            barraVida.actualizar(jugador.vidaActual, jugador.vidaMax);
         },
 
         actualizarInventario: function (jugador) {
