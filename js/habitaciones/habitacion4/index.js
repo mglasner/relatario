@@ -90,8 +90,9 @@ function iniciarDOM(esTouch) {
     est.altoCanvas = CFG.canvas.altoBase;
 
     const dom = crearPantalla(esTouch, function () {
+        const salir = est.callbackSalir;
         limpiarHabitacion4();
-        est.callbackSalir();
+        salir();
     });
 
     est.pantalla = dom.pantalla;
@@ -199,8 +200,10 @@ function verificarVictoria() {
 
     if (detectarMetaTile()) {
         est.activo = false;
-        est.jugador.inventario.push(CFG.meta.itemInventario);
-        notificarInventarioCambio();
+        if (!est.jugador.inventario.includes(CFG.meta.itemInventario)) {
+            est.jugador.inventario.push(CFG.meta.itemInventario);
+            notificarInventarioCambio();
+        }
         actualizarHUDInventario(est.jugador.inventario);
         lanzarToast(
             '\u00a1Llave obtenida! Escapando...',
@@ -208,10 +211,11 @@ function verificarVictoria() {
             'exito'
         );
 
+        const salir = est.callbackSalir;
         est.timeoutIds.push(
             setTimeout(function () {
                 limpiarHabitacion4();
-                est.callbackSalir();
+                salir();
             }, CFG.meta.timeoutExito)
         );
     }
@@ -365,8 +369,9 @@ function onKeyDown(e) {
         est.teclasRef[e.key] = true;
     }
     if (e.key === 'Escape') {
+        const salir = est.callbackSalir;
         limpiarHabitacion4();
-        est.callbackSalir();
+        salir();
     }
 }
 
