@@ -13,7 +13,7 @@ import {
     reescalarCanvas,
     limpiarDOM,
 } from './domPlat.js';
-import { crearOverlayRotar } from '../../componentes/overlayRotar.js';
+import { crearModoInmersivo } from '../../componentes/modoInmersivo.js';
 import {
     iniciarCamara,
     actualizarCamara,
@@ -91,9 +91,8 @@ let anchoCanvas = CFG.canvas.anchoBase;
 let altoCanvas = CFG.canvas.altoBase;
 let muerto = false;
 let timeoutIds = [];
-let overlayRotar = null;
+let modoInmersivo = null;
 let dpadRef = null;
-let esTouchRef = false;
 
 // Filas del subsuelo para emision de particulas (desacoplado del tile ABISMO)
 let filaNiebla = -1;
@@ -395,41 +394,6 @@ function onKeyUp(e) {
     delete teclasRef[e.key];
 }
 
-// --- Pantalla completa (mobile) ---
-
-function onFullscreenChange() {
-    // Doble rAF: el layout no se actualiza en el mismo frame que fullscreenchange
-    requestAnimationFrame(function () {
-        requestAnimationFrame(reescalarCanvas);
-    });
-}
-
-function solicitarPantallaCompleta() {
-    document.addEventListener('fullscreenchange', onFullscreenChange);
-    const el = document.documentElement;
-    if (el.requestFullscreen) {
-        el.requestFullscreen()
-            .then(function () {
-                // Intentar bloquear landscape (requiere fullscreen activo)
-                try {
-                    screen.orientation.lock('landscape').catch(function () {});
-                } catch {
-                    // API no disponible
-                }
-            })
-            .catch(function () {
-                // Fullscreen no disponible o denegado — continuar sin el
-            });
-    }
-}
-
-function salirPantallaCompleta() {
-    document.removeEventListener('fullscreenchange', onFullscreenChange);
-    if (document.fullscreenElement) {
-        document.exitFullscreen().catch(function () {});
-    }
-}
-
 // --- API publica ---
 
 export function iniciarHabitacion4(jugadorRef, callback, dpadArgumento) {
@@ -451,8 +415,8 @@ export function iniciarHabitacion4(jugadorRef, callback, dpadArgumento) {
     filaOjos = totalFilas - 1;
 
     // Crear pantalla
-    esTouchRef = !!dpadArgumento;
-    iniciarDOM(esTouchRef);
+    modoInmersivo = crearModoInmersivo(reescalarCanvas);
+    iniciarDOM(modoInmersivo.esMobile);
 
     // Mostrar llaves ya recolectadas en el HUD
     actualizarHUDInventario(jugador.inventario);
@@ -502,14 +466,8 @@ export function iniciarHabitacion4(jugadorRef, callback, dpadArgumento) {
         dpadRef.mostrar();
     }
 
-    // Overlay de rotacion y pantalla completa (solo touch)
-    overlayRotar = crearOverlayRotar();
-    overlayRotar.activar(function () {
-        requestAnimationFrame(reescalarCanvas);
-    });
-    if (esTouchRef) {
-        solicitarPantallaCompleta();
-    }
+    // Overlay de rotación y pantalla completa (solo mobile)
+    modoInmersivo.activar();
 
     // Iniciar loop
     animacionId = requestAnimationFrame(gameLoop);
@@ -539,13 +497,9 @@ export function limpiarHabitacion4() {
     });
 
     // Salir de pantalla completa y desactivar overlay
-    if (esTouchRef) {
-        salirPantallaCompleta();
-        esTouchRef = false;
-    }
-    if (overlayRotar) {
-        overlayRotar.desactivar();
-        overlayRotar = null;
+    if (modoInmersivo) {
+        modoInmersivo.desactivar();
+        modoInmersivo = null;
     }
 
     // Restaurar D-pad a modo centrado para el pasillo

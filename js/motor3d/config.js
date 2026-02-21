@@ -14,8 +14,8 @@ export const COLORES = {
     cieloAbajo: '#0a1a0f',
     sueloArriba: '#0d240d',
     sueloAbajo: '#050a05',
-    minimapaFondo: '#0d1a0d',
-    minimapaParedes: '#1a3e1a',
+    minimapaFondo: '#060e06',
+    minimapaParedes: '#2a5e2a',
 };
 
 // Estado mutable del canvas (se recalcula al redimensionar)

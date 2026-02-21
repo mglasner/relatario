@@ -38,7 +38,7 @@ import {
     renderizarHUD,
     limpiarHUD,
 } from '../motor3d/hudPrimeraPersona.js';
-import { crearOverlayRotar } from '../componentes/overlayRotar.js';
+import { crearModoInmersivo } from '../componentes/modoInmersivo.js';
 import { crearBarraVida } from '../componentes/barraVida.js';
 import { crearInventario } from '../componentes/inventario.js';
 
@@ -88,8 +88,7 @@ let framesLentos = 0;
 let flashDano = 0;
 
 // Landscape mobile
-let overlayRotar = null;
-let esTouchRef = false;
+let modoInmersivo = null;
 let dpadRef = null;
 let hudJugadorContenedor = null;
 let hudJugadorVida = null;
@@ -139,7 +138,8 @@ function reescalarCanvas3D() {
 function redimensionarLandscape() {
     if (!activo || !canvas3D) return;
 
-    const enLandscape = esTouchRef && window.innerWidth > window.innerHeight;
+    const enLandscape =
+        modoInmersivo && modoInmersivo.esMobile && window.innerWidth > window.innerHeight;
     calcularDimensiones(enLandscape ? { landscape: true } : undefined);
 
     // Solo redimensionar si las dimensiones cambiaron
@@ -170,37 +170,6 @@ function redimensionarLandscape() {
     juegoEl.style.setProperty('--ancho-3d', canvas.ancho + 6 + 'px');
 
     reescalarCanvas3D();
-}
-
-function onFullscreenChange() {
-    requestAnimationFrame(function () {
-        requestAnimationFrame(redimensionarLandscape);
-    });
-}
-
-function solicitarPantallaCompleta() {
-    document.addEventListener('fullscreenchange', onFullscreenChange);
-    const el = document.documentElement;
-    if (el.requestFullscreen) {
-        el.requestFullscreen()
-            .then(function () {
-                try {
-                    screen.orientation.lock('landscape').catch(function () {});
-                } catch {
-                    // API no disponible
-                }
-            })
-            .catch(function () {
-                // Fullscreen no disponible o denegado
-            });
-    }
-}
-
-function salirPantallaCompleta() {
-    document.removeEventListener('fullscreenchange', onFullscreenChange);
-    if (document.fullscreenElement) {
-        document.exitFullscreen().catch(function () {});
-    }
 }
 
 function actualizarHUDVida() {
@@ -548,7 +517,7 @@ function onKeyUp(e) {
 export function iniciarHabitacion2(jugadorRef, callback, dpadArgumento) {
     jugador = jugadorRef;
     callbackSalir = callback;
-    esTouchRef = !!dpadArgumento;
+    modoInmersivo = crearModoInmersivo(redimensionarLandscape);
     dpadRef = dpadArgumento;
     hudJugadorVidaAnterior = -1;
     tieneLlave = false;
@@ -605,7 +574,7 @@ export function iniciarHabitacion2(jugadorRef, callback, dpadArgumento) {
     juegoEl.style.setProperty('--ancho-3d', canvas.ancho + 6 + 'px');
 
     // Crear pantalla DOM
-    crearPantalla(esTouchRef);
+    crearPantalla(modoInmersivo.esMobile);
 
     // Pre-renderizar minimapa base
     minimapBase = crearMinimapBase(mapa, FILAS, COLS, canvas.anchoMini, canvas.altoMini);
@@ -632,14 +601,8 @@ export function iniciarHabitacion2(jugadorRef, callback, dpadArgumento) {
         dpadRef.mostrar();
     }
 
-    // Overlay de rotación y pantalla completa (solo touch)
-    overlayRotar = crearOverlayRotar();
-    overlayRotar.activar(function () {
-        requestAnimationFrame(redimensionarLandscape);
-    });
-    if (esTouchRef) {
-        solicitarPantallaCompleta();
-    }
+    // Overlay de rotación y pantalla completa (solo mobile)
+    modoInmersivo.activar();
 
     // Inicializar HUD landscape
     actualizarHUDVida();
@@ -665,13 +628,9 @@ export function limpiarHabitacion2() {
     });
 
     // Salir de pantalla completa y desactivar overlay
-    if (esTouchRef) {
-        salirPantallaCompleta();
-        esTouchRef = false;
-    }
-    if (overlayRotar) {
-        overlayRotar.desactivar();
-        overlayRotar = null;
+    if (modoInmersivo) {
+        modoInmersivo.desactivar();
+        modoInmersivo = null;
     }
     if (dpadRef) {
         dpadRef.setModoCentrado();
