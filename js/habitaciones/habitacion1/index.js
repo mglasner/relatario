@@ -326,9 +326,7 @@ function detectarLlave() {
         imgObtenida.alt = '';
         imgObtenida.className = 'indicador-llave-img';
         est.indicador.appendChild(imgObtenida);
-        est.indicador.appendChild(
-            document.createTextNode(' ' + CFG.textos.indicadorLlaveObtenida)
-        );
+        est.indicador.appendChild(document.createTextNode(' ' + CFG.textos.indicadorLlaveObtenida));
         est.indicador.classList.add('llave-obtenida');
 
         est.jugador.inventario.push(CFG.meta.itemInventario);
