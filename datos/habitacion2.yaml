@@ -12,8 +12,8 @@ meta:
 
 # --- Textos mostrados en pantalla ---
 textos:
-    indicadorBusqueda: "🔑 Encuentra la llave"
-    indicadorLlaveObtenida: "🔑 ¡Llave obtenida! Vuelve a la salida"
+    indicadorBusqueda: "Encuentra la llave"
+    indicadorLlaveObtenida: "¡Llave obtenida! Vuelve a la salida"
     toastLlave: "¡Llave encontrada!"
     mensajeExito: "¡Escapaste con la llave!"
 

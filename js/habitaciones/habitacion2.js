@@ -333,13 +333,23 @@ function detectarLlave() {
 
     if (celdaY === llaveFila && celdaX === llaveCol) {
         tieneLlave = true;
-        indicador.textContent = CFG.textos.indicadorLlaveObtenida;
+        indicador.replaceChildren();
+        const imgObtenida = document.createElement('img');
+        imgObtenida.src = 'assets/img/llaves/llave-laberinto3d.webp';
+        imgObtenida.alt = '';
+        imgObtenida.className = 'indicador-llave-img';
+        indicador.appendChild(imgObtenida);
+        indicador.appendChild(document.createTextNode(' ' + CFG.textos.indicadorLlaveObtenida));
         indicador.classList.add('llave-obtenida');
 
         jugador.inventario.push(CFG.meta.itemInventario);
         document.dispatchEvent(new Event('inventario-cambio'));
         actualizarHUDInventarioLocal();
-        lanzarToast(CFG.textos.toastLlave, '\uD83D\uDD11', 'item');
+        lanzarToast(
+            CFG.textos.toastLlave,
+            '<img src="assets/img/llaves/llave-laberinto3d.webp" alt="Llave" class="toast-llave-img">',
+            'item'
+        );
     }
 }
 
@@ -601,7 +611,13 @@ export function iniciarHabitacion2(jugadorRef, callback, dpadArgumento) {
     minimapBase = crearMinimapBase(mapa, FILAS, COLS, canvas.anchoMini, canvas.altoMini);
 
     // Resetear indicador
-    indicador.textContent = CFG.textos.indicadorBusqueda;
+    indicador.replaceChildren();
+    const imgIndicador = document.createElement('img');
+    imgIndicador.src = 'assets/img/llaves/llave-laberinto3d.webp';
+    imgIndicador.alt = '';
+    imgIndicador.className = 'indicador-llave-img';
+    indicador.appendChild(imgIndicador);
+    indicador.appendChild(document.createTextNode(' ' + CFG.textos.indicadorBusqueda));
     indicador.classList.remove('llave-obtenida');
     mensajeExito.classList.add('oculto');
 

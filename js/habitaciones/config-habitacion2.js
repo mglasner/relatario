@@ -7,8 +7,8 @@ export const CFG = {
         timeoutExito: 1500,
     },
     textos: {
-        indicadorBusqueda: '🔑 Encuentra la llave',
-        indicadorLlaveObtenida: '🔑 ¡Llave obtenida! Vuelve a la salida',
+        indicadorBusqueda: 'Encuentra la llave',
+        indicadorLlaveObtenida: '¡Llave obtenida! Vuelve a la salida',
         toastLlave: '¡Llave encontrada!',
         mensajeExito: '¡Escapaste con la llave!',
     },
