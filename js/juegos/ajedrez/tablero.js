@@ -4,18 +4,24 @@
 import { crearElemento } from '../../utils.js';
 import { resolverPieza } from './piezas.js';
 
-const COLUMNAS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
-const FILAS = [8, 7, 6, 5, 4, 3, 2, 1];
+const COLUMNAS_BASE = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+const FILAS_BASE = [8, 7, 6, 5, 4, 3, 2, 1];
 
 /**
  * Crea el tablero DOM.
  * @param {Object} opciones
  * @param {Object} opciones.equipo - Equipo enemigo (de generarEquipoEnemigo)
  * @param {Object} opciones.jugador - Personaje del jugador
+ * @param {string} [opciones.colorJugador='white'] - Color del jugador
  * @param {Function} opciones.onClickCelda - Callback (casilla: string)
  * @returns {{ contenedor: HTMLElement, actualizar: Function, resaltarMovimientos: Function, limpiarResaltado: Function, marcarUltimoMovimiento: Function, animarMovimiento: Function, indicarJaque: Function }}
  */
-export function crearTablero({ equipo, jugador, onClickCelda }) {
+export function crearTablero({ equipo, jugador, colorJugador = 'white', onClickCelda }) {
+    // Orientacion del tablero segun color del jugador
+    const esNegro = colorJugador === 'black';
+    const COLUMNAS = esNegro ? [...COLUMNAS_BASE].reverse() : COLUMNAS_BASE;
+    const FILAS = esNegro ? [...FILAS_BASE].reverse() : FILAS_BASE;
+
     const contenedor = crearElemento('div', 'ajedrez-tablero-wrap');
 
     // Grilla del tablero
@@ -25,7 +31,7 @@ export function crearTablero({ equipo, jugador, onClickCelda }) {
     for (const fila of FILAS) {
         for (const col of COLUMNAS) {
             const casilla = col + fila;
-            const esClara = (COLUMNAS.indexOf(col) + fila) % 2 === 1;
+            const esClara = (COLUMNAS_BASE.indexOf(col) + fila) % 2 === 1;
             const celda = crearElemento('div', 'ajedrez-celda');
             celda.classList.add(esClara ? 'ajedrez-clara' : 'ajedrez-oscura');
             celda.dataset.casilla = casilla;
@@ -53,16 +59,21 @@ export function crearTablero({ equipo, jugador, onClickCelda }) {
     contenedor.appendChild(coordsAbajo);
 
     // --- Piezas capturadas ---
-    const capturasBlancas = crearElemento('div', 'ajedrez-capturas ajedrez-capturas-blancas');
-    const capturasNegras = crearElemento('div', 'ajedrez-capturas ajedrez-capturas-negras');
+    const capturasEnemigo = crearElemento('div', 'ajedrez-capturas');
+    const capturasJugador = crearElemento('div', 'ajedrez-capturas');
 
     const panelCapturas = crearElemento('div', 'ajedrez-panel-capturas');
-    panelCapturas.appendChild(capturasNegras);
-    panelCapturas.appendChild(capturasBlancas);
+    panelCapturas.appendChild(capturasEnemigo);
+    panelCapturas.appendChild(capturasJugador);
     contenedor.appendChild(panelCapturas);
 
     // Seguimiento de capturas
     let piezasAnterior = {};
+
+    function esEnemigo(codigo) {
+        const esNegra = codigo === codigo.toLowerCase();
+        return colorJugador === 'white' ? esNegra : !esNegra;
+    }
 
     /** Renderiza las piezas en el tablero segun el estado del motor */
     function actualizar(estado) {
@@ -79,7 +90,7 @@ export function crearTablero({ equipo, jugador, onClickCelda }) {
             const codigo = estado.pieces[casilla];
             if (!codigo) continue;
 
-            const info = resolverPieza(codigo, equipo, jugador);
+            const info = resolverPieza(codigo, equipo, jugador, colorJugador);
             const el = crearElementoPieza(info, codigo);
             celda.appendChild(el);
         }
@@ -93,18 +104,24 @@ export function crearTablero({ equipo, jugador, onClickCelda }) {
             img.alt = info.nombre;
             img.className = 'ajedrez-pieza-img';
             img.draggable = false;
-            const esNegra = codigo === codigo.toLowerCase();
-            if (esNegra) img.classList.add('ajedrez-pieza-enemiga');
+            if (esEnemigo(codigo)) img.classList.add('ajedrez-pieza-enemiga');
             wrap.appendChild(img);
 
             if (info.badge) {
                 const badge = crearElemento('span', 'ajedrez-pieza-badge', info.badge);
-                if (esNegra) badge.classList.add('ajedrez-badge-enemigo');
+                if (esEnemigo(codigo)) {
+                    badge.classList.add('ajedrez-badge-enemigo');
+                } else if (codigo === codigo.toLowerCase()) {
+                    badge.classList.add('ajedrez-badge-negro');
+                }
                 wrap.appendChild(badge);
             }
             return wrap;
         }
         const span = crearElemento('span', 'ajedrez-pieza ajedrez-pieza-simbolo', info.valor);
+        if (codigo === codigo.toLowerCase()) {
+            span.classList.add('ajedrez-pieza-negra');
+        }
         return span;
     }
 
@@ -131,17 +148,14 @@ export function crearTablero({ equipo, jugador, onClickCelda }) {
     }
 
     function agregarCaptura(codigo) {
-        const esNegra = codigo === codigo.toLowerCase();
-        const info = resolverPieza(codigo, equipo, jugador);
+        const info = resolverPieza(codigo, equipo, jugador, colorJugador);
         const el = crearElementoPieza(info, codigo);
         el.classList.add('ajedrez-captura-miniatura');
 
-        if (esNegra) {
-            // Pieza enemiga capturada por jugador
-            capturasNegras.appendChild(el);
+        if (esEnemigo(codigo)) {
+            capturasEnemigo.appendChild(el);
         } else {
-            // Pieza blanca capturada por enemigo
-            capturasBlancas.appendChild(el);
+            capturasJugador.appendChild(el);
         }
     }
 

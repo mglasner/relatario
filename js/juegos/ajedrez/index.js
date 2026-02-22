@@ -30,30 +30,85 @@ let tablero = null;
 let bloqueado = false;
 let casillaSeleccionada = null;
 let movimientosDisponibles = [];
+let colorElegido = 'white';
 
-// --- Selector de dificultad ---
+// --- Selector de dificultad y color ---
 
-function crearSelectorDificultad(onElegir) {
+function crearSelectorInicial(onElegir) {
     const overlay = crearElemento('div', 'ajedrez-dificultad-overlay');
     const panel = crearElemento('div', 'ajedrez-dificultad-panel');
 
-    panel.appendChild(crearElemento('h3', 'ajedrez-dificultad-titulo', 'Elige la dificultad'));
+    // Seccion de color
+    panel.appendChild(crearElemento('h3', 'ajedrez-dificultad-titulo', CFG.textos.eligeColor));
+
+    const opcionesColor = crearElemento('div', 'ajedrez-dificultad-opciones');
+    let colorSeleccionado = CFG.color.opciones[CFG.color.default].valor;
+    const botonesColor = [];
+
+    CFG.color.opciones.forEach(function (opcion, i) {
+        const btn = crearElemento(
+            'button',
+            'ajedrez-dificultad-btn ajedrez-color-btn',
+            opcion.nombre
+        );
+        btn.type = 'button';
+        if (i === CFG.color.default) {
+            btn.classList.add('ajedrez-color-activo');
+        }
+        btn.addEventListener('click', function () {
+            colorSeleccionado = opcion.valor;
+            botonesColor.forEach(function (b) {
+                b.classList.remove('ajedrez-color-activo');
+            });
+            btn.classList.add('ajedrez-color-activo');
+        });
+        botonesColor.push(btn);
+        opcionesColor.appendChild(btn);
+    });
+
+    panel.appendChild(opcionesColor);
+
+    // Seccion de dificultad
+    panel.appendChild(
+        crearElemento(
+            'h3',
+            'ajedrez-dificultad-titulo ajedrez-dificultad-titulo-segundo',
+            'Elige la dificultad'
+        )
+    );
 
     const opciones = crearElemento('div', 'ajedrez-dificultad-opciones');
+    let nivelSeleccionado = CFG.dificultad.opciones[CFG.dificultad.default].nivel;
+    const botonesDificultad = [];
+
     CFG.dificultad.opciones.forEach(function (opcion, i) {
         const btn = crearElemento('button', 'ajedrez-dificultad-btn', opcion.nombre);
         btn.type = 'button';
         if (i === CFG.dificultad.default) {
-            btn.classList.add('ajedrez-dificultad-default');
+            btn.classList.add('ajedrez-dificultad-activo');
         }
         btn.addEventListener('click', function () {
-            overlay.remove();
-            onElegir(opcion.nivel);
+            nivelSeleccionado = opcion.nivel;
+            botonesDificultad.forEach(function (b) {
+                b.classList.remove('ajedrez-dificultad-activo');
+            });
+            btn.classList.add('ajedrez-dificultad-activo');
         });
+        botonesDificultad.push(btn);
         opciones.appendChild(btn);
     });
 
     panel.appendChild(opciones);
+
+    // Boton Jugar
+    const btnJugar = crearElemento('button', 'ajedrez-btn-iniciar', 'Jugar');
+    btnJugar.type = 'button';
+    btnJugar.addEventListener('click', function () {
+        overlay.remove();
+        onElegir(nivelSeleccionado, colorSeleccionado);
+    });
+    panel.appendChild(btnJugar);
+
     overlay.appendChild(panel);
     return overlay;
 }
@@ -101,9 +156,10 @@ function onClickCelda(casilla) {
         return;
     }
 
-    // Solo seleccionar piezas blancas
+    // Solo seleccionar piezas del color del jugador
     const esBlanca = pieza === pieza.toUpperCase();
-    if (!esBlanca) {
+    const esPropria = colorElegido === 'white' ? esBlanca : !esBlanca;
+    if (!esPropria) {
         deseleccionar();
         return;
     }
@@ -146,9 +202,9 @@ async function ejecutarMovimientoJugador(desde, hasta) {
     // Verificar fin de partida
     if (verificarFinPartida()) return;
 
-    // Verificar jaque (turno ya cambio a negras tras mover blancas)
+    // Verificar jaque (el turno ya cambio al rival)
     if (hayJaque()) {
-        tablero.indicarJaque(true, 'black');
+        tablero.indicarJaque(true, estado.turn);
         lanzarToast(CFG.textos.toastJaque, '\u265A', 'dano');
     } else {
         tablero.indicarJaque(false);
@@ -178,9 +234,9 @@ async function ejecutarMovimientoIA() {
     // Verificar fin de partida
     if (verificarFinPartida()) return;
 
-    // Verificar jaque (turno ya cambio a blancas tras mover negras)
+    // Verificar jaque (el turno ya cambio al jugador)
     if (hayJaque()) {
-        tablero.indicarJaque(true, 'white');
+        tablero.indicarJaque(true, estado.turn);
         lanzarToast(CFG.textos.toastJaque, '\u265A', 'dano');
     } else {
         tablero.indicarJaque(false);
@@ -195,7 +251,6 @@ function verificarFinPartida() {
     if (hayJaqueMate()) {
         const ganoJugador = !esTurnoJugador();
         // Despues del mate, el turno queda en quien esta en mate (el que perdio)
-        // Si no es turno del jugador, significa que las negras estan en mate → jugador gano
         if (ganoJugador) {
             victoria();
         } else {
@@ -261,15 +316,17 @@ function onKeyDown(e) {
     }
 }
 
-// --- Iniciar partida tras seleccion de dificultad ---
+// --- Iniciar partida tras seleccion ---
 
-function iniciarPartida(nivel) {
+function iniciarPartida(nivel, color) {
+    colorElegido = color;
     const equipo = generarEquipoEnemigo();
-    nuevaPartida(nivel);
+    nuevaPartida(nivel, color);
 
     tablero = crearTablero({
         equipo,
         jugador,
+        colorJugador: color,
         onClickCelda,
     });
 
@@ -282,7 +339,15 @@ function iniciarPartida(nivel) {
     // Render inicial
     const estado = obtenerEstado();
     tablero.actualizar(estado);
-    bloqueado = false;
+
+    if (color === 'black') {
+        // IA juega primero (blancas)
+        bloqueado = true;
+        actualizarIndicadorTurno();
+        setTimeout(ejecutarMovimientoIA, CFG.ia.retardoMovimiento);
+    } else {
+        bloqueado = false;
+    }
 }
 
 // --- API publica ---
@@ -299,6 +364,7 @@ export function iniciarAjedrez(jugadorRef, callback, dpadRef) {
     bloqueado = true;
     casillaSeleccionada = null;
     movimientosDisponibles = [];
+    colorElegido = 'white';
 
     // Ocultar D-pad (no se usa en ajedrez)
     if (dpadRef) dpadRef.ocultar();
@@ -307,8 +373,8 @@ export function iniciarAjedrez(jugadorRef, callback, dpadRef) {
 
     document.getElementById('juego').appendChild(pantalla);
 
-    // Mostrar selector de dificultad
-    const selector = crearSelectorDificultad(iniciarPartida);
+    // Mostrar selector de dificultad y color
+    const selector = crearSelectorInicial(iniciarPartida);
     pantalla.appendChild(selector);
 
     // Registrar controles

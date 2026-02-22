@@ -62,13 +62,15 @@ const SIMBOLOS = {
  * @param {string} codigo - Letra de la pieza (K, Q, R, B, N, P mayusc o minusc)
  * @param {Object} equipo - Resultado de generarEquipoEnemigo()
  * @param {Object} jugador - Personaje del jugador
- * @returns {{ tipo: 'img'|'simbolo', valor: string, nombre: string }}
+ * @param {string} [colorJugador='white'] - Color del jugador ('white' o 'black')
+ * @returns {{ tipo: 'img'|'simbolo', valor: string, nombre: string, badge?: string }}
  */
-export function resolverPieza(codigo, equipo, jugador) {
+export function resolverPieza(codigo, equipo, jugador, colorJugador = 'white') {
     const esNegra = codigo === codigo.toLowerCase();
     const letra = codigo.toUpperCase();
+    const esEnemigo = colorJugador === 'white' ? esNegra : !esNegra;
 
-    if (esNegra) {
+    if (esEnemigo) {
         // Piezas enemigas: usar avatar del villano
         const mapa = {
             P: equipo.peon,
@@ -79,12 +81,11 @@ export function resolverPieza(codigo, equipo, jugador) {
             Q: equipo.reina,
         };
         const villano = mapa[letra];
-        // Badge con simbolo de pieza para roles especiales (no peones)
-        const badge = letra !== 'P' ? SIMBOLOS[letra] : null;
+        const badge = SIMBOLOS[letra];
         return { tipo: 'img', valor: villano.img, nombre: villano.nombre, badge };
     }
 
-    // Piezas blancas: el jugador es Rey o Reina segun genero
+    // Piezas del jugador: el jugador es Rey o Reina segun genero
     const esReyJugador = jugador.genero === 'masculino' ? letra === 'K' : letra === 'Q';
     if (esReyJugador) {
         const badge = SIMBOLOS[letra];

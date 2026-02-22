@@ -7,10 +7,12 @@ const { Game } = engine;
 
 let game = null;
 let nivelIA = 2;
+let colorJugador = 'white';
 
 /** Inicia una nueva partida */
-export function nuevaPartida(nivel) {
+export function nuevaPartida(nivel, color = 'white') {
     nivelIA = nivel;
+    colorJugador = color;
     game = new Game();
 }
 
@@ -19,8 +21,13 @@ export function obtenerEstado() {
     return game.exportJson();
 }
 
+/** Devuelve el color elegido por el jugador */
+export function obtenerColorJugador() {
+    return colorJugador;
+}
+
 /**
- * Mueve una pieza del jugador (blancas).
+ * Mueve una pieza del jugador.
  * @param {string} desde - Casilla origen (ej: 'E2')
  * @param {string} hasta - Casilla destino (ej: 'E4')
  */
@@ -29,7 +36,7 @@ export function moverJugador(desde, hasta) {
 }
 
 /**
- * La IA mueve (negras).
+ * La IA mueve.
  * @returns {{ desde: string, hasta: string }} el movimiento realizado
  */
 export function moverIA() {
@@ -63,9 +70,9 @@ export function movimientosValidos(casilla) {
     }
 }
 
-/** @returns {boolean} true si es turno del jugador (blancas) */
+/** @returns {boolean} true si es turno del jugador */
 export function esTurnoJugador() {
-    return game.exportJson().turn === 'white';
+    return game.exportJson().turn === colorJugador;
 }
 
 /** @returns {boolean} true si hay jaque */

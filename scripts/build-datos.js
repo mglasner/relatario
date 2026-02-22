@@ -266,9 +266,11 @@ const SCHEMA_ABISMO = {
 
 const SCHEMA_AJEDREZ = {
     meta: ['titulo', 'tiempoVictoria'],
+    color: ['opciones', 'default'],
     ia: ['retardoMovimiento', 'retardoJaque'],
     tablero: ['tamCelda', 'tamCeldaMobile'],
     textos: [
+        'eligeColor',
         'turnoJugador',
         'turnoIA',
         'toastJaque',

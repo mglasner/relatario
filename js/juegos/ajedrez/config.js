@@ -22,6 +22,19 @@ export const CFG = {
         ],
         default: 1,
     },
+    color: {
+        opciones: [
+            {
+                nombre: '♔ Blancas',
+                valor: 'white',
+            },
+            {
+                nombre: '♚ Negras',
+                valor: 'black',
+            },
+        ],
+        default: 0,
+    },
     ia: {
         retardoMovimiento: 500,
         retardoJaque: 300,
@@ -31,6 +44,7 @@ export const CFG = {
         tamCeldaMobile: 48,
     },
     textos: {
+        eligeColor: 'Tu color',
         turnoJugador: 'Tu turno',
         turnoIA: 'Turno del rival...',
         toastJaque: '¡Jaque!',
