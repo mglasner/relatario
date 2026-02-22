@@ -15,22 +15,22 @@
         "build:datos": "node scripts/build-datos.js",
         "build": "npm run build:datos && npm run build:js && npm run build:css && npm run build:html",
         "build:js": "esbuild js/juego.js --bundle --minify --outfile=dist/juego.min.js --format=esm",
-        "build:css": "esbuild estilos.css --bundle --minify --external:*.woff2 --outfile=dist/estilos.min.css",
+        "build:css": "esbuild estilos.css --bundle --minify --external:*.woff2 --external:*.webp --outfile=dist/estilos.min.css",
         "build:html": "node scripts/build-html.js",
         "img:optimize": "node scripts/optimizar-imagenes.js"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/mglasner/mansion-de-aventuras.git"
+        "url": "git+https://github.com/mglasner/relatario.git"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "type": "module",
     "bugs": {
-        "url": "https://github.com/mglasner/mansion-de-aventuras/issues"
+        "url": "https://github.com/mglasner/relatario/issues"
     },
-    "homepage": "https://github.com/mglasner/mansion-de-aventuras#readme",
+    "homepage": "https://relatario.cl",
     "devDependencies": {
         "@eslint/js": "^10.0.1",
         "browser-sync": "^3.0.4",
