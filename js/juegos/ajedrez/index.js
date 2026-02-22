@@ -31,6 +31,8 @@ let bloqueado = false;
 let casillaSeleccionada = null;
 let movimientosDisponibles = [];
 let colorElegido = 'white';
+let timeoutIA = null;
+let timeoutFin = null;
 
 // --- Selector de dificultad y color ---
 
@@ -158,8 +160,8 @@ function onClickCelda(casilla) {
 
     // Solo seleccionar piezas del color del jugador
     const esBlanca = pieza === pieza.toUpperCase();
-    const esPropria = colorElegido === 'white' ? esBlanca : !esBlanca;
-    if (!esPropria) {
+    const esPropia = colorElegido === 'white' ? esBlanca : !esBlanca;
+    if (!esPropia) {
         deseleccionar();
         return;
     }
@@ -212,10 +214,13 @@ async function ejecutarMovimientoJugador(desde, hasta) {
 
     // Turno de la IA
     actualizarIndicadorTurno();
-    setTimeout(ejecutarMovimientoIA, CFG.ia.retardoMovimiento);
+    timeoutIA = setTimeout(ejecutarMovimientoIA, CFG.ia.retardoMovimiento);
 }
 
 async function ejecutarMovimientoIA() {
+    // Si se limpio antes de que la IA mueva (Escape durante retardo), salir
+    if (!tablero) return;
+
     // Guardar referencia al tablero por si se limpia durante la animacion
     const tableroRef = tablero;
     const { desde, hasta } = moverIA();
@@ -277,7 +282,7 @@ function victoria() {
 
     lanzarToast(CFG.textos.toastVictoria, '\u2728', 'exito');
 
-    setTimeout(function () {
+    timeoutFin = setTimeout(function () {
         limpiarAjedrez();
         callbackSalir();
     }, CFG.meta.tiempoVictoria);
@@ -287,7 +292,7 @@ function derrota() {
     bloqueado = true;
     lanzarToast(CFG.textos.toastDerrota, '\u265A', 'dano');
 
-    setTimeout(function () {
+    timeoutFin = setTimeout(function () {
         limpiarAjedrez();
         callbackSalir();
     }, CFG.meta.tiempoVictoria);
@@ -297,7 +302,7 @@ function tablas() {
     bloqueado = true;
     lanzarToast(CFG.textos.toastTablas, '\u00BD', 'item');
 
-    setTimeout(function () {
+    timeoutFin = setTimeout(function () {
         limpiarAjedrez();
         callbackSalir();
     }, CFG.meta.tiempoVictoria);
@@ -344,7 +349,7 @@ function iniciarPartida(nivel, color) {
         // IA juega primero (blancas)
         bloqueado = true;
         actualizarIndicadorTurno();
-        setTimeout(ejecutarMovimientoIA, CFG.ia.retardoMovimiento);
+        timeoutIA = setTimeout(ejecutarMovimientoIA, CFG.ia.retardoMovimiento);
     } else {
         bloqueado = false;
     }
@@ -383,6 +388,11 @@ export function iniciarAjedrez(jugadorRef, callback, dpadRef) {
 
 /** Limpia y destruye El Ajedrez */
 export function limpiarAjedrez() {
+    clearTimeout(timeoutIA);
+    clearTimeout(timeoutFin);
+    timeoutIA = null;
+    timeoutFin = null;
+
     document.removeEventListener('keydown', onKeyDown);
 
     if (pantalla) {

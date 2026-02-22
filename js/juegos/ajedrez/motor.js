@@ -21,11 +21,6 @@ export function obtenerEstado() {
     return game.exportJson();
 }
 
-/** Devuelve el color elegido por el jugador */
-export function obtenerColorJugador() {
-    return colorJugador;
-}
-
 /**
  * Mueve una pieza del jugador.
  * @param {string} desde - Casilla origen (ej: 'E2')

@@ -14,7 +14,7 @@ const FILAS_BASE = [8, 7, 6, 5, 4, 3, 2, 1];
  * @param {Object} opciones.jugador - Personaje del jugador
  * @param {string} [opciones.colorJugador='white'] - Color del jugador
  * @param {Function} opciones.onClickCelda - Callback (casilla: string)
- * @returns {{ contenedor: HTMLElement, actualizar: Function, resaltarMovimientos: Function, limpiarResaltado: Function, marcarUltimoMovimiento: Function, animarMovimiento: Function, indicarJaque: Function }}
+ * @returns {{ contenedor: HTMLElement, actualizar: Function, resaltarMovimientos: Function, resaltarSeleccion: Function, limpiarResaltado: Function, marcarUltimoMovimiento: Function, animarMovimiento: Function, indicarJaque: Function }}
  */
 export function crearTablero({ equipo, jugador, colorJugador = 'white', onClickCelda }) {
     // Orientacion del tablero segun color del jugador
@@ -97,6 +97,8 @@ export function crearTablero({ equipo, jugador, colorJugador = 'white', onClickC
     }
 
     function crearElementoPieza(info, codigo) {
+        const esNegra = codigo === codigo.toLowerCase();
+
         if (info.tipo === 'img') {
             const wrap = crearElemento('div', 'ajedrez-pieza ajedrez-pieza-wrap');
             const img = document.createElement('img');
@@ -111,7 +113,7 @@ export function crearTablero({ equipo, jugador, colorJugador = 'white', onClickC
                 const badge = crearElemento('span', 'ajedrez-pieza-badge', info.badge);
                 if (esEnemigo(codigo)) {
                     badge.classList.add('ajedrez-badge-enemigo');
-                } else if (codigo === codigo.toLowerCase()) {
+                } else if (esNegra) {
                     badge.classList.add('ajedrez-badge-negro');
                 }
                 wrap.appendChild(badge);
@@ -119,9 +121,7 @@ export function crearTablero({ equipo, jugador, colorJugador = 'white', onClickC
             return wrap;
         }
         const span = crearElemento('span', 'ajedrez-pieza ajedrez-pieza-simbolo', info.valor);
-        if (codigo === codigo.toLowerCase()) {
-            span.classList.add('ajedrez-pieza-negra');
-        }
+        if (esNegra) span.classList.add('ajedrez-pieza-negra');
         return span;
     }
 
