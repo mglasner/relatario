@@ -28,7 +28,8 @@ mansion-de-aventuras/
 │   │   ├── comun.css         # Libro layout, tabs, paneles, prólogo, modal
 │   │   ├── heroario.css      # Estilos específicos del heroario
 │   │   ├── villanario.css    # Página de rangos
-│   │   └── libroJuegos.css   # Páginas de juegos, selector héroe, modal héroe
+│   │   ├── libroJuegos.css   # Páginas de juegos, selector héroe, modal héroe
+│   │   └── cuento.css        # Tipografía narrativa para libros de cuentos
 │   ├── juegos/
 │   │   ├── comun.css         # Paletas .juego-*, cabecera, btn-huir
 │   │   ├── laberinto.css     # El Laberinto (laberinto 2D)
@@ -37,6 +38,11 @@ mansion-de-aventuras/
 │   │   └── abismo.css        # El Abismo (platformer)
 │   └── biblioteca/
 │       └── biblioteca.css    # Estante homepage
+├── cuentos/                  # Libros de cuentos (markdown + yaml)
+│   └── {slug}/               # Cada cuento en su directorio
+│       ├── libro.yaml        # Metadata: titulo, color, publicado, capitulos
+│       ├── *.md              # Capítulos en markdown
+│       └── assets/           # Lomo, portada e ilustraciones
 ├── datos/                    # Fuente de verdad en YAML (genera JS via build-datos)
 │   ├── personajes.yaml       # Personajes jugables: stats, colores, descripciones
 │   ├── enemigos.yaml         # Enemigos organizados en tiers
@@ -52,9 +58,12 @@ mansion-de-aventuras/
 │   ├── laberinto.js          # Generador procedural de laberintos
 │   ├── eventos.js            # Nombres de eventos custom centralizados
 │   ├── utils.js              # Utilidades compartidas
+│   ├── cuentos/
+│   │   └── registro.js       # ⚙️ Generado desde cuentos/ (build-cuentos)
 │   ├── componentes/          # Componentes UI (crean su propio HTML desde JS)
 │   │   ├── estante.js        # Homepage: mueble con lomos de libros
 │   │   ├── libroJuegos.js    # Libro de Juegos con selector de héroe
+│   │   ├── libroCuento.js    # Adapta cuento → crearLibro() genérico
 │   │   ├── modalLibro.js     # Modal reutilizable para mostrar libros
 │   │   ├── libro.js          # Motor genérico de libro (índice + detalle)
 │   │   ├── libroHeroes.js    # Heroario (contenido y páginas)
@@ -68,9 +77,11 @@ mansion-de-aventuras/
 │   └── motor3d/              # Motor raycasting estilo Doom para El Laberinto 3D
 ├── scripts/
 │   ├── build-datos.js        # YAML → JS (personajes, enemigos, configs)
+│   ├── build-cuentos.js      # cuentos/ → js/cuentos/registro.js
+│   ├── nuevo-cuento.js       # CLI: crea estructura de cuento nuevo
 │   ├── build-html.js         # Reescribe rutas para producción
 │   ├── dev.js                # BrowserSync + watcher de YAML
-│   ├── watch-datos.js        # Vigila cambios en datos/*.yaml
+│   ├── watch-datos.js        # Vigila cambios en datos/*.yaml y cuentos/
 │   ├── optimizar-imagenes.js # Optimización de imágenes
 │   ├── procesar-sprites.cjs  # Extrae frames de sprite sheets IA
 │   └── ensamblar-sprites.cjs # Ensambla strip final de sprites
@@ -97,8 +108,8 @@ Estante (homepage) → Libro abierto (modal)
 ```
 
 **Estados de la state machine** (`js/juego.js`):
-- **BIBLIOTECA**: Homepage con estante de madera y 3 lomos de libros
-- **LIBRO**: Libro abierto en modal (Heroario, Villanario, o Libro de Juegos)
+- **BIBLIOTECA**: Homepage con estante de madera y lomos de libros (3 fijos + cuentos publicados)
+- **LIBRO**: Libro abierto en modal (Heroario, Villanario, Libro de Juegos, o cuentos)
 - **JUEGO**: Juego en pantalla completa (los 4 desafíos)
 
 La selección de héroe ocurre dentro del Libro de Juegos (cada página de juego tiene un selector de avatares + botón "Jugar"). Los juegos son independientes, sin llaves secuenciales.
@@ -117,6 +128,43 @@ Cada enemigo tiene: nombre, tier (`esbirro`/`elite`/`pesadilla`), vida, ataques,
 2. **El Laberinto 3D** — Laberinto en primera persona (raycasting estilo Doom, 13×13) con trampas de fuego
 3. **El Memorice** — Juego de memoria 4×5, emparejar héroes con villanos en 30 intentos
 4. **El Abismo** — Platformer 2D side-scrolling en canvas 480×270, con esbirros y boss final
+
+## Libros de cuentos
+
+Sistema para agregar libros narrativos (cuentos, historias) al estante. Los cuentos se escriben en markdown y se convierten a HTML en build-time.
+
+### Crear un cuento nuevo
+
+```bash
+npm run nuevo-cuento -- "Título del cuento" [--slug mi-slug]
+```
+
+Genera la estructura en `cuentos/{slug}/` con `libro.yaml` (publicado: false), `cap-01.md` y `assets/`.
+
+### Estructura de un cuento
+
+```text
+cuentos/{slug}/
+├── libro.yaml          # Metadata (titulo, subtitulo, color, portada, lomo, publicado, capitulos)
+├── cap-01.md           # Capítulos en markdown
+├── cap-02.md
+└── assets/
+    ├── lomo.webp       # Imagen del lomo para el estante
+    └── portada.webp    # Imagen de portada del libro
+```
+
+### Flag `publicado`
+
+- `publicado: false` (o ausente): el build lo ignora, no aparece en la app
+- `publicado: true`: se incluye en el estante y es navegable
+
+### Pipeline
+
+`build-cuentos.js` escanea `cuentos/*/libro.yaml`, filtra por `publicado: true`, convierte cada `.md` a HTML con `marked`, y genera `js/cuentos/registro.js`. Los cuentos se registran dinámicamente en `LIBROS_ESTANTE` y `fabricaModales` de `juego.js`.
+
+### Lomo e imágenes
+
+Crear lomo con la skill `/disenar-libro`. Guardar en `cuentos/{slug}/assets/lomo.webp`. Referenciar en `libro.yaml` como `lomo: assets/lomo.webp`.
 
 ## Tono y contenido (apto para niños)
 
@@ -162,7 +210,7 @@ BrowserSync sirve los archivos fuente directamente (hot-reload en http://localho
 
 - `index.html` carga `estilos.css` y `js/juego.js`
 - Los ~50 módulos JS se cargan individualmente por el navegador
-- `watch-datos.js` vigila cambios en `datos/*.yaml` y regenera los JS correspondientes
+- `watch-datos.js` vigila cambios en `datos/*.yaml` y `cuentos/**/*.{md,yaml}`, regenera los JS correspondientes
 - Editar cualquier archivo recarga el navegador automáticamente
 
 ### Producción (`npm run build`)
@@ -171,10 +219,11 @@ esbuild genera la carpeta `dist/` con todo optimizado:
 
 | Paso          | Entrada                           | Salida                                                             |
 | ------------- | --------------------------------- | ------------------------------------------------------------------ |
-| `build:datos` | `datos/*.yaml`                    | `js/personajes.js`, `js/enemigos.js`, `js/juegos/*/config.js`       |
-| `build:js`    | `js/juego.js` + todos sus imports | `dist/juego.min.js` (1 archivo)                                    |
-| `build:css`   | `estilos.css`                     | `dist/estilos.min.css`                                             |
-| `build:html`  | `index.html`, `assets/`, `sw.js`  | `dist/index.html` (rutas reescritas), `dist/assets/`, `dist/sw.js` |
+| `build:datos`   | `datos/*.yaml`                    | `js/personajes.js`, `js/enemigos.js`, `js/juegos/*/config.js`       |
+| `build:cuentos` | `cuentos/*/libro.yaml` + `*.md`   | `js/cuentos/registro.js`                                            |
+| `build:js`      | `js/juego.js` + todos sus imports | `dist/juego.min.js` (1 archivo)                                     |
+| `build:css`     | `estilos.css`                     | `dist/estilos.min.css`                                              |
+| `build:html`    | `index.html`, `assets/`, `sw.js`  | `dist/index.html` (rutas reescritas), `dist/assets/`, `dist/sw.js`  |
 
 La carpeta `dist/` está en `.gitignore` — nunca se commitea.
 

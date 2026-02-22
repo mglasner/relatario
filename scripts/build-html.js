@@ -1,6 +1,8 @@
 // Script de build: copia index.html a dist/ reescribiendo rutas para producción
 
-import { readFileSync, writeFileSync, mkdirSync, cpSync } from 'fs';
+import { readFileSync, writeFileSync, mkdirSync, cpSync, readdirSync, existsSync } from 'fs';
+import { join } from 'path';
+import yaml from 'js-yaml';
 
 mkdirSync('dist', { recursive: true });
 
@@ -31,6 +33,25 @@ sw = sw.replace("'estilos.min.css'", `'estilos.min.css?v=${buildId}'`);
 writeFileSync('dist/sw.js', sw);
 // eslint-disable-next-line no-console
 console.log('SW cache version: relatario-' + buildId);
+
+// Copiar assets de cuentos publicados a dist/
+if (existsSync('cuentos')) {
+    readdirSync('cuentos', { withFileTypes: true })
+        .filter((d) => d.isDirectory())
+        .forEach((d) => {
+            const libroPath = join('cuentos', d.name, 'libro.yaml');
+            if (!existsSync(libroPath)) return;
+            const meta = yaml.load(readFileSync(libroPath, 'utf-8'));
+            if (!meta || !meta.publicado) return;
+
+            const assetsDir = join('cuentos', d.name, 'assets');
+            if (existsSync(assetsDir)) {
+                const destDir = join('dist', 'cuentos', d.name, 'assets');
+                mkdirSync(destDir, { recursive: true });
+                cpSync(assetsDir, destDir, { recursive: true });
+            }
+        });
+}
 
 // CNAME para GitHub Pages custom domain
 writeFileSync('dist/CNAME', 'relatario.cl');

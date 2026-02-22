@@ -24,6 +24,8 @@ import {
     ordenarPorTier,
     necesitaSeparador,
 } from './componentes/libroVillanos.js';
+import { CUENTOS_ESTANTE, CUENTOS_DATOS } from './cuentos/registro.js';
+import { crearLibroCuento } from './componentes/libroCuento.js';
 
 // --- Estados del juego (máquina de estados) ---
 
@@ -83,6 +85,7 @@ const LIBROS_ESTANTE = [
         color: '#8b3a62',
         img: 'assets/img/biblioteca/lomo-villanario.webp',
     },
+    ...CUENTOS_ESTANTE,
 ];
 
 // --- Estante (homepage) ---
@@ -189,6 +192,19 @@ const fabricaModales = {
     villanario: crearVillanarioModal,
     juegos: crearJuegosModal,
 };
+
+// Registrar factories de cuentos dinámicamente
+CUENTOS_ESTANTE.forEach(function (info) {
+    const slug = info.id.replace('cuento-', '');
+    fabricaModales[info.id] = function () {
+        const datos = CUENTOS_DATOS[slug];
+        if (!datos) return undefined;
+        const { libro, manejarTecladoLibro } = crearLibroCuento(datos);
+        const modal = crearModalLibro(libro, manejarTecladoLibro);
+        contenedorJuego.appendChild(modal.overlay);
+        return modal;
+    };
+});
 
 function obtenerModalLibro(libroId) {
     if (librosCache[libroId]) return librosCache[libroId];

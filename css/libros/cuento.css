@@ -1,0 +1,171 @@
+/* Libro de cuento — tipografía narrativa y estilos de prosa */
+
+/* Variables de color heredadas del libro base (--v-color, --v-oscuro, --v-glow) */
+
+.libro-cuento {
+    --v-color: rgb(180 200 150 / 90%);
+    --v-oscuro: rgb(140 170 110);
+    --v-glow: rgb(180 200 150 / 25%);
+    --v-tenue: rgb(180 200 150 / 10%);
+
+    font-family: Lora, 'Times New Roman', serif;
+}
+
+/* Título del capítulo */
+.libro-capitulo-titulo {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--v-color);
+    text-align: center;
+    margin: 0 0 4px;
+    letter-spacing: 0.02em;
+}
+
+/* Contenedor de prosa (HTML generado desde markdown) */
+.libro-prosa {
+    font-size: 0.88rem;
+    line-height: 1.75;
+    color: rgb(220 210 195);
+}
+
+/* Párrafos con sangría */
+.libro-prosa p {
+    margin: 0 0 0.8em;
+    text-indent: 1.5em;
+}
+
+/* Primer párrafo sin sangría (tiene capitular) */
+.libro-prosa p:first-child {
+    text-indent: 0;
+}
+
+/* Capitular (drop cap) en el primer párrafo */
+.libro-prosa p:first-child::first-letter {
+    font-size: 2.8em;
+    font-weight: 700;
+    float: left;
+    line-height: 0.85;
+    margin: 0.05em 0.08em 0 0;
+    color: var(--v-color);
+}
+
+/* Encabezados dentro de la prosa */
+.libro-prosa h1,
+.libro-prosa h2,
+.libro-prosa h3 {
+    color: var(--v-color);
+    margin: 1.2em 0 0.4em;
+}
+
+.libro-prosa h1 {
+    font-size: 1.2rem;
+}
+
+.libro-prosa h2 {
+    font-size: 1.05rem;
+}
+
+.libro-prosa h3 {
+    font-size: 0.95rem;
+}
+
+/* Énfasis y negritas */
+.libro-prosa strong {
+    color: var(--v-color);
+    font-weight: 700;
+}
+
+.libro-prosa em {
+    font-style: italic;
+    color: rgb(230 220 200);
+}
+
+/* Separador de escena */
+.libro-prosa hr {
+    border: none;
+    height: 1px;
+    margin: 1.5em 2em;
+    background: linear-gradient(to right, transparent, var(--v-oscuro), transparent);
+}
+
+/* Citas / diálogo destacado */
+.libro-prosa blockquote {
+    margin: 1em 0;
+    padding: 0.6em 1em;
+    border-left: 3px solid var(--v-oscuro);
+    background: rgb(255 255 255 / 3%);
+    border-radius: 0 4px 4px 0;
+    font-style: italic;
+    color: rgb(210 200 185);
+}
+
+.libro-prosa blockquote p {
+    text-indent: 0;
+    margin-bottom: 0.4em;
+}
+
+.libro-prosa blockquote p:last-child {
+    margin-bottom: 0;
+}
+
+/* Imágenes / ilustraciones */
+.libro-prosa img {
+    display: block;
+    max-width: 100%;
+    margin: 1em auto;
+    border-radius: 6px;
+    box-shadow: 0 2px 12px rgb(0 0 0 / 40%);
+}
+
+/* Listas */
+.libro-prosa ul,
+.libro-prosa ol {
+    margin: 0.6em 0;
+    padding-left: 1.5em;
+}
+
+.libro-prosa li {
+    margin-bottom: 0.3em;
+}
+
+/* --- Responsive --- */
+
+@media (width <= 768px) {
+    .libro-prosa {
+        font-size: 0.85rem;
+        line-height: 1.7;
+    }
+
+    .libro-capitulo-titulo {
+        font-size: 1.05rem;
+    }
+
+    .libro-prosa p:first-child::first-letter {
+        font-size: 2.4em;
+    }
+}
+
+@media (width <= 480px) {
+    .libro-prosa {
+        font-size: 0.82rem;
+        line-height: 1.65;
+    }
+
+    .libro-prosa p {
+        text-indent: 1em;
+    }
+
+    .libro-capitulo-titulo {
+        font-size: 1rem;
+    }
+
+    .libro-prosa p:first-child::first-letter {
+        font-size: 2.2em;
+    }
+}
+
+@media (width <= 360px) {
+    .libro-prosa {
+        font-size: 0.78rem;
+    }
+}

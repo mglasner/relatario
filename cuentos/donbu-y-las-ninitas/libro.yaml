@@ -1,0 +1,9 @@
+titulo: Las aventuras de DonBu y las niñitas
+subtitulo: Un cuento para leer en familia
+color: '#6b8e4e'
+portada: assets/portada.webp
+lomo: assets/lomo.webp
+publicado: false
+capitulos:
+  - archivo: cap-01.md
+    titulo: Capítulo 1
