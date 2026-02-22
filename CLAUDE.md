@@ -4,27 +4,51 @@ Videojuego web creado como proyecto familiar para aprender HTML, CSS y JavaScrip
 
 ## Estructura del proyecto
 
-```
+```text
 mansion-de-aventuras/
 ├── assets/
 │   └── img/
-│       └── personajes/      # Avatares de los personajes
-│           ├── lina.png
-│           ├── rose.png
-│           └── pandajuro.png
+│       ├── personajes/       # Avatares (.webp) de los personajes jugables
+│       ├── enemigos/         # Avatares (.webp) de los enemigos
+│       ├── sprites-plat/     # Sprite sheets PNG para el platformer (hab4)
+│       ├── habitaciones/     # Ilustraciones de habitaciones para el Heroario
+│       ├── llaves/           # Imágenes de llaves por habitación
+│       ├── pasillo/          # Decoraciones del pasillo (cuadros, enredaderas)
+│       └── icons/            # Favicon e iconos PWA
+├── datos/                    # Fuente de verdad en YAML (genera JS via build-datos)
+│   ├── personajes.yaml       # Personajes jugables: stats, colores, descripciones
+│   ├── enemigos.yaml         # Enemigos organizados en tiers
+│   ├── habitacion1.yaml      # Config del laberinto 2D
+│   ├── habitacion2.yaml      # Config del laberinto 3D
+│   ├── habitacion3.yaml      # Config del memorice
+│   └── habitacion4.yaml      # Config del platformer
 ├── js/
 │   ├── entidades.js          # Clases base: Entidad, Personaje, Enemigo
-│   ├── personajes.js         # Definición de personajes jugables (datos/stats)
-│   ├── enemigos.js           # Definición de enemigos (datos/stats)
+│   ├── personajes.js         # ⚙️ Generado desde datos/personajes.yaml
+│   ├── enemigos.js           # ⚙️ Generado desde datos/enemigos.yaml
 │   ├── juego.js              # Lógica principal, coordina componentes y game loop
-│   ├── componentes/          # Componentes UI (crean su propio HTML desde JS)
-│   │   ├── barraSuperior.js  # Barra de estado: avatar, vida, inventario
-│   │   ├── modalPuerta.js    # Modal de confirmación para entrar a habitaciones
-│   │   └── modalDerrota.js   # Modal de game over (reutilizable en todas las etapas)
-│   └── habitaciones/         # Cada habitación crea su propia pantalla
-│       └── habitacion1.js    # Habitación 1: El Laberinto (buscar la llave)
+│   ├── laberinto.js          # Generador procedural de laberintos (hab1 y hab2)
+│   ├── eventos.js            # Nombres de eventos custom centralizados
+│   ├── utils.js              # Utilidades compartidas
+│   ├── componentes/          # ~17 componentes UI (crean su propio HTML desde JS)
+│   ├── habitaciones/         # 4 subdirectorios, uno por habitación
+│   │   ├── habitacion1/      # El Laberinto (6 módulos)
+│   │   ├── habitacion2/      # El Laberinto 3D (4 módulos)
+│   │   ├── habitacion3/      # El Memorice (4 módulos)
+│   │   └── habitacion4/      # El Abismo — platformer (15 módulos)
+│   └── motor3d/              # Motor raycasting estilo Doom para hab2 (11 módulos)
+├── scripts/
+│   ├── build-datos.js        # YAML → JS (personajes, enemigos, configs)
+│   ├── build-html.js         # Reescribe rutas para producción
+│   ├── dev.js                # BrowserSync + watcher de YAML
+│   ├── watch-datos.js        # Vigila cambios en datos/*.yaml
+│   ├── optimizar-imagenes.js # Optimización de imágenes
+│   ├── procesar-sprites.cjs  # Extrae frames de sprite sheets IA
+│   └── ensamblar-sprites.cjs # Ensambla strip final de sprites
 ├── index.html                # Estructura de las pantallas del juego
 ├── estilos.css               # Estilos visuales y animaciones
+├── sw.js                     # Service Worker (cache strategies)
+├── manifest.webmanifest      # Manifest PWA
 └── CLAUDE.md
 ```
 
@@ -34,31 +58,31 @@ mansion-de-aventuras/
 - Build de producción: esbuild (bundle + minificación)
 - Deploy: GitHub Actions → GitHub Pages
 
-## Personajes
+## Personajes y enemigos
 
-| Nombre        | Descripción                                    | Paleta    |
-| ------------- | ---------------------------------------------- | --------- |
-| **Lina**      | 13 años. Valiente e inteligente                | Morado    |
-| **Rosé**      | 10 años. Inteligente, valiente, nunca se rinde | Verde     |
-| **PandaJuro** | Panda samurái. Furioso, leal y honorable       | Azul/Rojo |
+Definidos en `datos/personajes.yaml` y `datos/enemigos.yaml` respectivamente. El script `build-datos` genera los archivos JS a partir de estos YAML.
+
+Cada personaje tiene: nombre, edad, vida, velocidad, estatura, clase CSS (`jugador-{nombre}`), color HUD, descripción y avatar `.webp` en `assets/img/personajes/`.
+
+Cada enemigo tiene: nombre, tier (`esbirro`/`elite`/`pesadilla`), vida, ataques, descripción y avatar `.webp` en `assets/img/enemigos/`.
 
 ## Pantallas implementadas
 
-1. **Selección de personaje** - Elegir entre Lina, Rosé o PandaJuro con animaciones al seleccionar
-2. **Pasillo** - Pasillo con 4 puertas, movimiento con flechas y modal de confirmación
-3. **Habitación 1: El Laberinto** - Grid 15x13 donde el jugador busca una llave y vuelve a la salida
+1. **Selección de personaje** — Elegir personaje con animaciones al seleccionar
+2. **Pasillo** — Pasillo con 4 puertas, movimiento con flechas/D-pad, Heroario y Villanario como libros flotantes
+3. **Habitación 1: El Laberinto** — Laberinto 2D procedural (17×17) con trampas, esbirros y villano elite
+4. **Habitación 2: El Laberinto 3D** — Laberinto en primera persona (raycasting estilo Doom, 13×13) con trampas de fuego
+5. **Habitación 3: El Memorice** — Juego de memoria 4×5, emparejar héroes con villanos en 30 intentos
+6. **Habitación 4: El Abismo** — Platformer 2D side-scrolling en canvas 480×270, con esbirros, boss final y llaves
 
-## Diseño de villanos
+## Tono y contenido (apto para niños)
 
-El juego es apto para niños desde 7 años. Los villanos deben seguir estas reglas:
+El juego es apto para niños desde 7 años. Todo el contenido debe seguir estas reglas:
 
 - **Estilo visual**: cartoon/fantasía/aventura, sin sangre ni gore. Colores variados y estilizados
 - **Descripciones**: tono de aventura, fantasía y misterio, divertido, nunca violento ni gráfico (nada de "asesino", "sangre", "muerte", "infierno")
 - **Ataques**: nombres de magia/sombras/misterio/aventura en vez de violencia explícita (ej: "Hechizo sombrío" en vez de "Corte maldito")
-- **Imagen**: generada con estilo semi-cartoon, apta para niños, circular para avatar de juego
-- **Paleta CSS**: cada villano tiene su clase `.villano-nombre` con colores de borde, fondo, h3, avatar img, barra de vida y ataque-dano
-- **Datos**: definidos en `js/enemigos.js` como instancias de `Enemigo(nombre, vidaMax, ataques[], descripcion)`
-- **Imágenes**: van en `assets/img/enemigos/`
+- **Imágenes**: generadas con estilo semi-cartoon, aptas para niños
 
 ## Linting y formateo
 
@@ -91,21 +115,23 @@ Primero los linters (que pueden cambiar lógica como `let` → `const`), luego P
 
 ### Desarrollo (`npm run dev`)
 
-BrowserSync sirve los archivos fuente directamente (hot-reload en http://localhost:3000). No hay build, se usan los ES modules originales:
+BrowserSync sirve los archivos fuente directamente (hot-reload en http://localhost:3000). No hay build de JS/CSS, se usan los ES modules originales:
 
 - `index.html` carga `estilos.css` y `js/juego.js`
-- Los 25+ módulos JS se cargan individualmente por el navegador
+- Los ~50 módulos JS se cargan individualmente por el navegador
+- `watch-datos.js` vigila cambios en `datos/*.yaml` y regenera los JS correspondientes
 - Editar cualquier archivo recarga el navegador automáticamente
 
 ### Producción (`npm run build`)
 
 esbuild genera la carpeta `dist/` con todo optimizado:
 
-| Paso         | Entrada                           | Salida                                                             |
-| ------------ | --------------------------------- | ------------------------------------------------------------------ |
-| `build:js`   | `js/juego.js` + todos sus imports | `dist/juego.min.js` (~54 KB, 1 archivo)                            |
-| `build:css`  | `estilos.css`                     | `dist/estilos.min.css` (~34 KB)                                    |
-| `build:html` | `index.html`, `assets/`, `sw.js`  | `dist/index.html` (rutas reescritas), `dist/assets/`, `dist/sw.js` |
+| Paso          | Entrada                           | Salida                                                             |
+| ------------- | --------------------------------- | ------------------------------------------------------------------ |
+| `build:datos` | `datos/*.yaml`                    | `js/personajes.js`, `js/enemigos.js`, `js/habitaciones/*/config.js` |
+| `build:js`    | `js/juego.js` + todos sus imports | `dist/juego.min.js` (1 archivo)                                    |
+| `build:css`   | `estilos.css`                     | `dist/estilos.min.css`                                             |
+| `build:html`  | `index.html`, `assets/`, `sw.js`  | `dist/index.html` (rutas reescritas), `dist/assets/`, `dist/sw.js` |
 
 El script `scripts/build-html.js` reescribe las rutas en el HTML:
 
@@ -118,7 +144,7 @@ La carpeta `dist/` está en `.gitignore` — nunca se commitea.
 
 Archivo: `.github/workflows/deploy.yml`
 
-```
+```text
 Push a main → GitHub Actions ejecuta npm run build → dist/ se despliega a GitHub Pages
 ```
 
@@ -140,143 +166,19 @@ Incrementar `CACHE_NAME` en `sw.js` para invalidar el cache en actualizaciones.
 
 ## Sprites del platformer (Habitación 4)
 
-La Habitación 4 (El Abismo) es un platformer 2D en canvas 480×270. Los personajes usan sprite sheets PNG generados con IA, con fallback a sprites procedurales para personajes sin sheet.
+La Habitación 4 (El Abismo) es un platformer 2D en canvas 480×270. Personajes y enemigos usan sprite sheets PNG (strips horizontales de 48×60 px por frame), con fallback a sprites procedurales.
 
-### Archivos
-
-- **Sprite sheets finales**: `assets/img/sprites-plat/{nombre}.png` — strip horizontal PNG con transparencia, frames de 32×40 px
-- **Imágenes fuente (IA)**: `assets/img/generadas/spritesheet_{nombre}_vN.jpg` — no se commitean, solo para reprocesar
-- **Scripts**: `scripts/procesar-sprites.cjs` (extrae frames) y `scripts/ensamblar-sprites.cjs` (ensambla strip final)
-
-### Layouts de sprite sheet
-
-Existen dos layouts según si el personaje tiene ataques:
-
-**Layout 9 frames** (sin ataques): `[idle×2, run×4, jump, fall, hit]`
-
-| Índice | Estado | Frames |
-|--------|--------|--------|
-| 0-1 | idle | 2 |
-| 2-5 | correr | 4 |
-| 6 | saltar | 1 |
-| 7 | caer | 1 |
-| 8 | golpeado | 1 |
-
-**Layout 15 frames** (con ataques): `[idle×2, run×6, jump, fall, hit, atk1×2, atk2×2]`
-
-| Índice | Estado | Frames |
-|--------|--------|--------|
-| 0-1 | idle | 2 |
-| 2-7 | correr | 6 |
-| 8 | saltar | 1 |
-| 9 | caer | 1 |
-| 10 | golpeado | 1 |
-| 11-12 | ataque1 | 2 (wind-up + golpe) |
-| 13-14 | ataque2 | 2 (wind-up + golpe) |
-
-### Procedimiento para agregar un personaje nuevo
-
-#### Paso 1: Generar sprite sheet con IA
-
-Usar la tool `generate_image` con estos parámetros clave:
-
-- **aspectRatio**: `3:2` (para 15 frames en 3×5) o `21:9` (para 9 frames en 2×5)
-- **Fondo**: verde chroma key `#00ff00`
-- **Estilo**: pixel art, chibi, 16-bit retro platformer
-
-**Estructura del prompt (15 frames):**
-
-```
-Pixel art sprite sheet for a 2D platformer game. Character: [DESCRIPCIÓN FÍSICA
-DEL PERSONAJE - antropomorfo/humano, ropa, colores, proporciones chibi, rasgos
-distintivos].
-
-Show exactly 15 frames arranged in 3 rows of 5 frames each, on a solid bright
-green background (#00ff00 chroma key). Side view facing right.
-
-Row 1: Frame 1 = idle standing still. Frame 2 = idle with slight breathing
-movement. Frame 3 = running with LEFT LEG stepping forward and RIGHT ARM forward.
-Frame 4 = running with both legs under body (passing position). Frame 5 = running
-with RIGHT LEG stepping forward and LEFT ARM forward.
-
-Row 2: Frame 6 = running with LEFT LEG far forward in a stride. Frame 7 = running
-with RIGHT LEG far forward in a stride. Frame 8 = running with both legs under
-body again. Frame 9 = jumping upward with both arms raised and legs tucked
-together. Frame 10 = falling downward with arms and legs spread wide.
-
-Row 3: Frame 11 = hurt/recoiling in pain. Frame 12 = [ATAQUE 1 WIND-UP]. Frame
-13 = [ATAQUE 1 GOLPE]. Frame 14 = [ATAQUE 2 WIND-UP]. Frame 15 = [ATAQUE 2
-GOLPE].
-
-IMPORTANT: In the running frames, alternate which leg is in front - frames 3 and
-6 show LEFT leg forward, frames 5 and 7 show RIGHT leg forward.
-
-Clean pixel art style, 16-bit retro platformer aesthetic, crisp pixels, consistent
-character across all frames.
-```
-
-**Lecciones aprendidas:**
-- Ser EXPLÍCITO sobre alternancia de piernas izquierda/derecha en cada frame de carrera
-- Para personajes animales, especificar "anthropomorphic, bipedal, walks on two legs like a human"
-- Si la IA genera frames con la misma pierna siempre adelante, regenerar con prompt más explícito
-- NO usar espejo horizontal para simular alternancia: voltea todo el cuerpo, no solo las piernas
-
-#### Paso 2: Procesar — extraer frames individuales
-
-1. Agregar entrada en `SHEETS` de `scripts/procesar-sprites.cjs`:
-   ```js
-   { input: 'spritesheet_{nombre}_vN.jpg', output: '{nombre}.png', name: 'Nombre' },
-   ```
-2. Ejecutar: `node scripts/procesar-sprites.cjs`
-3. Inspeccionar frames ampliados (el script genera `{nombre}_frame{N}.png` y `{nombre}_frame{N}_4x.png`)
-4. Verificar: alternancia de piernas en run, poses claras de jump/fall/hit/ataques
-
-#### Paso 3: Mapear frames y ensamblar
-
-1. Identificar visualmente qué frame detectado corresponde a cada estado de animación
-2. Agregar mapeo en `PERSONAJES` de `scripts/ensamblar-sprites.cjs`:
-   ```js
-   nombre: {
-       // idle(2) + run(6) + jump + fall + hit + atk1(2) + atk2(2) = 15
-       frames: [0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15],
-   },
-   ```
-   - Saltar frames de ruido (ej: frame de 1×3 px)
-   - El script soporta `{ idx: N, flip: true }` para espejo horizontal (usar con cautela)
-3. Ejecutar: `node scripts/ensamblar-sprites.cjs`
-4. Verificar preview generado en `assets/img/sprites-plat/{nombre}_preview.png`
-
-#### Paso 4: Registrar en el código
-
-Agregar entrada en `SPRITE_SHEETS` de `js/habitaciones/habitacion4/spritesPlat.js`:
-```js
-const SPRITE_SHEETS = {
-    nombre: { src: 'assets/img/sprites-plat/nombre.png', frames: 15 },
-};
-```
-
-El valor de `frames` (9 o 15) determina qué layout usa el código automáticamente.
-
-#### Paso 5: Limpiar temporales
-
-```bash
-rm assets/img/sprites-plat/*_frame*.png assets/img/sprites-plat/*_preview.png
-rm assets/img/generadas/*_preview.png
-```
-
-### Integración en el juego
-
-- `spritesPlat.js` carga el sheet por nombre del personaje (`jugadorRef.nombre`), con fallback procedural inmediato
-- El sprite 32×40 se renderiza centrado sobre el hitbox de 12×14 (pies alineados abajo)
-- Personajes sin sprite sheet usan sprites procedurales de 12×14 generados pixel a pixel
-- Los frames de ataque (ataque1, ataque2) están almacenados pero aún no se usan en el gameplay
+- **Sprite sheets**: `assets/img/sprites-plat/{nombre}.png`
+- **Layouts**: 9 frames (sin ataques) o 15 frames (con ataques). El valor de `frames` en `SPRITE_SHEETS` de `spritesPlat.js` determina el layout automáticamente
+- **Renderizado**: sprite 48×60 centrado sobre hitbox de 12×14 (pies alineados abajo)
+- **Creación de nuevos sprites**: ver skill `/crear-personaje` → `references/sprites-plat.md`
 
 ## Convenciones
 
 - Archivos e IDs en español (ej: `estilos.css`, `#seleccion-personaje`, `#btn-jugar`)
 - Comentarios en español
-- Cada personaje tiene su clase CSS propia (`personaje-lina`, `personaje-rose`, `personaje-pandajuro`) con colores y animaciones individuales
-- Imágenes de personajes van en `assets/img/personajes/`
+- Cada personaje tiene su clase CSS propia (`jugador-{nombre}`) con colores y animaciones individuales; cada enemigo tiene `.villano-{nombre}`
+- Imágenes: personajes en `assets/img/personajes/`, enemigos en `assets/img/enemigos/`, sprites en `assets/img/sprites-plat/` (todas `.webp` excepto sprites que son `.png`)
 - Código simple y comentado para fines educativos
 - **Componentes**: Módulos JS que crean su propio HTML con DOM API, exportan una función `crear*(contenedor)` que retorna un objeto con métodos (mostrar, ocultar, actualizar, etc.)
 - **Habitaciones**: Módulos autocontenidos que crean/destruyen su pantalla al entrar/salir. Se comunican con juego.js mediante callbacks y eventos custom (`document.dispatchEvent`)

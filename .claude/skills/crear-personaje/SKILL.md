@@ -104,6 +104,15 @@ grep "new Enemigo\|new Personaje" js/enemigos.js js/personajes.js
 npm run lint
 ```
 
+### Paso 8 (opcional): Sprite sheet para platformer
+
+Si el personaje aparecerá en la Habitación 4 (El Abismo), generar su sprite sheet
+siguiendo el procedimiento en `references/sprites-plat.md`. Incluye generación con
+IA, procesamiento de frames, ensamblaje y registro en `spritesPlat.js`.
+
+Personajes sin sprite sheet usan fallback procedural automáticamente, por lo que
+este paso puede hacerse después.
+
 ## Creación Múltiple
 
 Al crear varios personajes en una sesión, repetir los pasos 2-4 para cada uno,
@@ -113,3 +122,4 @@ luego hacer los pasos 5-6 una sola vez al final.
 
 - **`references/campos-yaml.md`** — Esquemas YAML completos para héroes y villanos
 - **`references/paleta-css.md`** — Estructura CSS de paletas con ejemplo
+- **`references/sprites-plat.md`** — Procedimiento completo para sprite sheets del platformer
