@@ -40,14 +40,22 @@ color: '#7a6e5d'
 portada: assets/portada.webp
 publicado: false
 capitulos:
+  - archivo: prologo.md
+    titulo: Prólogo
   - archivo: cap-01.md
     titulo: Capítulo 1
+  - archivo: epilogo.md
+    titulo: Epílogo
 `;
 
 writeFileSync(`${dir}/libro.yaml`, libroYaml);
+writeFileSync(`${dir}/prologo.md`, 'Aquí comienza el prólogo...\n');
 writeFileSync(`${dir}/cap-01.md`, 'Aquí comienza tu historia...\n');
+writeFileSync(`${dir}/epilogo.md`, 'Aquí termina la historia...\n');
 
 console.log(`Cuento creado en ${dir}/`);
-console.log('  libro.yaml  — metadata (publicado: false)');
-console.log('  cap-01.md   — primer capítulo');
-console.log('  assets/     — directorio para imágenes');
+console.log('  libro.yaml   — metadata (publicado: false)');
+console.log('  prologo.md   — prólogo');
+console.log('  cap-01.md    — primer capítulo');
+console.log('  epilogo.md   — epílogo');
+console.log('  assets/      — directorio para imágenes');
