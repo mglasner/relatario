@@ -66,6 +66,12 @@ const toast = crearToast();
 
 const LIBROS_ESTANTE = [
     {
+        id: 'juegos',
+        titulo: 'Libro de Juegos',
+        color: '#4a7c59',
+        img: 'assets/img/biblioteca/lomo-juegos.webp',
+    },
+    {
         id: 'heroario',
         titulo: 'Heroario',
         color: '#c8a050',
@@ -76,12 +82,6 @@ const LIBROS_ESTANTE = [
         titulo: 'Villanario',
         color: '#8b3a62',
         img: 'assets/img/biblioteca/lomo-villanario.webp',
-    },
-    {
-        id: 'juegos',
-        titulo: 'Libro de Juegos',
-        color: '#4a7c59',
-        img: 'assets/img/biblioteca/lomo-juegos.webp',
     },
 ];
 
