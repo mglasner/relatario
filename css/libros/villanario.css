@@ -1,0 +1,63 @@
+/* Villanario — página de rangos */
+
+.libro-rangos {
+    text-align: center;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}
+
+.libro-rangos-intro {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: rgb(220 205 180 / 90%);
+    margin: 4px 0 0;
+    max-width: 280px;
+}
+
+.libro-rangos-lista {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0;
+    margin-top: 10px;
+    text-align: left;
+    width: 100%;
+    max-width: 300px;
+}
+
+.libro-rango-fila {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgb(255 215 0 / 8%);
+}
+
+.libro-rango-fila:last-child {
+    border-bottom: none;
+}
+
+.libro-rango-emoji {
+    font-size: 1.4rem;
+    line-height: 1;
+    flex-shrink: 0;
+    width: 30px;
+    text-align: center;
+}
+
+.libro-rango-nombre {
+    color: rgb(240 210 150 / 95%);
+    font-family: var(--font-display);
+    font-size: 0.88rem;
+}
+
+.libro-rango-desc {
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: rgb(220 205 180 / 70%);
+    margin: 2px 0 0;
+}

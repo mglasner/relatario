@@ -1,0 +1,141 @@
+/* D-pad virtual (touch) */
+
+.dpad-contenedor {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 150;
+    display: grid;
+    grid-template:
+        '.     arriba  .      ' 56px
+        'izq   .       der    ' 56px
+        '.     abajo   .      ' 56px
+        / 56px 56px 56px;
+    gap: 0;
+}
+
+.dpad-btn {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    border: 2px solid rgb(255 255 255 / 15%);
+    border-radius: 12px;
+    background-color: rgb(15 15 30 / 75%);
+    color: rgb(255 255 255 / 60%);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: none;
+    user-select: none;
+    transition:
+        background-color 0.1s,
+        border-color 0.1s;
+}
+
+.dpad-btn::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+}
+
+.dpad-btn:active,
+.dpad-btn.dpad-activo {
+    background-color: rgb(233 69 96 / 40%);
+    border-color: var(--color-accent);
+    color: white;
+}
+
+.dpad-arriba {
+    grid-area: arriba;
+}
+
+.dpad-izquierda {
+    grid-area: izq;
+}
+
+.dpad-derecha {
+    grid-area: der;
+}
+
+.dpad-abajo {
+    grid-area: abajo;
+}
+
+.dpad-contenedor.dpad-cruz-split {
+    left: 20px;
+    transform: none;
+}
+
+/* --- D-pad split (platformer: izq movimiento / der acciones) --- */
+
+.dpad-izq-contenedor {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 150;
+    display: flex;
+    gap: 8px;
+}
+
+.dpad-der-contenedor {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    z-index: 150;
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+}
+
+/* Boton A: accion principal (saltar) — grande, destacado */
+.dpad-btn-a {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border-color: rgb(94 234 219 / 50%);
+    background-color: rgb(94 234 219 / 15%);
+    color: rgb(94 234 219 / 90%);
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.dpad-btn-a:active {
+    background-color: rgb(94 234 219 / 40%);
+    border-color: #5eeadb;
+    color: white;
+}
+
+/* Boton B: accion secundaria — mas chico, arriba-izquierda del A */
+.dpad-btn-b {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    margin-bottom: 24px;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.dpad-btn-b:disabled {
+    opacity: 0.25;
+    border-style: dashed;
+    pointer-events: none;
+}
+
+/* Ocultar D-pad en dispositivos sin touch */
+@media (hover: hover) and (pointer: fine) {
+    .dpad-contenedor,
+    .dpad-izq-contenedor,
+    .dpad-der-contenedor {
+        display: none !important;
+    }
+}
+
+/* Ocultar D-pad cuando un libro (heroario/villanario) está abierto */
+body:has(.libro-modal:not(.oculto)) .dpad-contenedor,
+body:has(.libro-modal:not(.oculto)) .dpad-izq-contenedor,
+body:has(.libro-modal:not(.oculto)) .dpad-der-contenedor {
+    display: none !important;
+}

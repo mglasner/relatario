@@ -1,0 +1,280 @@
+/* Barra superior — HUD del jugador */
+
+.barra-superior {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background-color: rgb(15 15 30 / 95%);
+    border: 2px solid var(--color-borde);
+    border-radius: 10px;
+    padding: 8px 15px;
+    margin-bottom: 15px;
+}
+
+.barra-jugador {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.barra-jugador img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #888;
+}
+
+.barra-jugador span {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: var(--color-texto);
+}
+
+.barra-vida-jugador {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 100px;
+}
+
+.barra-vida-corazon {
+    font-size: 0.9rem;
+    animation: latido 1.2s ease-in-out infinite;
+}
+
+@keyframes latido {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    15% {
+        transform: scale(1.25);
+    }
+
+    30% {
+        transform: scale(1);
+    }
+}
+
+.barra-vida-jugador .barra-vida-fondo {
+    flex: 1;
+    height: 14px;
+    border-radius: 7px;
+    position: relative;
+}
+
+.barra-vida-jugador .barra-vida-relleno {
+    border-radius: 7px;
+    transition:
+        transform 0.4s ease,
+        background 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.barra-vida-jugador .barra-vida-relleno::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgb(255 255 255 / 25%) 50%,
+        transparent 100%
+    );
+    animation: shimmer-vida 2.5s ease-in-out infinite;
+}
+
+@keyframes shimmer-vida {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.barra-vida-texto {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 1px 2px rgb(0 0 0 / 60%);
+    z-index: 1;
+}
+
+.barra-vida-peligro .barra-vida-corazon {
+    animation: latido-rapido 0.5s ease-in-out infinite;
+}
+
+@keyframes latido-rapido {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.35);
+    }
+}
+
+.barra-inventario {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+}
+
+.inventario-slot {
+    width: 28px;
+    height: 28px;
+    border: 2px solid rgb(255 255 255 / 8%);
+    border-radius: 6px;
+    background-color: rgb(255 255 255 / 3%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+        border-color 0.3s,
+        background-color 0.3s,
+        box-shadow 0.3s;
+}
+
+.inventario-slot-lleno {
+    border-color: var(--slot-color);
+    background-color: rgb(255 255 255 / 6%);
+    box-shadow:
+        0 0 8px var(--slot-color),
+        inset 0 0 6px rgb(0 0 0 / 30%);
+    animation: slot-aparecer 0.4s ease;
+}
+
+.inventario-item-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+@keyframes slot-aparecer {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Colores de borde de avatar según personaje */
+.barra-lina .barra-jugador img {
+    border-color: #9b59b6;
+}
+
+.barra-rose .barra-jugador img {
+    border-color: #2ecc71;
+}
+
+.barra-pandajuro .barra-jugador img {
+    border-color: #c0392b;
+}
+
+.barra-hana .barra-jugador img {
+    border-color: #e91e90;
+}
+
+.barra-kira .barra-jugador img {
+    border-color: #2ec4b6;
+}
+
+.barra-donbu .barra-jugador img {
+    border-color: #d4a052;
+}
+
+/* --- Responsive --- */
+
+@media (width <= 768px) {
+    .barra-superior {
+        gap: 10px;
+        padding: 6px 10px;
+    }
+
+    .barra-jugador img {
+        width: 28px;
+        height: 28px;
+    }
+
+    .barra-jugador span {
+        font-size: 0.8rem;
+    }
+
+    .barra-vida-jugador {
+        min-width: 80px;
+    }
+
+    .inventario-slot {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+@media (width <= 480px) {
+    .barra-superior {
+        gap: 6px;
+        padding: 5px 8px;
+    }
+
+    .barra-jugador img {
+        width: 24px;
+        height: 24px;
+    }
+
+    .barra-jugador span {
+        font-size: 0.75rem;
+    }
+
+    .barra-vida-texto {
+        font-size: 0.6rem;
+    }
+
+    .barra-vida-jugador {
+        min-width: 60px;
+        gap: 4px;
+    }
+
+    .barra-vida-corazon {
+        font-size: 0.75rem;
+    }
+
+    .inventario-slot {
+        width: 22px;
+        height: 22px;
+    }
+}
+
+/* Ajustes landscape para modo inmersivo (mobile) */
+@media (orientation: landscape) and (pointer: coarse) {
+    #juego.juego-inmersivo {
+        padding: 2px 4px;
+    }
+
+    #juego.juego-inmersivo .barra-superior,
+    #juego.juego-inmersivo .cabecera-juego {
+        display: none;
+    }
+}

@@ -1,0 +1,44 @@
+/* Overlay "gira tu dispositivo" */
+
+.overlay-rotar {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: rgb(10 5 20 / 95%);
+}
+
+.overlay-rotar-icono {
+    font-size: 4rem;
+    animation: rotar-icono 2s ease-in-out infinite;
+}
+
+.overlay-rotar-mensaje {
+    color: rgb(255 255 255 / 85%);
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+}
+
+@keyframes rotar-icono {
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    50% {
+        transform: rotate(90deg);
+    }
+}
+
+/* Ocultar overlay en desktop */
+@media (hover: hover) and (pointer: fine) {
+    .overlay-rotar {
+        display: none !important;
+    }
+}

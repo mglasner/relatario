@@ -13,11 +13,29 @@ mansion-de-aventuras/
 │       ├── sprites-plat/     # Sprite sheets PNG para el platformer
 │       ├── juegos/           # Ilustraciones de juegos para el Libro de Juegos
 │       └── icons/            # Favicon e iconos PWA
-├── css/                      # Estilos por juego (@import desde estilos.css)
-│   ├── laberinto.css         # El Laberinto (laberinto 2D)
-│   ├── laberinto3d.css       # El Laberinto 3D (raycasting)
-│   ├── memorice.css          # El Memorice (memoria)
-│   └── abismo.css            # El Abismo (platformer)
+├── css/                      # Estilos modulares (@import desde estilos.css)
+│   ├── base.css              # Variables, fuentes, reset, dark mode, .oculto
+│   ├── componentes/
+│   │   ├── modales.css       # Modal salir + modal derrota
+│   │   ├── barra-superior.css # HUD del jugador
+│   │   ├── transiciones.css  # Fade, wipe, iris
+│   │   ├── dpad.css          # D-pad virtual + split
+│   │   ├── overlay-rotar.css # "Gira tu dispositivo"
+│   │   └── toast.css         # Notificaciones flotantes
+│   ├── libros/
+│   │   ├── entidades.css     # Colores personajes/villanos, stats, tiers
+│   │   ├── comun.css         # Libro layout, tabs, paneles, prólogo, modal
+│   │   ├── heroario.css      # Estilos específicos del heroario
+│   │   ├── villanario.css    # Página de rangos
+│   │   └── libroJuegos.css   # Páginas de juegos, selector héroe, modal héroe
+│   ├── juegos/
+│   │   ├── comun.css         # Paletas .juego-*, cabecera, btn-huir
+│   │   ├── laberinto.css     # El Laberinto (laberinto 2D)
+│   │   ├── laberinto3d.css   # El Laberinto 3D (raycasting)
+│   │   ├── memorice.css      # El Memorice (memoria)
+│   │   └── abismo.css        # El Abismo (platformer)
+│   └── biblioteca/
+│       └── biblioteca.css    # Estante homepage
 ├── datos/                    # Fuente de verdad en YAML (genera JS via build-datos)
 │   ├── personajes.yaml       # Personajes jugables: stats, colores, descripciones
 │   ├── enemigos.yaml         # Enemigos organizados en tiers

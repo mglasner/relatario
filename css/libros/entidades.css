@@ -1,0 +1,692 @@
+/* Entidades — colores de personajes, villanos, stats, tiers */
+
+/* --- Avatares (libros) --- */
+
+.avatar {
+    font-size: 4rem;
+    margin-bottom: 10px;
+    display: inline-block;
+}
+
+.avatar img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--color-texto-muy-apagado);
+}
+
+/* --- Colores por personaje --- */
+
+/* Lina - paleta morada */
+.personaje-lina {
+    --v-color: #bb86fc;
+    --v-oscuro: #9b59b6;
+    --v-glow: rgb(187 134 252 / 40%);
+    --v-tenue: rgb(187 134 252 / 12%);
+
+    border-color: #4a1a6b;
+    background-color: #1a0a2e;
+}
+
+.personaje-lina h3 {
+    color: #bb86fc;
+}
+
+.personaje-lina .avatar img {
+    border-color: #9b59b6;
+}
+
+/* Rosé - paleta verde */
+.personaje-rose {
+    --v-color: #6bfc86;
+    --v-oscuro: #2ecc71;
+    --v-glow: rgb(107 252 134 / 40%);
+    --v-tenue: rgb(107 252 134 / 12%);
+
+    border-color: #1a6b2a;
+    background-color: #0a2e14;
+}
+
+.personaje-rose h3 {
+    color: #6bfc86;
+}
+
+.personaje-rose .avatar img {
+    border-color: #2ecc71;
+}
+
+/* Hana - paleta rosa/fucsia */
+.personaje-hana {
+    --v-color: #fc86d4;
+    --v-oscuro: #e91e90;
+    --v-glow: rgb(252 134 212 / 40%);
+    --v-tenue: rgb(252 134 212 / 12%);
+
+    border-color: #6b1a5a;
+    background-color: #2e0a28;
+}
+
+.personaje-hana h3 {
+    color: #fc86d4;
+}
+
+.personaje-hana .avatar img {
+    border-color: #e91e90;
+}
+
+/* DonBu - paleta marrón/ámbar */
+.personaje-donbu {
+    --v-color: #e6b86a;
+    --v-oscuro: #d4a052;
+    --v-glow: rgb(230 184 106 / 40%);
+    --v-tenue: rgb(230 184 106 / 12%);
+
+    border-color: #6b4a1a;
+    background-color: #2e1a0a;
+}
+
+.personaje-donbu h3 {
+    color: #fcca6b;
+}
+
+.personaje-donbu .avatar img {
+    border-color: #d4a052;
+}
+
+/* Kira - paleta teal/púrpura */
+.personaje-kira {
+    --v-color: #3dd8c8;
+    --v-oscuro: #2ec4b6;
+    --v-glow: rgb(61 216 200 / 40%);
+    --v-tenue: rgb(61 216 200 / 12%);
+
+    border-color: #1a5a5a;
+    background-color: #0a2020;
+}
+
+.personaje-kira h3 {
+    color: #5eeadb;
+}
+
+.personaje-kira .avatar img {
+    border-color: #2ec4b6;
+}
+
+/* PandaJuro - paleta azul con rojo */
+.personaje-pandajuro {
+    --v-color: #e74c3c;
+    --v-oscuro: #c0392b;
+    --v-glow: rgb(231 76 60 / 40%);
+    --v-tenue: rgb(231 76 60 / 12%);
+
+    border-color: #1a3a6b;
+    background-color: #0a1430;
+}
+
+.personaje-pandajuro h3 {
+    color: #6bb5fc;
+}
+
+.personaje-pandajuro .avatar img {
+    border-color: #c0392b;
+}
+
+/* PomPom - paleta rosa/crema */
+.personaje-pompom {
+    --v-color: #fcc2d7;
+    --v-oscuro: #f8a5c2;
+    --v-glow: rgb(252 194 215 / 40%);
+    --v-tenue: rgb(252 194 215 / 12%);
+
+    border-color: #7a4a5a;
+    background-color: #2a1520;
+}
+
+.personaje-pompom h3 {
+    color: #fcc2d7;
+}
+
+.personaje-pompom .avatar img {
+    border-color: #f8a5c2;
+}
+
+/* Orejas - paleta naranja/tierra */
+.personaje-orejas {
+    --v-color: #f0a04b;
+    --v-oscuro: #e67e22;
+    --v-glow: rgb(240 160 75 / 40%);
+    --v-tenue: rgb(240 160 75 / 12%);
+
+    border-color: #6b3a0a;
+    background-color: #2a1505;
+}
+
+.personaje-orejas h3 {
+    color: #f0a04b;
+}
+
+.personaje-orejas .avatar img {
+    border-color: #e67e22;
+}
+
+.descripcion {
+    font-size: 0.85rem;
+    color: var(--color-texto-secundario);
+    margin-bottom: 10px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* --- Stats del personaje en la tarjeta --- */
+
+.stats {
+    text-align: left;
+    border-top: 1px solid rgb(255 255 255 / 8%);
+    padding-top: 10px;
+    margin-top: 4px;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #9898b0;
+    margin-bottom: 4px;
+}
+
+/* Barra de vida */
+.stat-vida {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 2px 8px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.stat-vida .stat-label {
+    grid-column: 1 / -1;
+}
+
+.barra-vida-fondo {
+    height: 6px;
+    background-color: rgb(255 255 255 / 8%);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.barra-vida-relleno {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #e94560, #ff6b81);
+    border-radius: 3px;
+    transform-origin: left;
+    transition: transform 0.3s;
+}
+
+.stat-valor {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #ccc;
+}
+
+/* Barra de velocidad */
+.stat-velocidad {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 2px 8px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.stat-velocidad .stat-label {
+    grid-column: 1 / -1;
+}
+
+.barra-velocidad-relleno {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+    border-radius: 3px;
+    transform-origin: left;
+    transition: transform 0.3s;
+}
+
+.stat-vel-ataque {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 2px 8px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.stat-vel-ataque .stat-label {
+    grid-column: 1 / -1;
+}
+
+.barra-vel-ataque-relleno {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #e05a8a, #f472b6);
+    border-radius: 3px;
+    transform-origin: left;
+    transition: transform 0.3s;
+}
+
+/* Ataques */
+.stat-atributos {
+    margin-top: 6px;
+    margin-bottom: 12px;
+}
+
+.stat-atributos .tier-badge {
+    position: static;
+}
+
+.stat-ataques {
+    margin-top: 12px;
+}
+
+.ataque {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3px 0;
+}
+
+.ataque-nombre {
+    font-size: 0.75rem;
+    color: #b0b0c0;
+}
+
+.ataque-dano {
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: var(--color-accent);
+    background-color: rgb(233 69 96 / 12%);
+    padding: 1px 6px;
+    border-radius: var(--radio-boton);
+}
+
+/* Colores de barra de vida por personaje */
+.personaje-lina .barra-vida-relleno {
+    background: linear-gradient(90deg, #9b59b6, #bb86fc);
+}
+
+.personaje-lina .ataque-dano {
+    color: #bb86fc;
+    background-color: rgb(155 89 182 / 15%);
+}
+
+.personaje-rose .barra-vida-relleno {
+    background: linear-gradient(90deg, #2ecc71, #6bfc86);
+}
+
+.personaje-rose .ataque-dano {
+    color: #6bfc86;
+    background-color: rgb(46 204 113 / 15%);
+}
+
+.personaje-hana .barra-vida-relleno {
+    background: linear-gradient(90deg, #e91e90, #fc86d4);
+}
+
+.personaje-hana .ataque-dano {
+    color: #fc86d4;
+    background-color: rgb(233 30 144 / 15%);
+}
+
+.personaje-kira .barra-vida-relleno {
+    background: linear-gradient(90deg, #2ec4b6, #5eeadb);
+}
+
+.personaje-kira .ataque-dano {
+    color: #5eeadb;
+    background-color: rgb(46 196 182 / 15%);
+}
+
+.personaje-donbu .barra-vida-relleno {
+    background: linear-gradient(90deg, #d4a052, #fcca6b);
+}
+
+.personaje-donbu .ataque-dano {
+    color: #fcca6b;
+    background-color: rgb(212 160 82 / 15%);
+}
+
+.personaje-pompom .barra-vida-relleno {
+    background: linear-gradient(90deg, #f8a5c2, #fcc2d7);
+}
+
+.personaje-pompom .ataque-dano {
+    color: #fcc2d7;
+    background-color: rgb(248 165 194 / 15%);
+}
+
+.personaje-orejas .barra-vida-relleno {
+    background: linear-gradient(90deg, #e67e22, #f0a04b);
+}
+
+.personaje-orejas .ataque-dano {
+    color: #f0a04b;
+    background-color: rgb(230 126 34 / 15%);
+}
+
+.personaje-pandajuro .barra-vida-relleno {
+    background: linear-gradient(90deg, #c0392b, #6bb5fc);
+}
+
+.personaje-pandajuro .ataque-dano {
+    color: #6bb5fc;
+    background-color: rgb(107 181 252 / 15%);
+}
+
+/* --- Sección de villanos --- */
+
+.villano {
+    position: relative;
+    background-color: var(--color-superficie);
+    border: 3px solid var(--color-borde);
+    border-radius: var(--radio-tarjeta);
+    padding: 20px;
+    width: 200px;
+    cursor: default;
+    flex-shrink: 0;
+    scroll-snap-align: center;
+    opacity: 0.75;
+    transition: opacity 0.3s;
+}
+
+.villano:hover {
+    opacity: 1;
+}
+
+/* Badge de tier */
+.tier-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 2px 8px;
+    border-radius: 20px;
+    line-height: 1.4;
+}
+
+.tier-esbirro {
+    background-color: rgb(80 80 80 / 40%);
+    color: #aaa;
+}
+
+.tier-elite {
+    background-color: rgb(168 85 247 / 20%);
+    color: #c084fc;
+}
+
+.tier-pesadilla {
+    background-color: rgb(239 68 68 / 20%);
+    color: #f87171;
+}
+
+.tier-leyenda {
+    background-color: rgb(245 158 11 / 20%);
+    color: #fbbf24;
+}
+
+.villano h3 {
+    font-family: var(--font-display);
+    color: #999;
+    margin: 5px 0;
+    font-size: 1.3rem;
+}
+
+.villano .descripcion {
+    font-size: 0.85rem;
+    color: #777;
+}
+
+.avatar-emoji {
+    font-size: 4rem;
+    display: block;
+    line-height: 1;
+}
+
+/* Siniestra — rojo/negro */
+.villano-siniestra {
+    --v-color: #f44;
+    --v-oscuro: #8b0000;
+    --v-glow: rgb(255 50 50 / 40%);
+    --v-tenue: rgb(255 68 68 / 12%);
+
+    border-color: #4a0a0a;
+    background-color: #1a0808;
+}
+
+.villano-siniestra h3 {
+    color: #f44;
+}
+
+.villano-siniestra .avatar img {
+    border-color: #8b0000;
+    box-shadow: 0 0 10px rgb(255 50 50 / 40%);
+}
+
+.villano-siniestra .barra-vida-relleno {
+    background: linear-gradient(90deg, #8b0000, #f44);
+}
+
+.villano-siniestra .ataque-dano {
+    color: #f44;
+    background-color: rgb(255 68 68 / 15%);
+}
+
+/* Trasgo — negro/gris */
+.villano-trasgo {
+    --v-color: #888;
+    --v-oscuro: #555;
+    --v-glow: rgb(150 150 150 / 30%);
+    --v-tenue: rgb(150 150 150 / 12%);
+
+    border-color: #333;
+    background-color: #111118;
+}
+
+.villano-trasgo h3 {
+    color: #888;
+}
+
+.villano-trasgo .avatar img {
+    border-color: #555;
+    box-shadow: 0 0 8px rgb(150 150 150 / 30%);
+}
+
+.villano-trasgo .barra-vida-relleno {
+    background: linear-gradient(90deg, #444, #888);
+}
+
+.villano-trasgo .ataque-dano {
+    color: #999;
+    background-color: rgb(150 150 150 / 15%);
+}
+
+/* El Profano — azul/negro */
+.villano-profano {
+    --v-color: #48c;
+    --v-oscuro: #1a3a6b;
+    --v-glow: rgb(50 100 200 / 40%);
+    --v-tenue: rgb(68 136 204 / 12%);
+
+    border-color: #0a1a3a;
+    background-color: #080e1a;
+}
+
+.villano-profano h3 {
+    color: #48c;
+}
+
+.villano-profano .avatar img {
+    border-color: #1a3a6b;
+    box-shadow: 0 0 10px rgb(50 100 200 / 40%);
+}
+
+.villano-profano .barra-vida-relleno {
+    background: linear-gradient(90deg, #1a2a4a, #48c);
+}
+
+.villano-profano .ataque-dano {
+    color: #48c;
+    background-color: rgb(68 136 204 / 15%);
+}
+
+/* El Errante — verde/negro */
+.villano-errante {
+    --v-color: #4c4;
+    --v-oscuro: #2a6b2a;
+    --v-glow: rgb(50 200 50 / 40%);
+    --v-tenue: rgb(68 204 68 / 12%);
+
+    border-color: #0a4a0a;
+    background-color: #081a08;
+}
+
+.villano-errante h3 {
+    color: #4c4;
+}
+
+.villano-errante .avatar img {
+    border-color: #2a6b2a;
+    box-shadow: 0 0 10px rgb(50 200 50 / 40%);
+}
+
+.villano-errante .barra-vida-relleno {
+    background: linear-gradient(90deg, #1a6b1a, #4c4);
+}
+
+.villano-errante .ataque-dano {
+    color: #4c4;
+    background-color: rgb(68 204 68 / 15%);
+}
+
+/* Topete — púrpura/magenta */
+.villano-topete {
+    --v-color: #c050d0;
+    --v-oscuro: #6a1b7a;
+    --v-glow: rgb(192 80 208 / 40%);
+    --v-tenue: rgb(192 80 208 / 12%);
+
+    border-color: #3a0a4a;
+    background-color: #12081a;
+}
+
+.villano-topete h3 {
+    color: #c050d0;
+}
+
+.villano-topete .avatar img {
+    border-color: #6a1b7a;
+    box-shadow: 0 0 10px rgb(192 80 208 / 40%);
+}
+
+.villano-topete .barra-vida-relleno {
+    background: linear-gradient(90deg, #6a1b7a, #c050d0);
+}
+
+.villano-topete .ataque-dano {
+    color: #c050d0;
+    background-color: rgb(192 80 208 / 15%);
+}
+
+/* Pototo — rosa/magenta */
+.villano-pototo {
+    --v-color: #e060a0;
+    --v-oscuro: #8b1a5a;
+    --v-glow: rgb(224 96 160 / 40%);
+    --v-tenue: rgb(224 96 160 / 12%);
+
+    border-color: #4a0a2a;
+    background-color: #1a0812;
+}
+
+.villano-pototo h3 {
+    color: #e060a0;
+}
+
+.villano-pototo .avatar img {
+    border-color: #8b1a5a;
+    box-shadow: 0 0 10px rgb(224 96 160 / 40%);
+}
+
+.villano-pototo .barra-vida-relleno {
+    background: linear-gradient(90deg, #8b1a5a, #e060a0);
+}
+
+.villano-pototo .ataque-dano {
+    color: #e060a0;
+    background-color: rgb(224 96 160 / 15%);
+}
+
+/* La Grotesca — vino/púrpura oscuro */
+.villano-grotesca {
+    --v-color: #a8325a;
+    --v-oscuro: #5c1a30;
+    --v-glow: rgb(168 50 90 / 40%);
+    --v-tenue: rgb(168 50 90 / 12%);
+
+    border-color: #3a0a1a;
+    background-color: #150810;
+}
+
+.villano-grotesca h3 {
+    color: #a8325a;
+}
+
+.villano-grotesca .avatar img {
+    border-color: #5c1a30;
+    box-shadow: 0 0 10px rgb(168 50 90 / 40%);
+}
+
+.villano-grotesca .barra-vida-relleno {
+    background: linear-gradient(90deg, #5c1a30, #a8325a);
+}
+
+.villano-grotesca .ataque-dano {
+    color: #a8325a;
+    background-color: rgb(168 50 90 / 15%);
+}
+
+/* El Disonante — ámbar/siena */
+.villano-disonante {
+    --v-color: #c89030;
+    --v-oscuro: #6e4e18;
+    --v-glow: rgb(200 144 48 / 40%);
+    --v-tenue: rgb(200 144 48 / 12%);
+
+    border-color: #3a2a0e;
+    background-color: #1a1408;
+}
+
+.villano-disonante h3 {
+    color: #c89030;
+}
+
+.villano-disonante .avatar img {
+    border-color: #6e4e18;
+    box-shadow: 0 0 10px rgb(200 144 48 / 40%);
+}
+
+.villano-disonante .barra-vida-relleno {
+    background: linear-gradient(90deg, #6e4e18, #c89030);
+}
+
+.villano-disonante .ataque-dano {
+    color: #c89030;
+    background-color: rgb(200 144 48 / 15%);
+}

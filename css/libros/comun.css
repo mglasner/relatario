@@ -1,0 +1,1120 @@
+/* Libro — Layout base y estilos compartidos (índice + detalle) */
+
+/* Layout del libro — clase base para todos los libros */
+.libro {
+    --v-color: rgb(230 200 160 / 95%);
+    --v-oscuro: rgb(180 155 120);
+    --v-glow: rgb(230 200 160 / 30%);
+    --v-tenue: rgb(230 200 160 / 10%);
+
+    display: flex;
+    width: 700px;
+    height: 680px;
+    max-width: 100%;
+    max-height: calc(90vh - 40px);
+    margin: 0 auto;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid rgb(255 215 0 / 25%);
+    box-shadow:
+        0 8px 32px rgb(0 0 0 / 50%),
+        0 0 18px var(--v-glow, rgb(233 69 96 / 15%));
+    transition: box-shadow 0.5s;
+    background-color: #18120d;
+}
+
+.libro-villanos {
+    animation: libro-entrada 0.5s ease;
+}
+
+@keyframes libro-entrada {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Páginas */
+.libro-pagina {
+    padding: 20px;
+}
+
+.libro-pagina-izq {
+    flex: 0 0 200px;
+    background:
+        repeating-linear-gradient(135deg, rgb(120 100 70 / 2%) 0, transparent 2px, transparent 8px),
+        radial-gradient(ellipse at 20% 80%, rgb(80 60 30 / 8%) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgb(60 50 25 / 6%) 0%, transparent 50%),
+        linear-gradient(to right, transparent 70%, rgb(0 0 0 / 15%)),
+        linear-gradient(135deg, #1c1510 0%, #18120d 50%, #140f0a 100%);
+    border-right: none;
+    display: flex;
+    flex-direction: column;
+}
+
+.libro-pagina-der {
+    flex: 1;
+    position: relative;
+    padding: 28px 32px 0;
+    background:
+        repeating-linear-gradient(135deg, rgb(120 100 70 / 2%) 0, transparent 2px, transparent 8px),
+        radial-gradient(ellipse at 70% 30%, rgb(80 60 30 / 8%) 0%, transparent 60%),
+        radial-gradient(ellipse at 30% 70%, rgb(60 50 25 / 6%) 0%, transparent 50%),
+        linear-gradient(to left, transparent 70%, rgb(0 0 0 / 12%)),
+        linear-gradient(135deg, #1c1510 0%, #18120d 50%, #140f0a 100%);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Tintado suave en página derecha */
+.libro-pagina-der::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        ellipse at center 30%,
+        var(--v-tenue, transparent) 0%,
+        transparent 70%
+    );
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Lomo decorativo — cuero cálido */
+.libro-lomo {
+    flex: 0 0 22px;
+    background: linear-gradient(
+        90deg,
+        #1a1008 0%,
+        #2a1c10 30%,
+        #3a2818 50%,
+        #2a1c10 70%,
+        #1a1008 100%
+    );
+    box-shadow:
+        inset 2px 0 6px rgb(0 0 0 / 50%),
+        inset -2px 0 6px rgb(0 0 0 / 50%);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    padding: 20px 0;
+}
+
+/* Costuras doradas del lomo */
+.libro-lomo-costura {
+    height: 1px;
+    margin: 0 3px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgb(255 215 0 / 30%),
+        rgb(255 215 0 / 50%),
+        rgb(255 215 0 / 30%),
+        transparent
+    );
+}
+
+/* Título del libro — dorado */
+.libro-titulo {
+    font-family: var(--font-display);
+    color: var(--color-dorado);
+    font-size: 1.15rem;
+    text-align: left;
+    padding-left: 10px;
+    margin: 0 0 8px;
+    text-shadow:
+        0 0 8px rgb(255 215 0 / 30%),
+        0 1px 2px rgb(0 0 0 / 60%);
+}
+
+/* Subtítulo del libro */
+.libro-subtitulo {
+    font-family: var(--font-display);
+    color: rgb(255 215 0 / 50%);
+    font-size: 0.75rem;
+    text-align: left;
+    padding-left: 10px;
+    margin: -4px 0 8px;
+    font-style: italic;
+    letter-spacing: 0.5px;
+}
+
+/* Ornamentos decorativos — dorados con diamante */
+.libro-ornamento {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgb(255 215 0 / 30%), transparent);
+    margin: 6px 0;
+    position: relative;
+}
+
+.libro-ornamento::after {
+    content: '\25C6';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.5rem;
+    color: rgb(255 215 0 / 40%);
+    line-height: 1;
+}
+
+/* Índice */
+.libro-indice {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.libro-indice-item {
+    padding: 8px 10px;
+    font-size: 0.8rem;
+    color: rgb(180 165 140);
+    border-radius: 6px;
+    border-left: 2px solid transparent;
+    cursor: pointer;
+    text-align: left;
+    transition:
+        background-color 0.2s,
+        color 0.2s,
+        border-color 0.2s;
+    outline: none;
+}
+
+.libro-indice-item:hover {
+    background-color: rgb(255 255 255 / 5%);
+    color: rgb(220 200 170);
+}
+
+.libro-indice-item:focus-visible {
+    outline: 2px dashed rgb(255 215 0 / 40%);
+    outline-offset: -2px;
+}
+
+.libro-indice-activo {
+    background-color: rgb(255 215 0 / 10%);
+    color: var(--color-dorado);
+    border-left-color: var(--color-dorado);
+    font-weight: bold;
+}
+
+/* Separador entre tiers — línea dorada con diamante */
+.libro-indice-sep {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgb(255 215 0 / 25%), transparent);
+    margin: 6px 8px;
+    position: relative;
+    pointer-events: none;
+}
+
+.libro-indice-sep::after {
+    content: '\25C6';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.45rem;
+    color: rgb(255 215 0 / 40%);
+    background: #18120d;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+/* Contenido del detalle */
+.libro-detalle-wrap {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    perspective: 1200px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(255 215 0 / 25%) transparent;
+}
+
+.libro-detalle-contenido {
+    text-align: center;
+    padding: 12px 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* --- Tabs Perfil / Habilidades --- */
+.libro-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 10px;
+}
+
+.libro-tab {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: rgb(180 165 140 / 50%);
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    padding: 4px 14px;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition:
+        color 0.2s,
+        border-color 0.2s;
+}
+
+.libro-tab:hover {
+    color: rgb(200 185 160);
+}
+
+.libro-tab-activo {
+    color: var(--v-color, var(--color-dorado));
+    border-bottom-color: var(--v-color, var(--color-dorado));
+}
+
+/* --- Paneles --- */
+.libro-panel {
+    display: none;
+}
+
+.libro-panel-activo {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    animation: libro-panel-entrada 0.25s ease;
+}
+
+@keyframes libro-panel-entrada {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.libro-detalle-contenido .avatar {
+    margin-bottom: 4px;
+}
+
+/* Avatar mini para panel de habilidades */
+.libro-avatar-mini img {
+    width: 48px;
+    height: 48px;
+}
+
+.libro-detalle-contenido .avatar img {
+    width: 120px;
+    height: 120px;
+}
+
+.libro-detalle-cabecera {
+    margin-bottom: 4px;
+}
+
+.libro-detalle-cabecera h3 {
+    font-family: var(--font-display);
+    color: var(--v-color, #999);
+    font-size: 1.4rem;
+    margin: 4px 0 2px;
+    text-shadow: 0 0 10px var(--v-glow, transparent);
+    transition:
+        color 0.5s,
+        text-shadow 0.5s;
+}
+
+/* Insignia de rango en perfil de villano */
+
+.villano-rango-insignia {
+    align-self: center;
+    font-size: 0.55rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 1px 8px;
+    border-radius: 10px;
+    border: 1px solid rgb(255 255 255 / 6%);
+    margin-bottom: 2px;
+}
+
+.villano-rango-esbirro {
+    background: rgb(80 80 80 / 50%);
+    color: #bbb;
+}
+
+.villano-rango-elite {
+    background: rgb(168 85 247 / 18%);
+    color: #c084fc;
+    border-color: rgb(168 85 247 / 15%);
+}
+
+.villano-rango-pesadilla {
+    background: rgb(239 68 68 / 18%);
+    color: #f87171;
+    border-color: rgb(239 68 68 / 15%);
+}
+
+.villano-rango-leyenda {
+    background: rgb(245 158 11 / 20%);
+    color: #fbbf24;
+    border-color: rgb(245 158 11 / 18%);
+}
+
+/* Descripción grande (panel perfil) */
+.libro-descripcion-grande {
+    display: block;
+    -webkit-line-clamp: unset;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: rgb(210 195 170);
+    font-style: italic;
+    text-align: left;
+    margin: 8px 0 0;
+    white-space: pre-line;
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(255 215 0 / 25%) transparent;
+}
+
+.libro-descripcion-grande::-webkit-scrollbar {
+    width: 4px;
+}
+
+.libro-descripcion-grande::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.libro-descripcion-grande::-webkit-scrollbar-thumb {
+    background: rgb(255 215 0 / 25%);
+    border-radius: 2px;
+}
+
+.libro-descripcion-grande::-webkit-scrollbar-thumb:hover {
+    background: rgb(255 215 0 / 40%);
+}
+
+.libro-detalle-contenido .stats {
+    text-align: left;
+    padding-top: 0;
+}
+
+/* Esquinas ornamentales doradas */
+.libro-esquina {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: 1;
+    transition: opacity 0.3s;
+}
+
+.libro:hover .libro-esquina {
+    opacity: 0.7;
+}
+
+.libro-esquina-tl {
+    top: 8px;
+    left: 8px;
+    border-top: 2px solid rgb(255 215 0 / 50%);
+    border-left: 2px solid rgb(255 215 0 / 50%);
+}
+
+.libro-esquina-tr {
+    top: 8px;
+    right: 8px;
+    border-top: 2px solid rgb(255 215 0 / 50%);
+    border-right: 2px solid rgb(255 215 0 / 50%);
+}
+
+.libro-esquina-bl {
+    bottom: 8px;
+    left: 8px;
+    border-bottom: 2px solid rgb(255 215 0 / 50%);
+    border-left: 2px solid rgb(255 215 0 / 50%);
+}
+
+.libro-esquina-br {
+    bottom: 8px;
+    right: 8px;
+    border-bottom: 2px solid rgb(255 215 0 / 50%);
+    border-right: 2px solid rgb(255 215 0 / 50%);
+}
+
+/* Page curl — puntita inferior derecha */
+.libro-page-curl {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    z-index: 4;
+    pointer-events: none;
+    border-radius: 0 0 8px;
+    transform-origin: bottom right;
+    animation: page-curl-idle 4s ease-in-out infinite;
+}
+
+/* Reverso de la página (color crema claro) */
+.libro-page-curl::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(315deg, #3d3225 0%, #2e2418 40%, #241c12 100%);
+    clip-path: polygon(100% 0%, 100% 100%, 0% 100%);
+    box-shadow: -3px -3px 6px rgb(0 0 0 / 50%);
+}
+
+/* Línea de pliegue diagonal + brillo */
+.libro-page-curl::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        315deg,
+        rgb(255 235 200 / 15%) 0%,
+        rgb(255 215 0 / 10%) 30%,
+        transparent 50%
+    );
+    clip-path: polygon(100% 0%, 100% 100%, 0% 100%);
+}
+
+@keyframes page-curl-idle {
+    0%,
+    100% {
+        transform: scale(1) rotate(0deg);
+    }
+
+    50% {
+        transform: scale(1.15) rotate(-2deg) translate(-2px, -2px);
+    }
+}
+
+/* Volteo 3D de página */
+@keyframes libro-flip-out {
+    0% {
+        transform: rotateY(0deg);
+        opacity: 1;
+        box-shadow: -4px 0 16px rgb(0 0 0 / 0%);
+    }
+
+    40% {
+        opacity: 1;
+        box-shadow: -20px 0 30px rgb(0 0 0 / 40%);
+    }
+
+    100% {
+        transform: rotateY(-90deg);
+        opacity: 0;
+        box-shadow: -2px 0 8px rgb(0 0 0 / 0%);
+    }
+}
+
+@keyframes libro-flip-in {
+    0% {
+        transform: rotateY(90deg);
+        opacity: 0;
+        box-shadow: 20px 0 30px rgb(0 0 0 / 0%);
+    }
+
+    40% {
+        opacity: 1;
+        box-shadow: 20px 0 30px rgb(0 0 0 / 40%);
+    }
+
+    100% {
+        transform: rotateY(0deg);
+        opacity: 1;
+        box-shadow: 0 0 0 rgb(0 0 0 / 0%);
+    }
+}
+
+.libro-fade-out {
+    transform-origin: left center;
+    animation: libro-flip-out 0.3s ease-in forwards;
+}
+
+.libro-fade-in {
+    transform-origin: right center;
+    animation: libro-flip-in 0.35s ease-out;
+}
+
+/* Volteo inverso (página hacia atrás) */
+.libro-fade-out-rev {
+    transform-origin: right center;
+    animation: libro-flip-in 0.3s ease-in reverse forwards;
+}
+
+.libro-fade-in-rev {
+    transform-origin: left center;
+    animation: libro-flip-out 0.35s ease-out reverse;
+}
+
+/* Navegación */
+.libro-navegacion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 10px 0 12px;
+    flex-shrink: 0;
+    border-top: 1px solid rgb(255 215 0 / 10%);
+    z-index: 2;
+}
+
+.libro-nav-btn {
+    width: 32px;
+    height: 32px;
+    border: 2px solid rgb(255 215 0 / 20%);
+    border-radius: 50%;
+    background-color: transparent;
+    color: rgb(200 185 160);
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+        border-color 0.2s,
+        color 0.2s,
+        background-color 0.2s;
+}
+
+.libro-nav-btn:hover:not(:disabled) {
+    border-color: var(--v-color, var(--color-accent));
+    color: var(--v-color, var(--color-accent));
+    background-color: var(--v-tenue, rgb(233 69 96 / 10%));
+}
+
+.libro-nav-btn:disabled {
+    opacity: 0.25;
+    cursor: default;
+}
+
+.libro-nav-contador {
+    font-size: 0.75rem;
+    color: rgb(180 165 140);
+    font-style: italic;
+    min-width: 40px;
+    text-align: center;
+}
+
+/* Variables de color para páginas sin entidad activa (inicio y juegos) */
+.libro-en-inicio,
+.libro-en-extra {
+    --v-color: rgb(230 200 160 / 95%);
+    --v-oscuro: rgb(180 155 120);
+    --v-glow: rgb(230 200 160 / 30%);
+    --v-tenue: rgb(230 200 160 / 10%);
+}
+
+/* Item de inicio en el índice */
+.libro-indice-inicio {
+    font-style: italic;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+}
+
+/* Subtítulo de sección en el índice */
+.libro-indice-seccion {
+    font-size: 0.58rem;
+    font-family: var(--font-display);
+    color: rgb(255 215 0 / 50%);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 8px 2px;
+    pointer-events: none;
+    list-style: none;
+}
+
+/* Tabs de sección e indicador de scroll (ocultos en desktop) */
+.libro-indice-secciones {
+    display: none;
+}
+
+.libro-scroll-hint {
+    display: none;
+}
+
+/* --- Página de prólogo (compartida por todos los libros) --- */
+.libro-intro {
+    text-align: center;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}
+
+.libro-intro-game-titulo {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: white;
+    letter-spacing: 0.04em;
+    margin: 0 0 8px;
+    line-height: 1.3;
+}
+
+.libro-intro-texto {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 14px;
+    max-width: 290px;
+}
+
+.libro-intro-texto p {
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: rgb(220 205 180 / 95%);
+}
+
+.libro-intro-link {
+    color: rgb(230 200 160 / 90%);
+    text-decoration: underline;
+    text-decoration-color: rgb(230 200 160 / 30%);
+    text-underline-offset: 3px;
+    cursor: pointer;
+    transition:
+        color 0.2s,
+        text-decoration-color 0.2s;
+}
+
+.libro-intro-link:hover {
+    color: rgb(255 220 170);
+    text-decoration-color: rgb(255 220 170 / 60%);
+}
+
+.libro-intro-cta {
+    color: rgb(240 210 150 / 95%) !important;
+    font-family: var(--font-display);
+    font-size: 0.92rem !important;
+    margin-top: 4px;
+}
+
+/* --- Modal del libro --- */
+
+.libro-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow: hidden;
+}
+
+.libro-modal-fondo {
+    position: absolute;
+    inset: 0;
+    background-color: rgb(0 0 0 / 80%);
+}
+
+.libro-modal-cuerpo {
+    position: relative;
+    animation: modal-aparecer 0.3s ease;
+    height: calc(100dvh - 64px);
+    max-width: min(700px, calc(100vw - 40px));
+    width: 100%;
+    overflow: hidden;
+    border-radius: 10px;
+    border: 2px solid rgb(255 215 0 / 25%);
+    display: flex;
+    flex-direction: column;
+}
+
+@keyframes modal-aparecer {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.libro-modal-cuerpo .libro {
+    border: none;
+    border-radius: 0;
+    flex: 1;
+    height: auto;
+    max-height: none;
+    min-height: 0;
+}
+
+.libro-modal-cerrar {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 10;
+    width: 36px;
+    height: 36px;
+    border: 2px solid rgb(255 255 255 / 15%);
+    border-radius: 50%;
+    background-color: rgb(15 12 20 / 85%);
+    color: var(--color-texto-secundario);
+    font-size: 1.3rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+    transition:
+        border-color 0.2s,
+        color 0.2s,
+        background-color 0.2s;
+}
+
+.libro-modal-cerrar:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    background-color: rgb(233 69 96 / 15%);
+}
+
+/* --- Responsive --- */
+
+/* Tablet */
+@media (width <= 768px) {
+    .libro {
+        max-width: 580px;
+        height: 560px;
+        max-height: calc(85vh - 40px);
+    }
+
+    .libro-pagina-izq {
+        flex: 0 0 170px;
+        padding: 16px;
+    }
+
+    .libro-pagina-der {
+        padding: 16px;
+    }
+
+    .libro-titulo {
+        font-size: 1rem;
+    }
+
+    .libro-detalle-contenido .avatar img {
+        width: 90px;
+        height: 90px;
+    }
+
+    .libro-esquina {
+        width: 16px;
+        height: 16px;
+    }
+
+    .libro-lomo {
+        flex: 0 0 20px;
+    }
+
+    .libro-detalle-cabecera h3 {
+        font-size: 1.1rem;
+    }
+
+    .libro-tab {
+        font-size: 0.7rem;
+        padding: 3px 10px;
+    }
+
+    .libro-nav-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 1rem;
+    }
+
+    .libro-nav-contador {
+        font-size: 0.7rem;
+    }
+
+    .libro-modal-cuerpo {
+        height: calc(100dvh - 50px);
+    }
+}
+
+/* Mobile */
+@media (width <= 480px) {
+    .libro {
+        flex-direction: column;
+        max-width: 100%;
+        position: relative;
+        flex: 1;
+        min-height: 0;
+    }
+
+    .libro-pagina-izq {
+        flex: none;
+        padding: 10px 12px;
+        overflow: hidden;
+    }
+
+    .libro-titulo {
+        font-size: 0.95rem;
+        margin-bottom: 4px;
+    }
+
+    .libro-ornamento {
+        display: none;
+    }
+
+    /* Section tabs visibles en mobile */
+    .libro-indice-secciones {
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 6px 0 4px;
+    }
+
+    .libro-seccion-tab {
+        background: rgb(255 215 0 / 8%);
+        border: 1px solid rgb(255 215 0 / 15%);
+        border-radius: 14px;
+        color: rgb(180 165 140 / 60%);
+        font-family: var(--font-display);
+        font-size: 0.6rem;
+        padding: 4px 10px;
+        cursor: pointer;
+        transition:
+            color 0.2s,
+            border-color 0.2s,
+            background 0.2s;
+        letter-spacing: 0.03em;
+    }
+
+    .libro-seccion-tab-activo {
+        background: rgb(255 215 0 / 12%);
+        border-color: var(--color-dorado);
+        color: var(--color-dorado);
+    }
+
+    /* Wrapper del índice con hints de scroll */
+    .libro-indice-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .libro-scroll-hint {
+        display: block;
+        flex-shrink: 0;
+        color: var(--color-dorado);
+        font-size: 0.85rem;
+        line-height: 1;
+        padding: 4px 0;
+        border-bottom: 2px solid transparent;
+        pointer-events: none;
+        opacity: 0.6;
+        text-shadow: 0 0 8px rgb(255 215 0 / 30%);
+        animation: libro-hint-pulso 2s ease-in-out infinite;
+        transition: opacity 0.3s;
+    }
+
+    .libro-scroll-hint-izq {
+        animation-name: libro-hint-pulso-izq;
+    }
+
+    .libro-scroll-hint-der {
+        animation-name: libro-hint-pulso-der;
+    }
+
+    .libro-scroll-hint-oculto {
+        animation: none;
+        opacity: 0;
+    }
+
+    @keyframes libro-hint-pulso-izq {
+        0%,
+        100% {
+            opacity: 0.4;
+            transform: translateX(0);
+        }
+
+        50% {
+            opacity: 0.8;
+            transform: translateX(-2px);
+        }
+    }
+
+    @keyframes libro-hint-pulso-der {
+        0%,
+        100% {
+            opacity: 0.4;
+            transform: translateX(0);
+        }
+
+        50% {
+            opacity: 0.8;
+            transform: translateX(2px);
+        }
+    }
+
+    /* Índice: scroll horizontal de una línea */
+    .libro-indice {
+        flex-flow: row nowrap;
+        gap: 6px;
+        margin: 4px 0;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        min-width: 0;
+    }
+
+    .libro-indice::-webkit-scrollbar {
+        display: none;
+    }
+
+    .libro-indice-item {
+        padding: 4px 6px;
+        font-size: 0.65rem;
+        text-align: center;
+        border-left: none;
+        border-bottom: 2px solid transparent;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .libro-indice-activo {
+        border-left-color: transparent;
+        border-bottom-color: var(--color-dorado);
+    }
+
+    /* Ocultar separadores y labels de sección (reemplazados por section tabs) */
+    .libro-indice-sep,
+    .libro-indice-seccion {
+        display: none;
+    }
+
+    .libro-lomo {
+        display: none;
+    }
+
+    .libro-lomo-costura {
+        display: none;
+    }
+
+    .libro-pagina-der {
+        padding: 12px;
+    }
+
+    /* Fondo plano del personaje/villano cuando hay uno activo (no en Bienvenida ni juegos) */
+    .libro:not(.libro-en-inicio, .libro-en-extra) > .libro-pagina-der {
+        background: none;
+        background-color: inherit;
+    }
+
+    .libro:not(.libro-en-inicio, .libro-en-extra) > .libro-pagina-der::before {
+        display: none;
+    }
+
+    .libro-detalle-contenido {
+        padding: 8px 12px;
+    }
+
+    .libro-detalle-contenido .avatar img {
+        width: 80px;
+        height: 80px;
+    }
+
+    .libro-esquina {
+        width: 14px;
+        height: 14px;
+        opacity: 0.3;
+    }
+
+    .libro-detalle-cabecera h3 {
+        font-size: 1rem;
+    }
+
+    .libro-tab {
+        font-size: 0.65rem;
+        padding: 3px 8px;
+    }
+
+    .libro-descripcion-grande {
+        font-size: 0.8rem;
+        line-height: 1.5;
+    }
+
+    .libro-nav-btn {
+        width: 26px;
+        height: 26px;
+        font-size: 0.9rem;
+    }
+
+    .libro-nav-contador {
+        font-size: 0.65rem;
+    }
+
+    .libro-modal-cuerpo {
+        height: calc(100dvh - 36px);
+    }
+
+    .libro-modal-cerrar {
+        width: 30px;
+        height: 30px;
+        font-size: 1.1rem;
+        top: 6px;
+        right: 6px;
+    }
+}
+
+/* Pantallas muy pequeñas */
+@media (width <= 360px) {
+    .libro-detalle-contenido .avatar img {
+        width: 64px;
+        height: 64px;
+    }
+
+    .libro-esquina {
+        display: none;
+    }
+
+    .libro-tab {
+        font-size: 0.6rem;
+        padding: 2px 6px;
+    }
+
+    .libro-detalle-cabecera h3 {
+        font-size: 0.9rem;
+    }
+
+    .libro-descripcion-grande {
+        font-size: 0.75rem;
+    }
+
+    .libro-indice-item {
+        padding: 3px 5px;
+        font-size: 0.6rem;
+    }
+
+    .libro-seccion-tab {
+        font-size: 0.55rem;
+        padding: 3px 8px;
+    }
+}

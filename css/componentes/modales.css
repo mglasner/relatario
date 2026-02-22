@@ -1,0 +1,230 @@
+/* Modales — salir y derrota */
+
+/* --- Modal de salir (confirmación para volver al menú) --- */
+
+#modal-salir {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#modal-salir .modal-contenido {
+    --modal-accent: #f0a500;
+    --modal-fondo: #3e2e0a;
+}
+
+.modal-salir-linea {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    border-radius: 15px 15px 0 0;
+    background: var(--modal-accent);
+    box-shadow: 0 0 12px var(--modal-accent);
+}
+
+.modal-salir-icono {
+    font-size: 3rem;
+    line-height: 1;
+    margin: 4px 0 8px;
+    animation: flotar-icono 2.5s ease-in-out infinite;
+}
+
+.modal-salir-btn-confirmar {
+    padding: 10px 30px;
+    font-size: 1rem;
+    border: 2px solid var(--modal-accent);
+    border-radius: var(--radio-boton);
+    cursor: pointer;
+    background-color: transparent;
+    color: var(--modal-accent);
+    transition:
+        background-color 0.3s,
+        color 0.3s;
+}
+
+.modal-salir-btn-confirmar:hover {
+    background-color: var(--modal-accent);
+    color: #1a1a2e;
+}
+
+.modal-salir-btn-cancelar {
+    padding: 10px 30px;
+    font-size: 1rem;
+    border: none;
+    border-radius: var(--radio-boton);
+    cursor: pointer;
+    background-color: var(--modal-accent);
+    color: #1a1a2e;
+    font-weight: bold;
+    transition: filter 0.2s;
+}
+
+.modal-salir-btn-cancelar:hover {
+    filter: brightness(0.85);
+}
+
+@keyframes flotar-icono {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-6px);
+    }
+}
+
+/* --- Modal de derrota --- */
+
+.modal-derrota {
+    position: absolute;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-derrota-fondo {
+    position: absolute;
+    inset: 0;
+    background-color: rgb(10 0 0 / 85%);
+    animation: derrota-fondo-aparecer 0.5s ease;
+}
+
+@keyframes derrota-fondo-aparecer {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-derrota-caja {
+    position: relative;
+    background: linear-gradient(180deg, #1a0a0a 0%, #0d0d1a 100%);
+    border: 2px solid #8b0000;
+    border-radius: 12px;
+    padding: 24px 32px;
+    text-align: center;
+    box-shadow:
+        0 0 30px rgb(139 0 0 / 40%),
+        inset 0 0 20px rgb(0 0 0 / 50%);
+    animation: derrota-caja-aparecer 0.4s ease;
+    max-width: min(280px, 85vw);
+}
+
+@keyframes derrota-caja-aparecer {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.modal-derrota-caja h2 {
+    font-family: var(--font-display);
+    color: #c33;
+    font-size: 1.2rem;
+    margin: 0 0 6px;
+    text-shadow: 0 0 12px rgb(200 50 50 / 50%);
+}
+
+.modal-derrota-caja p {
+    color: #999;
+    font-size: 0.85rem;
+    margin: 0 0 18px;
+}
+
+.modal-derrota-icono {
+    font-size: 2.5rem;
+    margin-bottom: 8px;
+    animation: derrota-pulso 2s ease-in-out infinite;
+}
+
+@keyframes derrota-pulso {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.modal-derrota-btn {
+    padding: 10px 28px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(180deg, #8b0000 0%, #5a0000 100%);
+    border: 2px solid #a22;
+    border-radius: 8px;
+    cursor: pointer;
+    text-shadow: 0 1px 2px rgb(0 0 0 / 50%);
+    box-shadow: 0 2px 8px rgb(139 0 0 / 30%);
+    transition:
+        transform 0.15s,
+        box-shadow 0.15s,
+        background 0.2s;
+}
+
+.modal-derrota-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgb(139 0 0 / 50%);
+    background: linear-gradient(180deg, #a11 0%, #6a0000 100%);
+}
+
+.modal-derrota-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 4px rgb(139 0 0 / 30%);
+}
+
+/* --- Responsive --- */
+
+@media (width <= 768px) {
+    .modal-contenido {
+        padding: 24px 28px;
+    }
+
+    .modal-derrota-caja {
+        padding: 20px 24px;
+    }
+}
+
+@media (width <= 480px) {
+    .modal-contenido {
+        padding: 20px;
+    }
+
+    .modal-contenido h2 {
+        font-size: 1.1rem;
+    }
+
+    .modal-derrota-caja {
+        padding: 18px 16px;
+    }
+
+    .modal-derrota-caja h2 {
+        font-size: 1.05rem;
+    }
+}
+
+@media (pointer: coarse) {
+    .modal-derrota-btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+}

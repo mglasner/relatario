@@ -1,0 +1,126 @@
+/* Juegos — paletas por juego, cabecera y botón huir */
+
+/* --- Paletas por juego --- */
+
+.juego-laberinto {
+    --juego-pared: #3d2560;
+    --juego-pared-medio: #2a1845;
+    --juego-pared-oscuro: #201035;
+    --juego-borde: rgb(100 60 150 / 25%);
+    --juego-accent: #bb86fc;
+}
+
+.juego-laberinto3d {
+    --juego-pared: #1a3e1a;
+    --juego-pared-medio: #102e10;
+    --juego-pared-oscuro: #0d240d;
+    --juego-borde: rgb(60 150 80 / 20%);
+    --juego-accent: #6bfc86;
+}
+
+.juego-memorice {
+    --juego-pared: #3e1a1a;
+    --juego-pared-medio: #2e1010;
+    --juego-pared-oscuro: #240d0d;
+    --juego-borde: rgb(150 60 60 / 20%);
+    --juego-accent: #e94560;
+}
+
+.juego-abismo {
+    --juego-pared: #1a1a3e;
+    --juego-pared-medio: #10102e;
+    --juego-pared-oscuro: #0d0d24;
+    --juego-borde: rgb(60 80 150 / 20%);
+    --juego-accent: #5eeadb;
+}
+
+/* Cabecera: botón huir + título en una sola fila */
+.cabecera-juego {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 2px;
+    width: 100%;
+    justify-content: center;
+}
+
+.titulo-juego {
+    font-family: var(--font-display);
+    color: var(--color-accent);
+    font-size: 1.3rem;
+    margin: 0;
+    text-shadow: 0 0 10px rgb(233 69 96 / 50%);
+}
+
+/* Botón huir: icono circular con imagen de puerta mágica */
+.btn-huir {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 2px solid rgb(240 165 0 / 30%);
+    border-radius: 50%;
+    cursor: pointer;
+    background-color: rgb(240 165 0 / 8%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    transition:
+        border-color 0.3s,
+        background-color 0.3s,
+        box-shadow 0.3s,
+        transform 0.2s;
+}
+
+.btn-huir::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    border: 1px solid rgb(240 165 0 / 0%);
+    transition: border-color 0.3s;
+    pointer-events: none;
+}
+
+.btn-huir:hover {
+    border-color: rgb(240 165 0 / 60%);
+    background-color: rgb(240 165 0 / 15%);
+    box-shadow:
+        0 0 12px rgb(240 165 0 / 30%),
+        0 0 24px rgb(240 165 0 / 10%);
+    transform: scale(1.08);
+}
+
+.btn-huir:hover::after {
+    border-color: rgb(240 165 0 / 20%);
+}
+
+.btn-huir:active {
+    transform: scale(0.95);
+    border-color: rgb(240 165 0 / 80%);
+    box-shadow: 0 0 16px rgb(240 165 0 / 40%);
+}
+
+.btn-huir-icono {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    border-radius: 50%;
+    filter: drop-shadow(0 0 4px rgb(240 165 0 / 40%));
+    transition: filter 0.3s;
+    pointer-events: none;
+}
+
+.btn-huir:hover .btn-huir-icono {
+    filter: drop-shadow(0 0 8px rgb(240 165 0 / 60%));
+}
+
+/* --- Responsive --- */
+
+@media (pointer: coarse) {
+    .btn-huir {
+        min-height: 44px;
+        min-width: 44px;
+    }
+}
