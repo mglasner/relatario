@@ -38,13 +38,14 @@ export function crearEstante(contenedor, libros) {
     mueble.appendChild(crearElemento('div', 'estante-corona'));
 
     // Encabezado
-    const encabezado = crearElemento('div', 'estante-encabezado');
+    const encabezado = crearElemento('header', 'estante-encabezado');
     encabezado.appendChild(crearElemento('h1', 'estante-titulo', 'El Relatario'));
     encabezado.appendChild(crearElemento('p', 'estante-subtitulo', 'un compendio de relatos'));
     mueble.appendChild(encabezado);
 
     // Repisa principal con lomos de libro
-    const repisa = crearElemento('div', 'estante-repisa');
+    const repisa = crearElemento('nav', 'estante-repisa');
+    repisa.setAttribute('aria-label', 'Libros');
 
     libros.forEach(function (libro) {
         // Contenedor: lomo + etiqueta debajo

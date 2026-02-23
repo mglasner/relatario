@@ -1,4 +1,4 @@
-// Script de build: copia index.html a dist/ reescribiendo rutas para producción
+// Script de build: genera dist/ con HTML reescrito, archivos SEO y assets para producción
 
 import { readFileSync, writeFileSync, mkdirSync, cpSync, readdirSync, existsSync } from 'fs';
 import { join } from 'path';
@@ -55,3 +55,25 @@ if (existsSync('cuentos')) {
 
 // CNAME para GitHub Pages custom domain
 writeFileSync('dist/CNAME', 'relatario.cl');
+
+// robots.txt
+writeFileSync(
+    'dist/robots.txt',
+    `User-agent: *\nAllow: /\nSitemap: https://relatario.cl/sitemap.xml\n`
+);
+
+// sitemap.xml
+const hoy = new Date().toISOString().split('T')[0];
+writeFileSync(
+    'dist/sitemap.xml',
+    `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://relatario.cl/</loc>
+    <lastmod>${hoy}</lastmod>
+  </url>
+</urlset>`
+);
+
+// 404.html
+cpSync('404.html', 'dist/404.html');

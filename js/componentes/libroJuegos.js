@@ -88,6 +88,7 @@ function generarPaginaJuego(juego) {
         img.src = juego.img;
         img.alt = juego.nombre;
         img.className = 'libro-juego-img';
+        img.loading = 'lazy';
         contenido.appendChild(img);
     }
 
@@ -132,6 +133,7 @@ function crearModalHeroe(onConfirmar) {
         avatar.src = pj.img;
         avatar.alt = pjNombre;
         avatar.className = 'selector-heroe-avatar';
+        avatar.loading = 'lazy';
         btn.appendChild(avatar);
 
         const label = crearElemento('span', 'selector-heroe-nombre', pjNombre);

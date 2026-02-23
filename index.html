@@ -16,6 +16,20 @@
             content="Un compendio de relatos, héroes y desafíos para contar en familia"
         />
         <meta property="og:url" content="https://relatario.cl/" />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="El Relatario" />
+        <meta property="og:locale" content="es_CL" />
+        <meta property="og:image" content="https://relatario.cl/assets/img/og-image.webp" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="El Relatario" />
+        <meta
+            name="twitter:description"
+            content="Un compendio de relatos, héroes y desafíos para contar en familia"
+        />
+        <meta name="twitter:image" content="https://relatario.cl/assets/img/og-image.webp" />
+        <link rel="canonical" href="https://relatario.cl/" />
         <title>El Relatario</title>
         <link
             rel="preload"
@@ -31,15 +45,50 @@
             type="font/woff2"
             crossorigin
         />
+        <link
+            rel="preload"
+            href="assets/img/biblioteca/sala-fondo.webp"
+            as="image"
+            type="image/webp"
+        />
         <link rel="icon" href="assets/img/icons/favicon.ico" sizes="32x32" />
         <link rel="manifest" href="manifest.webmanifest" />
         <link rel="apple-touch-icon" href="assets/img/icons/icon-192.png" />
         <link rel="stylesheet" href="estilos.css" />
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "WebApplication",
+                "name": "El Relatario",
+                "url": "https://relatario.cl/",
+                "description": "Un compendio de relatos, héroes y desafíos para contar en familia",
+                "applicationCategory": "GameApplication",
+                "operatingSystem": "Web",
+                "inLanguage": "es"
+            }
+        </script>
     </head>
     <body>
-        <div id="juego">
+        <noscript>
+            <h1>El Relatario</h1>
+            <p>Un compendio de relatos, héroes y desafíos para contar en familia.</p>
+            <h2>Libros</h2>
+            <ul>
+                <li>
+                    Heroario — Conoce a los 8 héroes: Lina, Rosé, PandaJuro, DonBu, Hana, Kira,
+                    Orejas y PomPom
+                </li>
+                <li>Villanario — Enfréntate a los villanos y conoce sus rangos</li>
+                <li>
+                    Libro de Juegos — 5 desafíos: El Laberinto, El Laberinto 3D, El Memorice, El
+                    Abismo y El Ajedrez
+                </li>
+                <li>El Tesorario — Colección de premios y tesoros ganados</li>
+            </ul>
+        </noscript>
+        <main id="juego">
             <div id="biblioteca"></div>
-        </div>
+        </main>
 
         <script type="module" src="js/juego.js"></script>
         <script>

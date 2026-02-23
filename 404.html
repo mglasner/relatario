@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="theme-color" content="#5a3a1a" />
+        <title>Página no encontrada — El Relatario</title>
+        <link
+            rel="preload"
+            href="/assets/fonts/lora-variable-latin.woff2"
+            as="font"
+            type="font/woff2"
+            crossorigin
+        />
+        <link rel="icon" href="/assets/img/icons/favicon.ico" sizes="32x32" />
+        <style>
+            @font-face {
+                font-family: 'Lora';
+                src: url('/assets/fonts/lora-variable-latin.woff2') format('woff2');
+                font-weight: 400 700;
+                font-display: swap;
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                min-height: 100dvh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #1a0f08;
+                color: #f5e6d3;
+                font-family: 'Lora', Georgia, serif;
+                text-align: center;
+                padding: 2rem;
+            }
+
+            .contenido {
+                max-width: 420px;
+            }
+
+            h1 {
+                font-size: 5rem;
+                line-height: 1;
+                color: #c9a96e;
+                margin-bottom: 0.5rem;
+            }
+
+            p {
+                font-size: 1.2rem;
+                margin-bottom: 2rem;
+                opacity: 0.85;
+            }
+
+            a {
+                display: inline-block;
+                padding: 0.75rem 2rem;
+                background: #5a3a1a;
+                color: #f5e6d3;
+                text-decoration: none;
+                border-radius: 8px;
+                font-family: inherit;
+                font-size: 1rem;
+                transition: background 0.2s;
+            }
+
+            a:hover {
+                background: #7a5a2a;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="contenido">
+            <h1>404</h1>
+            <p>
+                Esta página no existe. Quizás el camino se perdió entre los pasillos del laberinto.
+            </p>
+            <a href="/">Volver al Relatario</a>
+        </div>
+    </body>
+</html>
