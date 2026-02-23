@@ -4,6 +4,7 @@
 import { TESOROS } from '../tesoros.js';
 import { crearElemento } from '../utils.js';
 import { crearLibro, generarPortada } from './libro.js';
+import { crearCanvasTesoro } from './canvasTesoro.js';
 
 export const NOMBRES_JUEGOS = {
     laberinto: 'El Laberinto',
@@ -18,6 +19,16 @@ const ORDEN_TIER = ['curioso', 'raro', 'epico', 'legendario', 'mitico'];
 
 function esTierAlto(tier) {
     return ORDEN_TIER.indexOf(tier) >= 2;
+}
+
+// Canvas activo del tesoro (épico+) — se detiene al navegar entre páginas
+let canvasActivo = null;
+
+function detenerCanvasActivo() {
+    if (canvasActivo) {
+        canvasActivo.detener();
+        canvasActivo = null;
+    }
 }
 
 // Entidades con flag `encontrado` — se setea antes de crear el libro
@@ -58,6 +69,8 @@ function generarInfoJuegos(juegos) {
 }
 
 function generarDetalleTesoro(nombre) {
+    detenerCanvasActivo();
+
     const datos = entidadesActuales[nombre];
     const tier = datos.tier;
     const tierLabel = tier.charAt(0).toUpperCase() + tier.slice(1);
@@ -84,29 +97,21 @@ function generarDetalleTesoro(nombre) {
         );
     } else {
         const visual = crearElemento('div', 'tesorario-visual tesorario-visual-' + tier);
-        const tieneSprite = datos.sprite && datos.frames;
 
-        if (tieneSprite) {
-            const sprite = crearElemento('div', 'tesorario-sprite');
-            sprite.style.backgroundImage = 'url(' + datos.sprite + ')';
-            sprite.style.setProperty('--frames', datos.frames);
-            visual.appendChild(sprite);
-            visual.appendChild(crearElemento('div', 'tesorario-aura tesorario-aura-' + tier));
+        if (esTierAlto(tier)) {
+            // Épico+ encontrado: canvas con efectos
+            const esMobile = window.matchMedia('(max-width: 480px)').matches;
+            const ct = crearCanvasTesoro(datos.img, tier, esMobile ? 110 : 140);
+            visual.appendChild(ct.elemento);
+            ct.iniciar();
+            canvasActivo = ct;
         } else {
+            // Curioso y raro: imagen con animación CSS (raro gira en 3D)
             const img = crearElemento('img', 'tesorario-img');
             img.src = datos.img;
             img.alt = nombre;
             img.draggable = false;
             visual.appendChild(img);
-        }
-
-        if (esTierAlto(tier)) {
-            for (let i = 0; i < 8; i++) {
-                const p = crearElemento('div', 'tesorario-particula');
-                p.style.setProperty('--dur', 2.5 + Math.random() * 2.5 + 's');
-                p.style.setProperty('--delay', -Math.random() * 3 + 's');
-                visual.appendChild(p);
-            }
         }
 
         contenido.appendChild(visual);
@@ -175,6 +180,8 @@ function necesitaSeparadorTesoro(nombres, i) {
  * @param {Set<string>} encontrados - nombres de tesoros encontrados
  */
 export function crearLibroTesorario(encontrados) {
+    detenerCanvasActivo();
+
     const entidades = construirEntidades(encontrados);
     entidadesActuales = entidades;
 

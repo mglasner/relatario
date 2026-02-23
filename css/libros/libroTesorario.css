@@ -82,15 +82,30 @@
 }
 
 /* =========================================
-   RARO — float + shimmer + glow azul
+   RARO — rotación 3D + float + shimmer + glow azul
    ========================================= */
 
-.tesorario-visual-raro .tesorario-img {
+.tesorario-visual-raro {
+    perspective: 500px;
     animation: tesoro-float 3s ease-in-out infinite;
+}
+
+.tesorario-visual-raro .tesorario-img {
+    animation: tesoro-girar-3d 6s linear infinite;
     border-color: rgb(80 140 220 / 40%);
     box-shadow:
         0 0 20px rgb(80 140 220 / 25%),
         0 0 40px rgb(80 140 220 / 10%);
+}
+
+@keyframes tesoro-girar-3d {
+    from {
+        transform: rotateY(0deg);
+    }
+
+    to {
+        transform: rotateY(360deg);
+    }
 }
 
 /* Shimmer overlay */
@@ -135,135 +150,10 @@
     opacity: 0.5;
 }
 
-/* --- Sprite animado (épico+) --- */
+/* --- Canvas para tesoros épico+ --- */
 
-.tesorario-sprite {
-    width: 120px;
-    height: 120px;
-    background-size: calc(var(--frames) * 100%) 100%;
-    animation: sprite-loop calc(var(--frames) * 0.12s) steps(var(--frames)) infinite;
+.tesorario-canvas {
     border-radius: 10px;
-    border: 2px solid rgb(200 160 80 / 30%);
-    box-shadow: 0 0 15px rgb(200 160 80 / 15%);
-}
-
-/* --- Aura detrás del sprite --- */
-
-.tesorario-aura {
-    position: absolute;
-    width: 140px;
-    height: 140px;
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: -1;
-    animation: tesoro-aura-libro 2.5s ease-in-out infinite;
-}
-
-.tesorario-aura-epico {
-    background: radial-gradient(circle, rgb(160 80 255 / 15%) 0%, transparent 70%);
-}
-
-.tesorario-aura-legendario {
-    background: radial-gradient(circle, rgb(255 160 40 / 18%) 0%, transparent 70%);
-}
-
-.tesorario-aura-mitico {
-    background: radial-gradient(circle, rgb(255 80 100 / 20%) 0%, transparent 70%);
-}
-
-@keyframes tesoro-aura-libro {
-    0%,
-    100% {
-        transform: scale(1);
-        opacity: 0.5;
-    }
-
-    50% {
-        transform: scale(1.15);
-        opacity: 0.9;
-    }
-}
-
-/* =========================================
-   ÉPICO — sprite + partículas + glow púrpura
-   ========================================= */
-
-.tesorario-visual-epico .tesorario-sprite {
-    border-color: rgb(160 80 255 / 40%);
-    box-shadow:
-        0 0 20px rgb(160 80 255 / 25%),
-        0 0 50px rgb(160 80 255 / 10%);
-}
-
-/* =========================================
-   LEGENDARIO — sprite + ondas + glow naranja
-   ========================================= */
-
-.tesorario-visual-legendario .tesorario-sprite {
-    border-color: rgb(255 160 40 / 45%);
-    box-shadow:
-        0 0 25px rgb(255 160 40 / 30%),
-        0 0 60px rgb(255 160 40 / 12%);
-}
-
-/* Ondas de energía */
-.tesorario-visual-legendario::after {
-    content: '';
-    position: absolute;
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
-    border: 1px solid rgb(255 160 40 / 25%);
-    animation: tesorario-ondas 2.2s ease-out infinite;
-    pointer-events: none;
-}
-
-@keyframes tesorario-ondas {
-    from {
-        transform: scale(0.5);
-        opacity: 0.7;
-    }
-
-    to {
-        transform: scale(1.4);
-        opacity: 0;
-    }
-}
-
-/* =========================================
-   MÍTICO — sprite + glow rojo intenso
-   ========================================= */
-
-.tesorario-visual-mitico .tesorario-sprite {
-    border-color: rgb(255 80 100 / 45%);
-    box-shadow:
-        0 0 30px rgb(255 80 100 / 35%),
-        0 0 70px rgb(255 80 100 / 15%);
-}
-
-/* =========================================
-   Partículas orbitando (épico+)
-   ========================================= */
-
-.tesorario-particula {
-    position: absolute;
-    width: 3px;
-    height: 3px;
-    border-radius: 50%;
-    background: rgb(200 150 255);
-    box-shadow: 0 0 5px rgb(200 150 255 / 50%);
-    animation: tesoro-orbitar var(--dur) linear infinite;
-    animation-delay: var(--delay);
-}
-
-.tesorario-visual-legendario .tesorario-particula {
-    background: rgb(255 180 80);
-    box-shadow: 0 0 5px rgb(255 180 80 / 50%);
-}
-
-.tesorario-visual-mitico .tesorario-particula {
-    background: rgb(255 120 140);
-    box-shadow: 0 0 6px rgb(255 120 140 / 60%);
 }
 
 /* --- Nombre del tesoro --- */
@@ -323,8 +213,7 @@
         height: 110px;
     }
 
-    .tesorario-img,
-    .tesorario-sprite {
+    .tesorario-img {
         width: 90px;
         height: 90px;
     }

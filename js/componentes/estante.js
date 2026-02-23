@@ -107,7 +107,8 @@ export function crearEstante(contenedor, repisas) {
             const xSec = lomoSec.getBoundingClientRect().left;
             const correccion = xLomo - xSec;
             if (Math.abs(correccion) > 0.5) {
-                r.style.paddingLeft = (parseFloat(getComputedStyle(r).paddingLeft) + correccion) + 'px';
+                r.style.paddingLeft =
+                    parseFloat(getComputedStyle(r).paddingLeft) + correccion + 'px';
             }
         });
     }
