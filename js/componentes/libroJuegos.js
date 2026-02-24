@@ -80,7 +80,18 @@ const JUEGOS = {
         parrafos: [
             'Un tablero de ajedrez mágico donde un ejército aleatorio de villanos cobra vida como piezas enemigas.',
             'Mueve tus piezas con estrategia para dar jaque mate. Cada pieza enemiga es un villano con su propio avatar.',
-            'Elige tu color, ajusta la dificultad y demuestra que tu mente es más poderosa que cualquier ejército.',
+        ],
+        modos: [
+            {
+                icono: '\uD83E\uDD16',
+                nombre: 'vs IA',
+                desc: 'Enfrenta al ejército de villanos controlado por la máquina. Elige dificultad y color.',
+            },
+            {
+                icono: '\uD83E\uDD1D',
+                nombre: 'vs Humano',
+                desc: 'Dos jugadores en el mismo dispositivo. Uno controla a los héroes y el otro a los villanos.',
+            },
         ],
         tip: 'Piensa antes de mover. Protege a tu rey y busca debilidades en el rival.',
     },
@@ -293,8 +304,11 @@ function crearModalHeroe(onConfirmar) {
     return { overlay: overlay, abrir: abrir, cerrar: cerrar };
 }
 
+// Juegos que no usan el modal de selección de héroe (eligen dentro del juego)
+const JUEGOS_SIN_MODAL_HEROE = { ajedrez: true };
+
 // Genera la página de detalle de un juego: descripción + botón Jugar
-function generarDetalleJuego(nombre, _tabAnterior, abrirModalHeroe) {
+function generarDetalleJuego(nombre, _tabAnterior, abrirModalHeroe, onJugarDirecto) {
     const entidades = adaptarJuegos();
     const datos = entidades[nombre];
     const juego = JUEGOS[datos.juegoId];
@@ -305,7 +319,13 @@ function generarDetalleJuego(nombre, _tabAnterior, abrirModalHeroe) {
     const btnJugar = crearElemento('button', 'libro-juego-btn-jugar', 'Jugar');
     btnJugar.type = 'button';
     btnJugar.addEventListener('click', function () {
-        abrirModalHeroe(datos.juegoId);
+        if (JUEGOS_SIN_MODAL_HEROE[datos.juegoId]) {
+            // Iniciar directo sin modal de héroe (el juego maneja la selección)
+            const primerHeroe = Object.keys(PERSONAJES)[0];
+            onJugarDirecto(datos.juegoId, primerHeroe, null);
+        } else {
+            abrirModalHeroe(datos.juegoId);
+        }
     });
     const ornamento = contenido.querySelector('.libro-ornamento');
     ornamento.after(btnJugar);
@@ -358,7 +378,7 @@ export function crearLibroJuegos(contenedor, onJugar) {
     const { libro, manejarTecladoLibro } = crearLibro({
         entidades: entidades,
         generarDetalle: function (nombre, tabAnterior) {
-            return generarDetalleJuego(nombre, tabAnterior, modalHeroe.abrir);
+            return generarDetalleJuego(nombre, tabAnterior, modalHeroe.abrir, onJugar);
         },
         claseRaiz: 'libro-juegos',
         titulo: 'Libro de Juegos',

@@ -14,7 +14,7 @@
 | 8 | [Modo Boss Rush](#8-modo-boss-rush) | Media | [ ] |
 | 9 | [Mascotas acompanantes](#9-mascotas-acompanantes) | Media-Alta | [ ] |
 | 10 | [Editor de niveles para El Abismo](#10-editor-de-niveles-para-el-abismo) | Alta | [ ] |
-| 11 | [Ajedrez local (heroes vs villanos)](#11-ajedrez-local-heroes-vs-villanos) | Alta | [x] |
+| 11 | [Ajedrez local (heroes vs villanos)](#11-ajedrez-local-heroes-vs-villanos) | Alta | [ ] |
 | 12 | [Modo Historia / Campana](#12-modo-historia-cooperativo-campana) | Muy Alta | [ ] |
 | 13 | [Ajedrez online (multidispositivo)](#13-ajedrez-online-multidispositivo) | Muy Alta | [ ] |
 | 14 | [Sistema de autenticacion y backend](#14-sistema-de-autenticacion-y-backend) | Muy Alta | [ ] |
@@ -185,19 +185,25 @@ Reutiliza todo el motor existente del Abismo — el editor solo genera el array 
 
 ## 11. Ajedrez local (heroes vs villanos)
 
-**Dificultad: Alta** | Archivos nuevos: `js/juegos/ajedrez/index.js`, `js/juegos/ajedrez/tablero.js`, `js/juegos/ajedrez/reglas.js`, `css/juegos/ajedrez.css`, `datos/ajedrez.yaml`
+**Dificultad: Alta** | Archivos nuevos: `js/juegos/ajedrez/index.js`, `js/juegos/ajedrez/tablero.js`, `js/juegos/ajedrez/reglas.js`, `js/juegos/ajedrez/ia.js`, `css/juegos/ajedrez.css`, `datos/ajedrez.yaml`
 
-Un 6to juego en el Libro de Juegos: ajedrez tematico donde un jugador controla las piezas de heroes y el otro las de villanos, en un mismo dispositivo (hot-seat).
+Un 6to juego en el Libro de Juegos: ajedrez tematico con piezas de heroes vs villanos. Dos modos de juego seleccionables al iniciar:
+
+### Modos de juego
+
+- **Heroes vs Villanos (IA)**: el jugador controla los heroes y la IA controla los villanos. Dificultad ajustable (profundidad del minimax o similar)
+- **Heroe Humano vs Villano Humano**: dos jugadores en el mismo dispositivo (hot-seat). Al cambiar de turno se muestra un overlay "Turno de Heroes" / "Turno de Villanos" para que el otro jugador tome el dispositivo
+
+### Mecanicas
 
 - **Piezas tematizadas**: cada pieza de ajedrez corresponde a un personaje. Los peones son esbirros, las torres son heroes/villanos tanque, los alfiles son magicos, los caballos son agiles, la reina es el elite, el rey es el lider del equipo
 - **Tablero visual**: tablero 8x8 con estetica de El Relatario (colores del equipo de cada bando), piezas como avatares miniatura de los personajes
-- **Turnos**: al cambiar de turno, se muestra un overlay "Turno de Heroes" / "Turno de Villanos" para que el otro jugador tome el dispositivo
 - **Reglas completas**: movimientos legales, enroque, captura al paso, promocion de peon, jaque y jaque mate. Se puede implementar con una libreria ligera de validacion o desde cero
 - **Touch + mouse**: drag-and-drop para mover piezas, con highlight de movimientos legales al seleccionar una pieza
 
-Se integra como una pagina mas del Libro de Juegos. No requiere seleccion de heroe individual — cada equipo ya tiene sus piezas asignadas.
+Se integra como una pagina mas del Libro de Juegos. El selector de modo (IA vs 1v1) aparece en el modal de seleccion antes de jugar, similar al selector de dificultad del Memorice.
 
-**Por que es divertido**: Es el primer juego de 2 jugadores de El Relatario. Los hermanos se enfrentan directamente, cada uno con "su equipo". Convierte personajes conocidos en piezas estrategicas.
+**Por que es divertido**: Es el primer juego con opcion de 2 jugadores de El Relatario. Contra la IA es un desafio estrategico individual; en 1v1 los hermanos se enfrentan directamente, cada uno con "su equipo". Convierte personajes conocidos en piezas estrategicas.
 
 ---
 
