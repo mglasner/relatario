@@ -12,6 +12,7 @@ import {
     actualizarHUDBoss,
     ocultarHUDBoss,
     reescalarCanvas,
+    obtenerDPR,
     limpiarDOM,
 } from './domPlat.js';
 import { crearModoInmersivo } from '../../componentes/modoInmersivo.js';
@@ -317,6 +318,10 @@ function renderFrame() {
     const camX = obtenerCamaraX();
     const shakeY = obtenerShakeY();
     const tiempo = Date.now();
+
+    // DPR base transform (coordenadas de juego → pixels de canvas)
+    const dpr = obtenerDPR();
+    est.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     // Aplicar shake vertical
     est.ctx.save();

@@ -106,12 +106,20 @@ npm run lint
 
 ### Paso 8 (opcional): Sprite sheet para platformer
 
-Si el personaje aparecerá en la Habitación 4 (El Abismo), generar su sprite sheet
-siguiendo el procedimiento en `references/sprites-plat.md`. Incluye generación con
-IA, procesamiento de frames, ensamblaje y registro en `spritesPlat.js`.
+Si el personaje aparecerá en El Abismo, generar su sprite sheet siguiendo
+`references/sprites-plat.md`. Pipeline de 3 pasos:
 
-Personajes sin sprite sheet usan fallback procedural automáticamente, por lo que
-este paso puede hacerse después.
+1. **Estudiar al personaje** — SIEMPRE leer el avatar y los datos YAML antes de
+   generar. Sin esto el sprite sale generico e irreconocible.
+2. **Generar con chromakey** — usar `inputImagePath` (avatar) y
+   `maintainCharacterConsistency: true`. Fondo verde `#00FF00` o magenta `#FF00FF`
+   segun la paleta del personaje (ver tabla en la referencia).
+3. **Remover chromakey** — `scripts/remover-chromakey.py` (analisis HSV)
+4. **Post-procesar** — `scripts/postproceso-sprites-2x.py` (detecta frames, escala
+   uniforme, ensambla strip de 17 frames a 96x120 px)
+5. **Limpieza manual** — revisar y limpiar residuos de chromakey en GIMP si quedan
+
+Personajes sin sprite sheet usan fallback procedural automaticamente.
 
 ## Creación Múltiple
 

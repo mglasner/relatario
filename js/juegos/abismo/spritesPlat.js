@@ -2,55 +2,48 @@
 // Carga sprite sheets PNG (generados con IA) y los parte en frames.
 // Fallback: genera sprites procedurales si no hay sprite sheet disponible.
 //
-// Jugadores (15 frames): [idle×2, run×6, jump, fall, hit, atk1×2, atk2×2]
-// Enemigos (9 frames):   [idle×2, walk×4, hit, atk×2]
-// Cada frame mide FRAME_W x FRAME_H pixeles.
+// Layout unificado (17 frames): [idle×2, run×6, jump, fall, hit, atk1×2, atk2×2, crouch×2]
+// Cada frame mide FRAME_W x FRAME_H pixeles (resolucion 2x).
 
 // --- Constantes ---
 
-const FRAME_W = 48;
-const FRAME_H = 60;
+const FRAME_W = 96;
+const FRAME_H = 120;
 
-// Layouts de frames segun cantidad total en el strip
-// Layout 9:  idle(2) + run(4) + jump(1) + fall(1) + hit(1)
-// Layout 15: idle(2) + run(6) + jump(1) + fall(1) + hit(1) + atk1(2) + atk2(2)
-const LAYOUTS = {
-    9: {
-        idle: { inicio: 0, cantidad: 2 },
-        correr: { inicio: 2, cantidad: 4 },
-        saltar: { inicio: 6, cantidad: 1 },
-        caer: { inicio: 7, cantidad: 1 },
-        golpeado: { inicio: 8, cantidad: 1 },
-    },
-    15: {
-        idle: { inicio: 0, cantidad: 2 },
-        correr: { inicio: 2, cantidad: 6 },
-        saltar: { inicio: 8, cantidad: 1 },
-        caer: { inicio: 9, cantidad: 1 },
-        golpeado: { inicio: 10, cantidad: 1 },
-        ataque1: { inicio: 11, cantidad: 2 },
-        ataque2: { inicio: 13, cantidad: 2 },
-    },
+// Layout unificado (17 frames): idle(2) run(6) jump fall hit atk1(2) atk2(2) crouch(2)
+const HERO_LAYOUT = {
+    idle: { inicio: 0, cantidad: 2 },
+    correr: { inicio: 2, cantidad: 6 },
+    saltar: { inicio: 8, cantidad: 1 },
+    caer: { inicio: 9, cantidad: 1 },
+    golpeado: { inicio: 10, cantidad: 1 },
+    ataque1: { inicio: 11, cantidad: 2 },
+    ataque2: { inicio: 13, cantidad: 2 },
+    agacharse: { inicio: 15, cantidad: 2 },
 };
 
-// Personajes con sprite sheet disponible (nombre en minusculas → archivo y layout)
-const SPRITE_SHEETS = {
-    donbu: { src: 'assets/img/sprites-plat/donbu.png', frames: 15 },
-    hana: { src: 'assets/img/sprites-plat/hana.png', frames: 15 },
-    kira: { src: 'assets/img/sprites-plat/kira.png', frames: 15 },
-    pompom: { src: 'assets/img/sprites-plat/pompom.png', frames: 15 },
-    orejas: { src: 'assets/img/sprites-plat/orejas.png', frames: 15 },
-    rosé: { src: 'assets/img/sprites-plat/rose.png', frames: 15 },
-    lina: { src: 'assets/img/sprites-plat/lina.png', frames: 15 },
-    pandajuro: { src: 'assets/img/sprites-plat/pandajuro.png', frames: 15 },
-};
-
-// Layout de enemigos (9 frames): idle(2) + walk(4) + hit(1) + atk(2)
+// Enemigos usan el mismo layout, con alias patrulla → correr
 const ENEMY_LAYOUT = {
     idle: { inicio: 0, cantidad: 2 },
-    patrulla: { inicio: 2, cantidad: 4 },
-    golpeado: { inicio: 6, cantidad: 1 },
-    ataque: { inicio: 7, cantidad: 2 },
+    patrulla: { inicio: 2, cantidad: 6 },
+    saltar: { inicio: 8, cantidad: 1 },
+    caer: { inicio: 9, cantidad: 1 },
+    golpeado: { inicio: 10, cantidad: 1 },
+    ataque: { inicio: 11, cantidad: 2 },
+    ataque2: { inicio: 13, cantidad: 2 },
+    agacharse: { inicio: 15, cantidad: 2 },
+};
+
+// Personajes con sprite sheet disponible (nombre en minusculas → archivo)
+const SPRITE_SHEETS = {
+    donbu: { src: 'assets/img/sprites-plat/donbu.png' },
+    hana: { src: 'assets/img/sprites-plat/hana.png' },
+    kira: { src: 'assets/img/sprites-plat/kira.png' },
+    pompom: { src: 'assets/img/sprites-plat/pompom.png' },
+    orejas: { src: 'assets/img/sprites-plat/orejas.png' },
+    rosé: { src: 'assets/img/sprites-plat/rose.png' },
+    lina: { src: 'assets/img/sprites-plat/lina.png' },
+    pandajuro: { src: 'assets/img/sprites-plat/pandajuro.png' },
 };
 
 // Enemigos con sprite sheet (nombre completo en minusculas → archivo)
@@ -63,6 +56,8 @@ const ENEMY_SPRITE_SHEETS = {
     pototo: { src: 'assets/img/sprites-plat/pototo.png' },
     'la grotesca': { src: 'assets/img/sprites-plat/grotesca.png' },
     'el disonante': { src: 'assets/img/sprites-plat/disonante.png' },
+    'el monstruo comelón': { src: 'assets/img/sprites-plat/comelon.png' },
+    'la nebulosa': { src: 'assets/img/sprites-plat/nebulosa.png' },
 };
 
 // --- Estado ---
@@ -108,10 +103,9 @@ export function iniciarSpritesJugador(nombrePersonaje, colorBase) {
     const config = SPRITE_SHEETS[key];
 
     if (config) {
-        const layout = LAYOUTS[config.frames];
         cargarImagen(config.src)
             .then((img) => {
-                spritesJugador = cortarFrames(img, layout);
+                spritesJugador = cortarFrames(img, HERO_LAYOUT);
                 spriteSheetCargado = true;
             })
             .catch(() => {
@@ -127,7 +121,7 @@ export function obtenerSpriteJugador(estado, frameIndex) {
 }
 
 export function obtenerDimensionesSprite() {
-    if (spriteSheetCargado) return { ancho: FRAME_W, alto: FRAME_H };
+    if (spriteSheetCargado) return { ancho: 48, alto: 60 }; // tamaño logico de dibujo (game coords)
     return { ancho: 12, alto: 14 }; // dimensiones procedurales
 }
 

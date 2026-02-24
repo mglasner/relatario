@@ -11,6 +11,7 @@ let hudBossContenedor = null;
 let hudBossNombre = null;
 let hudBossVida = null;
 let canvasRef = null;
+let canvasDPR = 1;
 
 // Referencias al HUD in-canvas (vida jugador + inventario + boton huir)
 let hudJugadorContenedor = null;
@@ -50,12 +51,15 @@ export function crearPantalla(esTouch, onHuir) {
     const wrapper = document.createElement('div');
     wrapper.className = 'plat-wrapper';
 
-    // Canvas (dimensiones logicas fijas)
+    // Canvas con DPR para renderizado a resolucion nativa
+    canvasDPR = (window.devicePixelRatio || 1) >= 1.5 ? 2 : 1;
+
     const canvas = document.createElement('canvas');
     canvas.id = 'canvas-platformer';
-    canvas.width = anchoCanvas;
-    canvas.height = altoCanvas;
+    canvas.width = anchoCanvas * canvasDPR;
+    canvas.height = altoCanvas * canvasDPR;
     const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
 
     // --- HUD in-canvas: vida del jugador + boton huir (landscape mobile) ---
     hudJugadorContenedor = document.createElement('div');
@@ -171,6 +175,10 @@ export function reescalarCanvas() {
     canvasRef.style.height = Math.floor(CFG.canvas.altoBase * escala) + 'px';
 }
 
+export function obtenerDPR() {
+    return canvasDPR;
+}
+
 export function limpiarDOM() {
     hudBossContenedor = null;
     hudBossNombre = null;
@@ -180,4 +188,5 @@ export function limpiarDOM() {
     hudJugadorVidaAnterior = -1;
     hudJugadorInventario = null;
     canvasRef = null;
+    canvasDPR = 1;
 }
