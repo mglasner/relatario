@@ -39,13 +39,13 @@ const ESTADOS = {
     JUEGO: 'JUEGO',
 };
 
-// Registro de juegos: { "laberinto": { iniciar, limpiar }, ... }
+// Registro de juegos: { "id": { iniciar, limpiar, sinBarra? }, ... }
 const juegos = {
     laberinto: { iniciar: iniciarLaberinto, limpiar: limpiarLaberinto },
     laberinto3d: { iniciar: iniciarLaberinto3d, limpiar: limpiarLaberinto3d },
     memorice: { iniciar: iniciarMemorice, limpiar: limpiarMemorice },
     abismo: { iniciar: iniciarAbismo, limpiar: limpiarAbismo },
-    ajedrez: { iniciar: iniciarAjedrez, limpiar: limpiarAjedrez },
+    ajedrez: { iniciar: iniciarAjedrez, limpiar: limpiarAjedrez, sinBarra: true },
 };
 
 // --- Estado del juego ---
@@ -368,7 +368,9 @@ function ejecutarCambioEstado(anterior, nuevo, datos) {
         estado.jugadorActual.vidaActual = estado.jugadorActual.vidaMax;
         estado.jugadorActual.inventario = [];
 
-        barra.mostrar(estado.jugadorActual);
+        if (!juegoRegistrado.sinBarra) {
+            barra.mostrar(estado.jugadorActual);
+        }
 
         juegoRegistrado.iniciar(
             estado.jugadorActual,
