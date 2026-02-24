@@ -1,6 +1,7 @@
 // Modal reutilizable para mostrar un libro con overlay, fondo click-to-close y botón cerrar
 
 import { crearElemento } from '../utils.js';
+import { crearModoPortrait } from './modoPortrait.js';
 
 // Crea un modal con overlay, fondo click-to-close, botón cerrar y libro dentro
 export function crearModalLibro(libro, manejarTecladoLibro) {
@@ -22,6 +23,7 @@ export function crearModalLibro(libro, manejarTecladoLibro) {
     // AbortController agrupa todos los listeners del modal para limpieza segura
     let ac = null;
     let callbackCerrar = null;
+    let portrait = null;
 
     function manejarTeclado(e) {
         if (e.key === 'Escape') {
@@ -59,6 +61,10 @@ export function crearModalLibro(libro, manejarTecladoLibro) {
         document.addEventListener('keydown', manejarTecladoLibro, { signal });
         document.addEventListener('keydown', manejarFocusTrap, { signal });
 
+        // Forzar portrait en mobile
+        portrait = crearModoPortrait();
+        portrait.activar();
+
         // Mover foco al botón de cerrar al abrir
         btnCerrar.focus();
     }
@@ -68,6 +74,10 @@ export function crearModalLibro(libro, manejarTecladoLibro) {
         if (ac) {
             ac.abort();
             ac = null;
+        }
+        if (portrait) {
+            portrait.desactivar();
+            portrait = null;
         }
         if (callbackCerrar) callbackCerrar();
     }

@@ -1,8 +1,9 @@
 // Componente: Overlay "gira tu dispositivo"
-// Muestra un overlay fullscreen en portrait pidiendo rotar a landscape.
+// Muestra un overlay fullscreen pidiendo rotar a la orientacion deseada.
 // Solo activo en dispositivos touch. Usa matchMedia para detectar orientacion.
+// @param {string} orientacionDeseada — 'landscape' (por defecto) o 'portrait'
 
-export function crearOverlayRotar() {
+export function crearOverlayRotar(orientacionDeseada = 'landscape') {
     const esTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     if (!esTouch) {
         return {
@@ -17,6 +18,9 @@ export function crearOverlayRotar() {
     // Crear overlay
     const overlay = document.createElement('div');
     overlay.className = 'overlay-rotar oculto';
+    if (orientacionDeseada === 'portrait') {
+        overlay.classList.add('overlay-rotar-portrait');
+    }
 
     const icono = document.createElement('div');
     icono.className = 'overlay-rotar-icono';
@@ -30,22 +34,26 @@ export function crearOverlayRotar() {
     overlay.appendChild(mensaje);
     document.body.appendChild(overlay);
 
+    // Detectar la orientacion opuesta a la deseada
+    const consultaOpuesta =
+        orientacionDeseada === 'landscape' ? '(orientation: portrait)' : '(orientation: landscape)';
+
     let mediaQuery = null;
     let onChangeCallback = null;
 
     function alCambiarOrientacion(e) {
-        const esLandscape = !e.matches; // matches = portrait
-        if (esLandscape) {
-            overlay.classList.add('oculto');
-        } else {
+        // e.matches = true cuando estamos en la orientacion NO deseada → mostrar overlay
+        if (e.matches) {
             overlay.classList.remove('oculto');
+        } else {
+            overlay.classList.add('oculto');
         }
-        if (onChangeCallback) onChangeCallback(esLandscape);
+        if (onChangeCallback) onChangeCallback(!e.matches);
     }
 
     function activar(onChange) {
         onChangeCallback = onChange || null;
-        mediaQuery = window.matchMedia('(orientation: portrait)');
+        mediaQuery = window.matchMedia(consultaOpuesta);
         mediaQuery.addEventListener('change', alCambiarOrientacion);
 
         // Estado inicial

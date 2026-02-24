@@ -36,6 +36,22 @@
     }
 }
 
+/* Variante portrait: icono empieza girado y vuelve a vertical */
+.overlay-rotar-portrait .overlay-rotar-icono {
+    animation: rotar-icono-portrait 2s ease-in-out infinite;
+}
+
+@keyframes rotar-icono-portrait {
+    0%,
+    100% {
+        transform: rotate(90deg);
+    }
+
+    50% {
+        transform: rotate(0deg);
+    }
+}
+
 /* Ocultar overlay en desktop */
 @media (hover: hover) and (pointer: fine) {
     .overlay-rotar {
