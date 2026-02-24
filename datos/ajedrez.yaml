@@ -1,7 +1,17 @@
 # datos/ajedrez.yaml — El Ajedrez
 meta:
-    titulo: "El Ajedrez"
+    titulo: 'El Ajedrez'
     tiempoVictoria: 2500
+
+modo:
+    opciones:
+        - id: ia
+          nombre: 'vs Villanos (IA)'
+          icono: "\uD83E\uDD16"
+        - id: humano
+          nombre: 'vs Humano'
+          icono: "\uD83E\uDD1D"
+    default: 0
 
 dificultad:
     opciones:
@@ -15,9 +25,9 @@ dificultad:
 
 color:
     opciones:
-        - nombre: "♔ Blancas"
+        - nombre: '♔ Blancas'
           valor: white
-        - nombre: "♚ Negras"
+        - nombre: '♚ Negras'
           valor: black
     default: 0
 
@@ -30,15 +40,19 @@ tablero:
     tamCeldaMobile: 48
 
 textos:
-    eligeColor: "Tu color"
-    turnoJugador: "Tu turno"
-    turnoIA: "Turno del rival..."
-    toastJaque: "¡Jaque!"
-    toastMate: "¡Jaque mate!"
-    toastTablas: "Tablas"
-    toastVictoria: "¡Has derrotado al ejército de villanos!"
-    toastDerrota: "El Monstruo Comelón ha ganado..."
-    promocion: "Elige una pieza"
+    eligeColor: 'Tu color'
+    toastJaque: '¡Jaque!'
+    toastTablas: 'Tablas'
+    toastVictoria: '¡Has derrotado al ejército de villanos!'
+    toastDerrota: 'El Monstruo Comelón ha ganado...'
+    toastVictoriaHeroes: '¡Los Héroes ganan!'
+    toastVictoriaVillanos: '¡Los Villanos ganan!'
+    eligeModo: 'Modo de juego'
+    ofrecerTablas: 'Ofrecer tablas'
+    heroesOfrecenTablas: 'Los Héroes ofrecen tablas'
+    villanosOfrecenTablas: 'Los Villanos ofrecen tablas'
+    aceptarTablas: 'Aceptar'
+    rechazarTablas: 'Rechazar'
 
 curacion:
     victoriaMin: 10

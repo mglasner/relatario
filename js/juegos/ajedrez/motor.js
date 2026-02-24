@@ -70,6 +70,11 @@ export function esTurnoJugador() {
     return game.exportJson().turn === colorJugador;
 }
 
+/** @returns {'white'|'black'} el color del turno actual */
+export function obtenerTurno() {
+    return game.exportJson().turn;
+}
+
 /** @returns {boolean} true si hay jaque */
 export function hayJaque() {
     return game.exportJson().check;
