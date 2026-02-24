@@ -12,6 +12,7 @@ const STATIC_ASSETS = [
     BASE_PATH + 'assets/fonts/lora-variable-latin.woff2',
     BASE_PATH + 'assets/fonts/quicksand-variable-latin.woff2',
     BASE_PATH + 'manifest.webmanifest',
+    BASE_PATH + 'offline.html',
 ];
 
 // Instalación: precachear assets críticos
@@ -63,7 +64,9 @@ self.addEventListener('fetch', function (event) {
                     return response;
                 })
                 .catch(function () {
-                    return caches.match(event.request);
+                    return caches.match(event.request).then(function (cached) {
+                        return cached || caches.match(BASE_PATH + 'offline.html');
+                    });
                 })
         );
         return;

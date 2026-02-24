@@ -69,6 +69,7 @@
         </script>
     </head>
     <body>
+        <a href="#biblioteca" class="skip-link">Saltar al contenido</a>
         <noscript>
             <h1>El Relatario</h1>
             <p>Un compendio de relatos, héroes y desafíos para contar en familia.</p>
@@ -86,8 +87,8 @@
                 <li>El Tesorario — Colección de premios y tesoros ganados</li>
             </ul>
         </noscript>
-        <main id="juego">
-            <div id="biblioteca"></div>
+        <main id="juego" aria-label="El Relatario">
+            <div id="biblioteca" role="region" aria-label="Biblioteca de libros"></div>
         </main>
 
         <script type="module" src="js/juego.js"></script>

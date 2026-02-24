@@ -343,7 +343,7 @@ function detectarSalida() {
 
 // --- Game loop ---
 
-const gameLoop = crearGameLoop(function () {
+const gameLoop = crearGameLoop(function (_tiempo, _dt) {
     if (!est.activo) {
         gameLoop.detener();
         return;

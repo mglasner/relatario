@@ -10,6 +10,8 @@ export function crearCabecera(nombre, datos, claseAvatar) {
     const img = document.createElement('img');
     img.src = datos.img;
     img.alt = nombre;
+    img.width = 80;
+    img.height = 80;
     img.loading = 'lazy';
     avatarDiv.appendChild(img);
     frag.appendChild(avatarDiv);
@@ -28,6 +30,8 @@ export function generarPortada(titulo, imgSrc) {
     const img = document.createElement('img');
     img.src = imgSrc;
     img.alt = titulo;
+    img.width = 200;
+    img.height = 200;
     img.className = 'libro-portada-emblema';
     img.loading = 'lazy';
     contenido.appendChild(img);

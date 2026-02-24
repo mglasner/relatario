@@ -7,6 +7,8 @@ import { crearOverlayRotar } from './overlayRotar.js';
 export function crearModoInmersivo(onCambio) {
     const esMobile = window.matchMedia('(pointer: coarse)').matches;
     let overlayRotar = null;
+    // AbortController agrupa listeners para limpieza segura
+    let ac = null;
 
     function onFullscreenChange() {
         // Doble rAF: el layout no se actualiza en el mismo frame que fullscreenchange
@@ -24,7 +26,10 @@ export function crearModoInmersivo(onCambio) {
         });
 
         if (esMobile) {
-            document.addEventListener('fullscreenchange', onFullscreenChange);
+            ac = new AbortController();
+            document.addEventListener('fullscreenchange', onFullscreenChange, {
+                signal: ac.signal,
+            });
             const el = document.documentElement;
             if (el.requestFullscreen) {
                 el.requestFullscreen()
@@ -42,12 +47,20 @@ export function crearModoInmersivo(onCambio) {
 
     function desactivar() {
         if (esMobile) {
-            document.removeEventListener('fullscreenchange', onFullscreenChange);
+            // Limpia el listener de fullscreenchange de forma segura
+            if (ac) {
+                ac.abort();
+                ac = null;
+            }
             if (document.fullscreenElement) {
                 document.exitFullscreen().catch(function () {});
             }
             if (screen.orientation && screen.orientation.unlock) {
-                screen.orientation.unlock();
+                try {
+                    screen.orientation.unlock();
+                } catch {
+                    // API no disponible
+                }
             }
         }
 

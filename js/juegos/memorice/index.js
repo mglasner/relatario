@@ -7,13 +7,14 @@ import { crearCarta } from './carta.js';
 import { lanzarToast } from '../../componentes/toast.js';
 import { notificarVidaCambio, notificarJugadorMuerto, notificarVictoria } from '../../eventos.js';
 import { crearPantallaJuego } from '../../componentes/pantallaJuego.js';
-import { crearElemento } from '../../utils.js';
+import { crearElemento, crearTimeoutTracker } from '../../utils.js';
 
 // --- Estado del módulo ---
 
 let jugador = null;
 let callbackSalir = null;
 let pantalla = null;
+const timeouts = crearTimeoutTracker();
 let indicador = null;
 let indicadorTexto = null;
 let indicadorProgreso = null;
@@ -152,7 +153,7 @@ function onClickGrilla(e) {
         const primera = primeraCarta;
         primeraCarta = null;
 
-        setTimeout(function () {
+        timeouts.set(function () {
             primera.deshacer();
             segunda.deshacer();
 
@@ -175,7 +176,7 @@ function victoria() {
     notificarVictoria();
     lanzarToast(CFG.textos.toastVictoria, '\u2728', 'exito');
 
-    setTimeout(function () {
+    timeouts.set(function () {
         limpiarMemorice();
         callbackSalir();
     }, CFG.meta.tiempoVictoria);
@@ -238,6 +239,7 @@ export function iniciarMemorice(jugadorRef, callback, dpadRef) {
 
 /** Limpia y destruye El Memorice */
 export function limpiarMemorice() {
+    timeouts.limpiar();
     document.removeEventListener('keydown', onKeyDown);
 
     if (pantalla) {

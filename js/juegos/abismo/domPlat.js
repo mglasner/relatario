@@ -59,7 +59,13 @@ export function crearPantalla(esTouch, onHuir) {
 
     const canvas = document.createElement('canvas');
     canvas.id = 'canvas-platformer';
+    canvas.setAttribute('role', 'img');
+    canvas.setAttribute('aria-label', 'El Abismo — Juego de plataformas');
     const ctx = canvas.getContext('2d');
+    if (!ctx) {
+        pantalla.appendChild(crearElemento('p', null, 'Tu navegador no soporta canvas 2D.'));
+        return { pantalla, canvas, ctx: null, escala: 1 };
+    }
     ctx.imageSmoothingEnabled = false;
 
     // --- HUD in-canvas: vida del jugador + boton huir (landscape mobile) ---

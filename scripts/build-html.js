@@ -34,24 +34,31 @@ writeFileSync('dist/sw.js', sw);
 // eslint-disable-next-line no-console
 console.log('SW cache version: relatario-' + buildId);
 
-// Copiar assets de cuentos publicados a dist/
-if (existsSync('cuentos')) {
-    readdirSync('cuentos', { withFileTypes: true })
+// Obtener slugs de cuentos publicados (reutilizado para assets y sitemap)
+function obtenerCuentosPublicados() {
+    if (!existsSync('cuentos')) return [];
+    return readdirSync('cuentos', { withFileTypes: true })
         .filter((d) => d.isDirectory())
-        .forEach((d) => {
+        .filter((d) => {
             const libroPath = join('cuentos', d.name, 'libro.yaml');
-            if (!existsSync(libroPath)) return;
+            if (!existsSync(libroPath)) return false;
             const meta = yaml.load(readFileSync(libroPath, 'utf-8'));
-            if (!meta || !meta.publicado) return;
-
-            const assetsDir = join('cuentos', d.name, 'assets');
-            if (existsSync(assetsDir)) {
-                const destDir = join('dist', 'cuentos', d.name, 'assets');
-                mkdirSync(destDir, { recursive: true });
-                cpSync(assetsDir, destDir, { recursive: true });
-            }
-        });
+            return meta && meta.publicado;
+        })
+        .map((d) => d.name);
 }
+
+const cuentosPublicados = obtenerCuentosPublicados();
+
+// Copiar assets de cuentos publicados a dist/
+cuentosPublicados.forEach((slug) => {
+    const assetsDir = join('cuentos', slug, 'assets');
+    if (existsSync(assetsDir)) {
+        const destDir = join('dist', 'cuentos', slug, 'assets');
+        mkdirSync(destDir, { recursive: true });
+        cpSync(assetsDir, destDir, { recursive: true });
+    }
+});
 
 // CNAME para GitHub Pages custom domain
 writeFileSync('dist/CNAME', 'relatario.cl');
@@ -62,18 +69,29 @@ writeFileSync(
     `User-agent: *\nAllow: /\nSitemap: https://relatario.cl/sitemap.xml\n`
 );
 
-// sitemap.xml
+// sitemap.xml — incluye homepage y cuentos publicados
 const hoy = new Date().toISOString().split('T')[0];
+let sitemapEntries = `  <url>
+    <loc>https://relatario.cl/</loc>
+    <lastmod>${hoy}</lastmod>
+  </url>`;
+
+// Agregar cuentos publicados al sitemap
+cuentosPublicados.forEach((slug) => {
+    sitemapEntries += `\n  <url>
+    <loc>https://relatario.cl/#cuento-${slug}</loc>
+    <lastmod>${hoy}</lastmod>
+  </url>`;
+});
+
 writeFileSync(
     'dist/sitemap.xml',
     `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://relatario.cl/</loc>
-    <lastmod>${hoy}</lastmod>
-  </url>
+${sitemapEntries}
 </urlset>`
 );
 
-// 404.html
+// 404.html y offline.html
 cpSync('404.html', 'dist/404.html');
+cpSync('offline.html', 'dist/offline.html');

@@ -23,22 +23,23 @@ export function crearTransicion() {
             overlay.className = 'transicion-overlay transicion-' + estilo + '-in';
 
             function alCubrir() {
-                overlay.removeEventListener('animationend', alCubrir);
                 // Punto medio: pantalla cubierta, cambiar contenido
                 callback();
 
                 // Animar salida
                 overlay.className = 'transicion-overlay transicion-' + estilo + '-out';
 
-                function alDescubrir() {
-                    overlay.removeEventListener('animationend', alDescubrir);
-                    overlay.className = 'transicion-overlay';
-                    enCurso = false;
-                    resolve();
-                }
-                overlay.addEventListener('animationend', alDescubrir);
+                overlay.addEventListener(
+                    'animationend',
+                    function alDescubrir() {
+                        overlay.className = 'transicion-overlay';
+                        enCurso = false;
+                        resolve();
+                    },
+                    { once: true }
+                );
             }
-            overlay.addEventListener('animationend', alCubrir);
+            overlay.addEventListener('animationend', alCubrir, { once: true });
         });
     }
 

@@ -3,7 +3,7 @@
 // stomper esbirros, derrotar al boss y conseguir la llave
 
 import { CFG } from './config.js';
-import { est, resetearEstado } from './estado.js';
+import { est, resetearEstado, timeouts } from './estado.js';
 import { obtenerSpawns, resetearMapa, obtenerFilas, obtenerColumnas } from './nivel.js';
 import {
     crearPantalla,
@@ -210,12 +210,10 @@ function verificarVictoria() {
         lanzarToast('\u00a1Desafío superado! Escapando...', '\u2728', 'exito');
 
         const salir = est.callbackSalir;
-        est.timeoutIds.push(
-            setTimeout(function () {
-                limpiarAbismo();
-                salir();
-            }, CFG.meta.timeoutExito)
-        );
+        timeouts.set(function () {
+            limpiarAbismo();
+            salir();
+        }, CFG.meta.timeoutExito);
     }
 }
 
@@ -276,7 +274,7 @@ function emitirParticulasJugador() {
 
 // --- Game loop ---
 
-const gameLoop4 = crearGameLoop(function () {
+const gameLoop4 = crearGameLoop(function (_tiempo, _dt) {
     if (!est.activo) {
         gameLoop4.detener();
         return;
@@ -433,17 +431,11 @@ export function iniciarAbismo(jugadorRef, callback, dpadArgumento) {
         return e.esBoss;
     });
     if (bossActual) {
-        est.timeoutIds.push(
-            setTimeout(function () {
-                if (est.activo) {
-                    lanzarToast(
-                        '\u00a1' + bossActual.nombre + ' te espera!',
-                        '\ud83d\udc79',
-                        'dano'
-                    );
-                }
-            }, 1500)
-        );
+        timeouts.set(function () {
+            if (est.activo) {
+                lanzarToast('\u00a1' + bossActual.nombre + ' te espera!', '\ud83d\udc79', 'dano');
+            }
+        }, 1500);
     }
 
     // Controles
@@ -469,10 +461,8 @@ export function iniciarAbismo(jugadorRef, callback, dpadArgumento) {
 export function limpiarAbismo() {
     est.activo = false;
 
-    // Cancelar timeouts pendientes (toast boss, victoria)
-    for (let i = 0; i < est.timeoutIds.length; i++) {
-        clearTimeout(est.timeoutIds[i]);
-    }
+    // Cancelar todos los timeouts pendientes de una vez
+    timeouts.limpiar();
 
     gameLoop4.detener();
 

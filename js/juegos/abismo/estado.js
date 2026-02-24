@@ -2,6 +2,10 @@
 // Agrupa todas las variables de estado del módulo en un solo objeto
 
 import { CFG } from './config.js';
+import { crearTimeoutTracker } from '../../utils.js';
+
+// Tracker centralizado de timeouts para limpieza segura
+export const timeouts = crearTimeoutTracker();
 
 // Snapshot para resetear estado en limpiarAbismo
 const valoresIniciales = {
@@ -13,7 +17,6 @@ const valoresIniciales = {
     anchoCanvas: CFG.canvas.anchoBase,
     altoCanvas: CFG.canvas.altoBase,
     muerto: false,
-    timeoutIds: [],
     modoInmersivo: null,
     dpadRef: null,
     // Filas del subsuelo para emision de particulas (desacoplado del tile ABISMO)
@@ -34,6 +37,4 @@ export function resetearEstado() {
         delete est.teclasRef[k];
     });
     Object.assign(est, valoresIniciales);
-    // Restaurar timeoutIds como array nuevo (Object.assign copia la referencia)
-    est.timeoutIds = [];
 }

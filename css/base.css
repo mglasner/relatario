@@ -119,6 +119,26 @@ h1 {
     display: none !important;
 }
 
+/* Skip-link para accesibilidad: visible solo con foco de teclado */
+.skip-link {
+    position: absolute;
+    top: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.5rem 1rem;
+    background: var(--color-oscuro, #d4c4a8);
+    color: var(--color-texto, #3a2a18);
+    border-radius: 0 0 8px 8px;
+    z-index: 9999;
+    font-family: var(--font-body, sans-serif);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
 /* --- Responsive --- */
 
 @media (width <= 768px) {

@@ -67,6 +67,7 @@ export function crearEstante(contenedor, repisas) {
 
             const lomo = crearElemento('button', 'estante-lomo');
             lomo.type = 'button';
+            lomo.setAttribute('aria-label', 'Abrir ' + libro.titulo);
             lomo.dataset.libro = libro.id;
             lomo.style.setProperty('--lomo-color', libro.color);
 
@@ -74,7 +75,14 @@ export function crearEstante(contenedor, repisas) {
                 const img = crearElemento('img', 'estante-lomo-img');
                 img.src = libro.img;
                 img.alt = libro.titulo;
+                img.width = 60;
+                img.height = 200;
+                img.loading = 'lazy';
                 img.draggable = false;
+                img.onerror = function () {
+                    // Fallback: ocultar imagen rota, el lomo se ve con su color de fondo
+                    img.style.display = 'none';
+                };
                 lomo.appendChild(img);
             }
 
@@ -92,23 +100,35 @@ export function crearEstante(contenedor, repisas) {
     });
 
     // Alinear el primer lomo de las repisas secundarias con el de la primaria
+    // Batch reads y batch writes para evitar layout thrashing
     function alinearRepisas() {
         if (!repisaPrimaria || repisasSecundarias.length === 0) return;
         const lomoRef = repisaPrimaria.querySelector('.estante-lomo');
         if (!lomoRef) return;
 
-        const xLomo = lomoRef.getBoundingClientRect().left;
-
+        // Batch write: resetear paddings
         repisasSecundarias.forEach(function (r) {
-            // Resetear para medir posici\u00f3n natural
             r.style.paddingLeft = '';
+        });
+
+        // Batch read: medir todas las posiciones de una vez
+        const xLomo = lomoRef.getBoundingClientRect().left;
+        const lecturas = repisasSecundarias.map(function (r) {
             const lomoSec = r.querySelector('.estante-lomo');
-            if (!lomoSec) return;
-            const xSec = lomoSec.getBoundingClientRect().left;
-            const correccion = xLomo - xSec;
+            if (!lomoSec) return null;
+            return {
+                repisa: r,
+                xSec: lomoSec.getBoundingClientRect().left,
+                padActual: parseFloat(getComputedStyle(r).paddingLeft),
+            };
+        });
+
+        // Batch write: aplicar correcciones
+        lecturas.forEach(function (l) {
+            if (!l) return;
+            const correccion = xLomo - l.xSec;
             if (Math.abs(correccion) > 0.5) {
-                r.style.paddingLeft =
-                    parseFloat(getComputedStyle(r).paddingLeft) + correccion + 'px';
+                l.repisa.style.paddingLeft = l.padActual + correccion + 'px';
             }
         });
     }

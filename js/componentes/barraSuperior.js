@@ -17,6 +17,8 @@ export function crearBarraSuperior(contenedor) {
 
     const avatar = document.createElement('img');
     avatar.id = 'barra-avatar';
+    avatar.width = 40;
+    avatar.height = 40;
 
     const nombre = document.createElement('span');
     nombre.id = 'barra-nombre';

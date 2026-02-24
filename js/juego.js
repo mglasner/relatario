@@ -390,14 +390,20 @@ function ejecutarCambioEstado(anterior, nuevo, datos) {
     }
 }
 
+// Guard para prevenir transiciones concurrentes durante animación iris
+let transicionEnCurso = false;
+
 function cambiarEstado(nuevo, datos) {
+    if (transicionEnCurso) return;
     const anterior = estado.estadoActual;
 
     // Transiciones solo entre juego y otros estados (iris)
     if (nuevo === ESTADOS.JUEGO || anterior === ESTADOS.JUEGO) {
+        transicionEnCurso = true;
         toast.limpiar();
         transicion.ejecutar('iris', function () {
             ejecutarCambioEstado(anterior, nuevo, datos);
+            transicionEnCurso = false;
         });
     } else {
         // Cambios entre BIBLIOTECA y LIBRO son instantáneos (modal)

@@ -1,5 +1,6 @@
 // Habitacion 4 — El Abismo: Sistema de particulas 2D
 // Pool preallocado de 150 particulas con culling horizontal
+// Optimizado: puntero circular para busqueda O(1) amortizada y conteo de activas
 
 const POOL_SIZE = 150;
 const GRAVEDAD_PART = 0.15;
@@ -27,10 +28,20 @@ for (let i = 0; i < POOL_SIZE; i++) {
 
 // Contador de frames para emision periodica
 let frameCount = 0;
+// Puntero circular para busqueda rapida de slot libre
+let nextFree = 0;
+// Conteo de particulas activas (para early-exit en actualizar/renderizar)
+let activeCount = 0;
 
 function obtenerLibre() {
+    if (activeCount >= POOL_SIZE) return null;
+    // Buscar desde el puntero circular
     for (let i = 0; i < POOL_SIZE; i++) {
-        if (!pool[i].activa) return pool[i];
+        const idx = (nextFree + i) % POOL_SIZE;
+        if (!pool[idx].activa) {
+            nextFree = (idx + 1) % POOL_SIZE;
+            return pool[idx];
+        }
     }
     return null;
 }
@@ -39,6 +50,7 @@ function emitir(config) {
     const p = obtenerLibre();
     if (!p) return;
     p.activa = true;
+    activeCount++;
     p.x = config.x;
     p.y = config.y;
     p.vx = config.vx || 0;
@@ -254,6 +266,10 @@ export function emitirEstelaBoss(bossX, bossY, bossAncho, bossAlto) {
 export function actualizarParticulas() {
     frameCount++;
 
+    // Early-exit: nada que actualizar
+    if (activeCount === 0) return;
+
+    let vivas = 0;
     for (let i = 0; i < POOL_SIZE; i++) {
         const p = pool[i];
         if (!p.activa) continue;
@@ -290,11 +306,18 @@ export function actualizarParticulas() {
 
         if (p.vida <= 0) {
             p.activa = false;
+        } else {
+            vivas++;
         }
     }
+    activeCount = vivas;
 }
 
 export function renderizarParticulas(ctx, camaraX, anchoCanvas) {
+    // Early-exit: nada que renderizar
+    if (activeCount === 0) return;
+
+    const TAU = Math.PI * 2;
     for (let i = 0; i < POOL_SIZE; i++) {
         const p = pool[i];
         if (!p.activa) continue;
@@ -307,12 +330,14 @@ export function renderizarParticulas(ctx, camaraX, anchoCanvas) {
 
         if (p.alpha <= 0.01) continue;
 
-        ctx.fillStyle = 'rgba(' + p.r + ',' + p.g + ',' + p.b + ',' + p.alpha.toFixed(2) + ')';
+        // Alpha cuantizado a 2 decimales para reducir string interning
+        const a = ((p.alpha * 100 + 0.5) | 0) * 0.01;
+        ctx.fillStyle = 'rgba(' + p.r + ',' + p.g + ',' + p.b + ',' + a + ')';
 
         if (p.tipo === 'niebla' || p.tipo === 'aura' || p.tipo === 'afterimage') {
             // Circulos para efecto suave
             ctx.beginPath();
-            ctx.arc(px, py, p.tamano, 0, Math.PI * 2);
+            ctx.arc(px, py, p.tamano, 0, TAU);
             ctx.fill();
         } else {
             // Cuadrados pixelados
@@ -331,4 +356,6 @@ export function limpiarParticulas() {
         pool[i].activa = false;
     }
     frameCount = 0;
+    nextFree = 0;
+    activeCount = 0;
 }

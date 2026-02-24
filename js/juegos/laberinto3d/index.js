@@ -178,6 +178,8 @@ function crearPantalla(esTouch) {
 
     est.canvas3D = document.createElement('canvas');
     est.canvas3D.id = 'canvas-3d';
+    est.canvas3D.setAttribute('role', 'img');
+    est.canvas3D.setAttribute('aria-label', 'El Laberinto 3D — Vista en primera persona');
     est.canvas3D.width = canvas.ancho;
     est.canvas3D.height = canvas.alto;
     est.ctx3D = est.canvas3D.getContext('2d');
@@ -241,7 +243,7 @@ function crearPantalla(esTouch) {
 
 const gameLoop2 = crearGameLoop(loop);
 
-function loop(ahora) {
+function loop(ahora, _dt) {
     if (!est.activo || !est.jugador.estaVivo()) {
         gameLoop2.detener();
         return;
