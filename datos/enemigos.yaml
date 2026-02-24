@@ -6,7 +6,7 @@ Siniestra:
     clase: villano-siniestra
     descripcion: "Nadie sabe quién fue Siniestra antes de convertirse en espectro, pero los rumores dicen que era una hechicera que hizo un trato con las sombras... y las sombras no cumplieron su parte.\n\nAhora vaga furiosa por los pasillos, dejando un rastro de llamas oscuras que se apagan solas al amanecer. Si escuchas un susurro helado detrás de ti, ya es demasiado tarde para correr."
     edad: 500
-    velocidad: 5
+    velocidad: 7
     velAtaque: 3
     estatura: 1.8
     ataques:
@@ -63,7 +63,7 @@ El Profano:
     clase: villano-profano
     descripcion: "El Profano es una sombra con forma humana que se desliza entre las paredes sin hacer ruido. Fue el guardián de un templo olvidado, pero algo lo corrompió y ahora solo obedece a la oscuridad.\n\nAparece cuando menos lo esperas, siempre detrás de ti, siempre en silencio. Los más valientes juran haber visto sus ojos brillar en la negrura un segundo antes de sentir el frío de su cuchillada sombría."
     edad: 800
-    velocidad: 4
+    velocidad: 5
     velAtaque: 3
     estatura: 1.95
     ataques:
@@ -82,7 +82,7 @@ Topete:
     clase: villano-topete
     descripcion: "Topete tiene 5 años, cachetes de ángel y el corazón de un pequeño demonio travieso. Es la sombra fiel de su hermana Pototo: donde va una, va la otra, y donde hay una travesura, Topete ya está ahí con su sonrisa de \"yo no fui\". DonBu intentó encadenarla una vez... tres veces... bueno, ya perdió la cuenta. Ella siempre se escapa, y para colmo usa las cadenas rotas como juguetes.\n\nNo te dejes engañar por su tamaño: sus berrinches explosivos hacen temblar los pasillos enteros, y cuando agita sus cadenitas al aire, hasta Siniestra se hace a un lado. Su madre Pamelotota dice que es \"expresiva\". DonBu dice que es un terremoto con coletas."
     edad: 5
-    velocidad: 7
+    velocidad: 5
     velAtaque: 8
     estatura: 1.1
     ataques:
@@ -101,7 +101,7 @@ Pototo:
     clase: villano-pototo
     descripcion: "Pototo es la mayor de las hermanas del caos y la mente maestra detrás de cada travesura en El Relatario. Con 10 años ya tiene un historial de bromas que haría llorar a cualquier villano adulto. Su pelo largo y oscuro esconde una mirada calculadora detrás del antifaz: cuando cruza los brazos y sonríe de lado, DonBu sabe que algo terrible está por pasar.\n\nSu especialidad es el plan a largo plazo: puede pasar días fingiendo ser una niña buena hasta que llega el momento perfecto para soltar su risa burlesca y desatar el caos. Cuando DonBu logra atraparla y encadenarla, ella lo mira fijo y dice \"¿en serio, papá?\" con una calma que da escalofríos. A los cinco minutos ya está libre y planeando la siguiente travesura."
     edad: 10
-    velocidad: 8
+    velocidad: 5
     velAtaque: 6
     estatura: 1.35
     ataques:
@@ -139,7 +139,7 @@ El Disonante:
     clase: villano-disonante
     descripcion: "Hubo un tiempo en que El Disonante fue el violinista más talentoso del mundo de las sombras. Su mejor amigo, un joven cantante llamado Luminox, le prometió que triunfarían juntos: \"Tú compones, yo canto, seremos leyenda\". Pero Luminox robó sus melodías, se convirtió en el idol más famoso del reino y jamás lo mencionó. La traición le retorció el alma... y la cara. Hoy su rostro es tan desagradable como las notas que arranca de su violín roto.\n\nAhora arrastra su violín agrietado por los pasillos, dejando un rastro de notas amargas que hacen llorar a las paredes. Odia el K-pop con cada fibra de su ser: si escucha un ritmo pegajoso, entra en un frenesí de cuerdas chirriantes. Por eso cuando supo que Lina, una idol que llena estadios, había entrado a El Relatario, afinó su arco por primera vez en décadas. Esta vez, dice, el público escuchará su versión de la historia."
     edad: 200
-    velocidad: 4
+    velocidad: 5
     velAtaque: 5
     estatura: 1.85
     ataques:

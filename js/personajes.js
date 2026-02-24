@@ -21,7 +21,7 @@ const PERSONAJES = {
             descripcion:
                 'Idol de K-pop y visual de su banda. A los 13 ya llena estadios, firma autógrafos y tiene fans que gritan su nombre. Pero lo que nadie sabe es que su voz no solo emociona: cuando Lina canta en su registro más agudo, las ventanas tiemblan y los villanos se tapan los oídos.\n\nDetrás del escenario es una chica normal que se ríe demasiado fuerte, come ramen a escondidas de su manager y se queda dormida viendo doramas. Pero cuando aparece un monstruo, se pone los audífonos, sube el volumen y convierte cada pelea en un concierto.\n',
             edad: 13,
-            velocidad: 7,
+            velocidad: 6,
             velAtaque: 6,
             estatura: 1.55,
             colorHud: '#9b59b6',
@@ -53,7 +53,7 @@ const PERSONAJES = {
             descripcion:
                 'Tiene 10 años y ya hace cosas en la tela aérea que los adultos no se atreven ni a mirar. Sube, gira, se suelta y vuelve a agarrarse como si la gravedad fuera una sugerencia. Sus compañeras de circo dicen que nació sin miedo. Su mamá dice que nació sin sentido común.\n\nRosé nunca se rinde. Nunca. Si se cae, se levanta. Si se pierde, busca otro camino. Si un villano le dice "ríndete", ella se ríe y le tira un giro del cubo en la cara. Es la más chica del grupo, pero tiene el corazón más grande y la terquedad más feroz.\n',
             edad: 10,
-            velocidad: 8,
+            velocidad: 7,
             velAtaque: 7,
             estatura: 1.4,
             colorHud: '#2ecc71',
@@ -77,7 +77,7 @@ const PERSONAJES = {
             descripcion:
                 'Shōgun legendario de la era Tokugawa. Dicen que una noche, cien ninjas rodearon su templo mientras dormía. PandaJuro se despertó, arrancó un bambú del jardín y los venció a todos antes de que se le enfriara el té. Desde entonces nadie lo molesta a la hora de la siesta.\n\nTiene 300 años pero no aparenta más de 280. Es lento porque no tiene apuro: dice que la prisa es para los que no saben pelear. Gruñón, honorable y furiosamente leal. Si te ganas su respeto, PandaJuro dará su vida por ti. Si no, te ignorará y seguirá comiendo bambú.\n',
             edad: 300,
-            velocidad: 5,
+            velocidad: 4,
             velAtaque: 4,
             estatura: 1.7,
             colorHud: '#c0392b',
@@ -105,7 +105,7 @@ const PERSONAJES = {
             descripcion:
                 'A los 16 años, Hana ya baila como si su cuerpo no tuviera huesos. Jazz, contemporáneo, hip-hop, lo que sea. Sus profesores dejaron de enseñarle porque ella les enseña a ellos. Cuando baila, la gente se queda quieta mirando, hipnotizada, como si el tiempo se detuviera.\n\nLo que sus rivales no entienden es que cada pirueta es un ataque. Cada giro lleva fuerza, cada paso lleva intención. Hana no pelea: baila. Y cuando termina su coreografía, el villano ya está en el suelo preguntándose qué pasó.\n',
             edad: 16,
-            velocidad: 9,
+            velocidad: 7,
             velAtaque: 8,
             estatura: 1.62,
             colorHud: '#e91e90',
@@ -129,7 +129,7 @@ const PERSONAJES = {
             descripcion:
                 'A los 14, Kira ya tiene un canal de investigación paranormal con miles de seguidores. Lleva siempre su linterna modificada, un cuaderno lleno de apuntes y una cámara infrarroja que le regaló su abuelo. Si algo raro pasa en el barrio, Kira es la primera en llegar y la última en irse.\n\nNo le tiene miedo a nada porque, según ella, "el miedo es solo información que no has procesado". Analiza, deduce y actúa con una precisión que pone nervioso a cualquier fantasma. Sus disparos de luz nunca fallan, y si un villano intenta esconderse en la oscuridad, peor para él.\n',
             edad: 14,
-            velocidad: 7,
+            velocidad: 6,
             velAtaque: 7,
             estatura: 1.58,
             colorHud: '#2ec4b6',
@@ -217,7 +217,7 @@ const PERSONAJES = {
             descripcion:
                 'Una oreja le llega al suelo, la otra apunta al cielo. Dientes chuecos, patas tan largas que tropieza consigo mismo. "Ahí va Orejas, el que parece que lo armaron con piezas sobrantes", decían de pequeño. Pero nunca se amargó. Simplemente sonreía y seguía su camino. Contra todo pronóstico, PomPom, la coneja más hermosa de la pradera, se enamoró de él.\n\nCada mañana sale al campo con su azadón y una bolsa remendada veinte veces, buscando zanahorias para PomPom y sus quince hijos. Silba mientras trabaja, una melodía torcida igual que sus dientes, pero llena de alegría. Su mejor amigo es Don Topo, el viejo topo ciego de al lado, que le dijo una vez: "tú no eres feo, Orejas... es que yo no veo".\n',
             edad: 35,
-            velocidad: 6,
+            velocidad: 9,
             velAtaque: 5,
             estatura: 0.5,
             colorHud: '#e67e22',

@@ -63,7 +63,17 @@ render:
     colorBoss: "#bb86fc"         # color de sprite para el boss sin sprite sheet
 
 # --- Escalado de personajes ---
-# Ajusta tamaño, velocidad y salto según la estatura del personaje
+# Ajusta tamaño, velocidad y salto según la estatura del personaje.
+#
+# Criterio de velocidad (atributo 3-9, ratio 3x entre extremos):
+#   3 = muy lento: zombies, monstruos masivos, cuerpos pesados
+#   4 = lento: animales pesados (burro, panda), personajes explícitamente lentos
+#   5 = medio-lento: sombras sigilosas, músicos, niños pequeños, nubes cósmicas
+#   6 = medio: humanos en buena condición, duendes ágiles
+#   7 = rápido: bailarinas, acróbatas, fantasmas etéreos
+#   8 = muy rápido: conejos
+#   9 = el más rápido: Orejas (conejo con patas largas)
+# Distribución tipo campana centrada en 5-6.
 escalado:
     estaturaRef: 1.55            # estatura de referencia (Lina = escala 1.0)
     escalaMin: 0.45              # escala mínima permitida
@@ -74,8 +84,8 @@ escalado:
     spriteBaseH: 60              # alto base del sprite visual (px)
     velAttrMin: 3                # atributo velocidad mínimo
     velAttrMax: 9                # atributo velocidad máximo
-    velPlatMin: 1.5              # px/frame para vel=3
-    velPlatMax: 3.5              # px/frame para vel=9
+    velPlatMin: 1.0              # px/frame para vel=3 (ratio 3x con velPlatMax)
+    velPlatMax: 3.0              # px/frame para vel=9
     fuerzaSaltoBase: -7.5        # fuerza de salto base
     fuerzaSaltoFactor: 0.3       # cuánto se ajusta por escala
 

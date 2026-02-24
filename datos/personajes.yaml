@@ -8,7 +8,7 @@ Lina:
 
         Detrás del escenario es una chica normal que se ríe demasiado fuerte, come ramen a escondidas de su manager y se queda dormida viendo doramas. Pero cuando aparece un monstruo, se pone los audífonos, sube el volumen y convierte cada pelea en un concierto.
     edad: 13
-    velocidad: 7
+    velocidad: 6
     velAtaque: 6
     estatura: 1.55
     colorHud: '#9b59b6'
@@ -33,7 +33,7 @@ Rosé:
 
         Rosé nunca se rinde. Nunca. Si se cae, se levanta. Si se pierde, busca otro camino. Si un villano le dice "ríndete", ella se ríe y le tira un giro del cubo en la cara. Es la más chica del grupo, pero tiene el corazón más grande y la terquedad más feroz.
     edad: 10
-    velocidad: 8
+    velocidad: 7
     velAtaque: 7
     estatura: 1.4
     colorHud: '#2ecc71'
@@ -58,7 +58,7 @@ PandaJuro:
 
         Tiene 300 años pero no aparenta más de 280. Es lento porque no tiene apuro: dice que la prisa es para los que no saben pelear. Gruñón, honorable y furiosamente leal. Si te ganas su respeto, PandaJuro dará su vida por ti. Si no, te ignorará y seguirá comiendo bambú.
     edad: 300
-    velocidad: 5
+    velocidad: 4
     velAtaque: 4
     estatura: 1.7
     colorHud: '#c0392b'
@@ -83,7 +83,7 @@ Hana:
 
         Lo que sus rivales no entienden es que cada pirueta es un ataque. Cada giro lleva fuerza, cada paso lleva intención. Hana no pelea: baila. Y cuando termina su coreografía, el villano ya está en el suelo preguntándose qué pasó.
     edad: 16
-    velocidad: 9
+    velocidad: 7
     velAtaque: 8
     estatura: 1.62
     colorHud: '#e91e90'
@@ -108,7 +108,7 @@ Kira:
 
         No le tiene miedo a nada porque, según ella, "el miedo es solo información que no has procesado". Analiza, deduce y actúa con una precisión que pone nervioso a cualquier fantasma. Sus disparos de luz nunca fallan, y si un villano intenta esconderse en la oscuridad, peor para él.
     edad: 14
-    velocidad: 7
+    velocidad: 6
     velAtaque: 7
     estatura: 1.58
     colorHud: '#2ec4b6'
@@ -183,7 +183,7 @@ Orejas:
 
         Cada mañana sale al campo con su azadón y una bolsa remendada veinte veces, buscando zanahorias para PomPom y sus quince hijos. Silba mientras trabaja, una melodía torcida igual que sus dientes, pero llena de alegría. Su mejor amigo es Don Topo, el viejo topo ciego de al lado, que le dijo una vez: "tú no eres feo, Orejas... es que yo no veo".
     edad: 35
-    velocidad: 6
+    velocidad: 9
     velAtaque: 5
     estatura: 0.5
     colorHud: '#e67e22'
