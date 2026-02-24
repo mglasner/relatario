@@ -97,3 +97,4 @@ camara:
 sprites:
     jugadorIdleVel: 30           # frames entre cada frame de idle
     jugadorCorrerVel: 6          # frames entre cada frame de correr
+    jugadorAgacharseVel: 20      # frames entre cada frame de agacharse

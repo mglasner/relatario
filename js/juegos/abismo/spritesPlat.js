@@ -306,6 +306,11 @@ function generarSpriteJugador(color, estado, frame) {
     } else if (estado === 'golpeado') {
         px(ctx, 2, bodyY + 2, color);
         px(ctx, 9, bodyY + 2, color);
+    } else if (estado === 'agacharse') {
+        px(ctx, 1, bodyY + 2, color);
+        px(ctx, 2, bodyY + 2, color);
+        px(ctx, 9, bodyY + 2, color);
+        px(ctx, 10, bodyY + 2, color);
     } else {
         const brazoOff = estado === 'correr' ? (frame % 2 === 0 ? 0 : 1) : 0;
         px(ctx, 2, bodyY + 1 + brazoOff, color);
@@ -384,6 +389,14 @@ function generarSpriteJugador(color, estado, frame) {
         px(ctx, 7, legY, oscuro);
         px(ctx, 4, legY + 1, oscuro);
         px(ctx, 7, legY + 1, oscuro);
+    } else if (estado === 'agacharse') {
+        // Piernas cortas y abiertas (cuclillas)
+        px(ctx, 3, legY, oscuro);
+        px(ctx, 3, legY + 1, oscuro);
+        px(ctx, 4, legY + 1, oscuro);
+        px(ctx, 7, legY + 1, oscuro);
+        px(ctx, 8, legY, oscuro);
+        px(ctx, 8, legY + 1, oscuro);
     } else {
         px(ctx, 4, legY, oscuro);
         px(ctx, 4, legY + 1, oscuro);
@@ -415,5 +428,9 @@ function generarSpritesProceduralJugador(colorBase) {
         saltar: [generarSpriteJugador(colorBase, 'saltar', 0)],
         caer: [generarSpriteJugador(colorBase, 'caer', 0)],
         golpeado: [generarSpriteJugador(colorBase, 'golpeado', 0)],
+        agacharse: [
+            generarSpriteJugador(colorBase, 'agacharse', 0),
+            generarSpriteJugador(colorBase, 'agacharse', 1),
+        ],
     };
 }

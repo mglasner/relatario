@@ -74,5 +74,6 @@ export const CFG = {
     sprites: {
         jugadorIdleVel: 30,
         jugadorCorrerVel: 6,
+        jugadorAgacharseVel: 20,
     },
 };

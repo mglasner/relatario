@@ -1,8 +1,8 @@
 // Habitacion 4 — El Abismo: Jugador platformer
-// Estados: idle, correr, saltar, caer, golpeado
+// Estados: idle, correr, saltar, caer, golpeado, agacharse
 
 import { CFG } from './config.js';
-import { resolverColisionX, resolverColisionY, esMeta } from './fisicas.js';
+import { resolverColisionX, resolverColisionY, esMeta, esSolido } from './fisicas.js';
 import { obtenerSpawnJugador } from './nivel.js';
 import { obtenerSpriteJugador } from './spritesPlat.js';
 import { notificarVidaCambio, notificarJugadorMuerto } from '../../eventos.js';
@@ -40,11 +40,15 @@ let jugadorRef = null;
 let teclasRef = {};
 
 // Estado de animacion
-let estado = 'idle'; // idle, correr, saltar, caer, golpeado
+let estado = 'idle'; // idle, correr, saltar, caer, golpeado, agacharse
 let frameAnim = 0;
 let contadorAnim = 0;
 let estabaSuelo = false; // para detectar aterrizaje
 let yAnterior = 0; // posicion Y del frame anterior (para validar stomp "desde arriba")
+
+// Agacharse
+let altoNormal = 14;
+let estaAgachado = false;
 
 export function iniciarJugador(jugador, teclas) {
     jugadorRef = jugador;
@@ -56,6 +60,7 @@ export function iniciarJugador(jugador, teclas) {
     const hb = calcularHitbox(esc);
     ancho = hb.ancho;
     alto = hb.alto;
+    altoNormal = alto;
     const sd = calcularSpriteDrawSize(esc);
     spriteDrawW = sd.ancho;
     spriteDrawH = sd.alto;
@@ -73,6 +78,7 @@ export function iniciarJugador(jugador, teclas) {
     jumpBufferFrames = 0;
     invulFrames = 0;
     knockbackVx = 0;
+    estaAgachado = false;
     estado = 'idle';
     frameAnim = 0;
     contadorAnim = 0;
@@ -86,10 +92,31 @@ export function actualizarJugador() {
     yAnterior = y;
     const anteriorEnSuelo = estaEnSuelo;
 
-    // Input horizontal
+    // Agacharse (solo en suelo, sin knockback)
+    const quiereAgacharse = !!teclasRef['ArrowDown'] && estaEnSuelo && knockbackVx === 0;
+    if (quiereAgacharse && !estaAgachado) {
+        // Agacharse: reducir hitbox, ajustar Y para mantener pies
+        estaAgachado = true;
+        const altoAgachado = Math.round(altoNormal * 0.6);
+        y += alto - altoAgachado;
+        alto = altoAgachado;
+    } else if (!quiereAgacharse && estaAgachado) {
+        // Levantarse: verificar que no hay techo antes de expandir hitbox
+        const nuevaY = y - (altoNormal - alto);
+        const margen = 2;
+        if (!esSolido(x + margen, nuevaY) && !esSolido(x + ancho - margen, nuevaY)) {
+            estaAgachado = false;
+            y = nuevaY;
+            alto = altoNormal;
+        }
+    }
+
+    // Input horizontal (bloqueado si esta agachado)
     let inputX = 0;
-    if (teclasRef['ArrowLeft']) inputX -= 1;
-    if (teclasRef['ArrowRight']) inputX += 1;
+    if (!estaAgachado) {
+        if (teclasRef['ArrowLeft']) inputX -= 1;
+        if (teclasRef['ArrowRight']) inputX += 1;
+    }
 
     // Knockback override
     if (knockbackVx !== 0) {
@@ -106,8 +133,8 @@ export function actualizarJugador() {
     // Resolver colision X
     x = resolverColisionX(x, y, ancho, alto, vx);
 
-    // Jump buffer: recordar intencion de saltar
-    if (teclasRef['ArrowUp']) {
+    // Jump buffer: recordar intencion de saltar (bloqueado si agachado)
+    if (!estaAgachado && teclasRef['ArrowUp']) {
         jumpBufferFrames = FIS.jumpBuffer;
     } else if (jumpBufferFrames > 0) {
         jumpBufferFrames--;
@@ -120,8 +147,8 @@ export function actualizarJugador() {
         coyoteFrames--;
     }
 
-    // Saltar
-    if (jumpBufferFrames > 0 && coyoteFrames > 0) {
+    // Saltar (no si esta agachado)
+    if (!estaAgachado && jumpBufferFrames > 0 && coyoteFrames > 0) {
         vy = fuerzaSaltoActual;
         jumpBufferFrames = 0;
         coyoteFrames = 0;
@@ -156,6 +183,8 @@ function actualizarEstado(inputX) {
         nuevoEstado = 'saltar';
     } else if (!estaEnSuelo && vy >= 0) {
         nuevoEstado = 'caer';
+    } else if (estaAgachado) {
+        nuevoEstado = 'agacharse';
     } else if (inputX !== 0) {
         nuevoEstado = 'correr';
     }
@@ -166,7 +195,9 @@ function actualizarEstado(inputX) {
         contadorAnim = 0;
     } else {
         contadorAnim++;
-        const vel = estado === 'correr' ? SPR.jugadorCorrerVel : SPR.jugadorIdleVel;
+        let vel = SPR.jugadorIdleVel;
+        if (estado === 'correr') vel = SPR.jugadorCorrerVel;
+        else if (estado === 'agacharse') vel = SPR.jugadorAgacharseVel;
         if (contadorAnim >= vel) {
             contadorAnim = 0;
             frameAnim++;
@@ -267,7 +298,7 @@ export function renderizarJugador(ctx, camaraX) {
 }
 
 export function obtenerPosicion() {
-    return { x, y, ancho, alto, vy, vx, estaEnSuelo, direccion, yAnterior };
+    return { x, y, ancho, alto, vy, vx, estaEnSuelo, estaAgachado, direccion, yAnterior };
 }
 
 export function esInvulnerable() {

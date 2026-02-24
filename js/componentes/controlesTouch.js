@@ -1,7 +1,7 @@
 // Componente: D-pad virtual para dispositivos touch
 // Soporta tres modos:
 // - Centrado (laberinto 2D): 4 botones ▲◀▶▼ centrados abajo
-// - Dividido (platformer): izq ◀▶ movimiento / der botones A (saltar) y B (accion)
+// - Dividido (platformer): izq ◀▶ movimiento / der botones A (saltar) y B (agacharse)
 // - CruzSplit (laberinto 3D): cruz ▲◀▶▼ a la izquierda + der A/B
 //
 // La cruz soporta diagonales invisibles: tocar entre dos flechas adyacentes
@@ -159,9 +159,8 @@ export function crearControlesTouch() {
     const contDer = document.createElement('div');
     contDer.className = 'dpad-der-contenedor';
 
-    // B: accion secundaria (deshabilitado por ahora)
-    const btnB = crearBoton('dpad-btn-b', 'Habilidad1', 'B');
-    btnB.disabled = true;
+    // B: agacharse
+    const btnB = crearBoton('dpad-btn-b', 'ArrowDown', '▼');
 
     // A: saltar (accion principal)
     const btnA = crearBoton('dpad-btn-a', 'ArrowUp', 'A');
