@@ -70,7 +70,9 @@ trasgo:
     tamBase: 20 # px base del sprite
     velocidadBase: 2 # px/frame base de movimiento
     cooldownBaseAtaque: 10500 # ms base de cooldown, dividido por velAtaque del enemigo
-    intervaloPathfinding: 500 # ms entre recálculos de ruta BFS
+    intervaloPathfinding: 1200 # ms entre recálculos de ruta BFS (más torpe que el elite)
+    velocidadInicial: 0.4 # fracción de velocidad al despertar (40%)
+    tiempoAceleracion: 45 # segundos para alcanzar velocidad máxima
     posicionDistMin: 0.4 # aparece a mínimo 40% de la distancia máxima desde la entrada
     posicionDistMax: 0.7 # aparece a máximo 70% de la distancia máxima
 
@@ -81,7 +83,9 @@ villanoElite:
     velocidadBase: 2 # px/frame base de movimiento
     velocidadReferencia: 6 # atributo de velocidad que equivale a velocidadBase
     countdown: 15 # segundos del countdown antes de aparecer (empieza tras el delay del trasgo)
-    intervaloPathfinding: 500 # ms entre recálculos de ruta BFS
+    intervaloPathfinding: 800 # ms entre recálculos de ruta BFS (más listo que el trasgo)
+    velocidadInicial: 0.5 # fracción de velocidad al despertar (50%)
+    tiempoAceleracion: 30 # segundos para alcanzar velocidad máxima
     posicionDistMin: 0.5 # aparece a mínimo 50% de la distancia máxima desde el jugador
     posicionDistMax: 0.8 # aparece a máximo 80% de la distancia máxima
     escalaVisualBase: 1.45 # escala visual para estatura de referencia

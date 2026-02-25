@@ -19,10 +19,10 @@ const JUEGOS = {
         accent: '#bb86fc',
         parrafos: [
             '¡Bienvenido al laberinto más enredado de todos! Sus pasillos oscuros esconden una llave mágica que necesitas para escapar.',
-            'Camina con cuidado entre las paredes sombrías. Dicen que algunos aventureros se perdieron durante horas buscando la salida...',
-            '¡Cuidado! Si te cruzas con enemigos podrías perder vida. Pero dicen que algunas paredes guardan secretos...',
+            'Al entrar despiertas a las criaturas que duermen en sus rincones. Al principio estarán aturdidas y lentas, pero con cada segundo que pasa se vuelven más feroces y rápidas. ¡No te confíes!',
+            'Camina con cuidado entre las paredes sombrías. Dicen que algunas guardan secretos... y si sientes una brisa extraña, ¡empuja!',
         ],
-        tip: 'Explora cada rincón. Si sientes una brisa extraña, ¡empuja contra la pared!',
+        tip: 'Aprovecha los primeros segundos para explorar. Los enemigos recién despertados son torpes y lentos.',
     },
     laberinto3d: {
         nombre: 'El Laberinto 3D',

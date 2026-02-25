@@ -9,6 +9,7 @@ import {
     getCeldaEnemigo,
     calcularDistanciasBFS,
     filtrarCandidatasPorDistancia,
+    calcularFactorProgresivo,
     detectarTrampasEnemigo,
     crearBarraVida,
 } from './enemigoComun.js';
@@ -74,6 +75,7 @@ function iniciarVillanoElite() {
         ultimoGolpe: 0,
         ultimoGolpeTrampa: 0,
         ultimoPathfinding: 0,
+        tiempoAparicion: Date.now(),
         velocidadMult: 1,
         timerLentitud: null,
         escalaVisual: escalaVisual,
@@ -129,10 +131,16 @@ export function actualizarVillanoElite() {
         est.villanoElite.camino = calcularCamino(celdaV.fila, celdaV.col, celdaJ.fila, celdaJ.col);
     }
 
-    // Velocidad escalada por atributo del enemigo + multiplicador de lentitud
+    // Velocidad con factor progresivo (despertar gradual) + atributo + lentitud
+    const factorProg = calcularFactorProgresivo(
+        est.villanoElite.tiempoAparicion,
+        CFG.villanoElite.velocidadInicial,
+        CFG.villanoElite.tiempoAceleracion
+    );
     const velocidad =
         CONFIG.VELOCIDAD_ELITE *
         (est.villanoElite.datos.velocidad / CFG.villanoElite.velocidadReferencia) *
+        factorProg *
         est.villanoElite.velocidadMult;
 
     // Mover hacia el siguiente punto del camino

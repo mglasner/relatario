@@ -83,6 +83,15 @@ export function filtrarCandidatasPorDistancia(distancias, maxDist, fracMin, frac
     return candidatas;
 }
 
+// Factor de velocidad progresiva: de velocidadInicial a 1.0 en tiempoAceleracion segundos
+export function calcularFactorProgresivo(tiempoAparicion, velocidadInicial, tiempoAceleracion) {
+    const transcurrido = (Date.now() - tiempoAparicion) / 1000;
+    return Math.min(
+        1,
+        velocidadInicial + (1 - velocidadInicial) * (transcurrido / tiempoAceleracion)
+    );
+}
+
 // Detecta trampas de fuego y lentitud sobre un enemigo
 // estKey: clave del enemigo en est ('trasgo' | 'villanoElite')
 // Retorna true si el enemigo murió

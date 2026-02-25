@@ -8,6 +8,7 @@ import {
     getCeldaEnemigo,
     calcularDistanciasBFS,
     filtrarCandidatasPorDistancia,
+    calcularFactorProgresivo,
     detectarTrampasEnemigo,
     crearBarraVida,
 } from './enemigoComun.js';
@@ -93,6 +94,7 @@ export function iniciarTrasgo() {
         ultimoGolpe: 0,
         ultimoGolpeTrampa: 0,
         ultimoPathfinding: 0,
+        tiempoAparicion: Date.now(),
         velocidadMult: 1,
         timerLentitud: null,
         elemento: null,
@@ -114,8 +116,13 @@ export function actualizarTrasgo() {
         est.trasgo.camino = calcularCamino(celdaT.fila, celdaT.col, celdaJ.fila, celdaJ.col);
     }
 
-    // Mover hacia el siguiente punto del camino
-    const vel = CONFIG.VELOCIDAD_TRASGO * est.trasgo.velocidadMult;
+    // Velocidad con factor progresivo (despertar gradual) + multiplicador de lentitud
+    const factorProg = calcularFactorProgresivo(
+        est.trasgo.tiempoAparicion,
+        CFG.trasgo.velocidadInicial,
+        CFG.trasgo.tiempoAceleracion
+    );
+    const vel = CONFIG.VELOCIDAD_TRASGO * factorProg * est.trasgo.velocidadMult;
     if (est.trasgo.camino.length > 0) {
         const objetivo = est.trasgo.camino[0];
         const targetX = objetivo[1] * CONFIG.TAM_CELDA + (CONFIG.TAM_CELDA - CONFIG.TAM_TRASGO) / 2;
