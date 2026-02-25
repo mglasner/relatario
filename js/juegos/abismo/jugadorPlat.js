@@ -50,6 +50,12 @@ let yAnterior = 0; // posicion Y del frame anterior (para validar stomp "desde a
 let altoNormal = 14;
 let estaAgachado = false;
 
+// Jump cut (salto variable)
+let saltoCortado = false;
+
+// Escala del jugador (para stomp proporcional)
+let escalaJugador = 1;
+
 export function iniciarJugador(jugador, teclas) {
     jugadorRef = jugador;
     teclasRef = teclas;
@@ -57,6 +63,7 @@ export function iniciarJugador(jugador, teclas) {
 
     // Calcular dimensiones y velocidad proporcionales
     const esc = calcularEscala(jugador.estatura);
+    escalaJugador = esc;
     const hb = calcularHitbox(esc);
     ancho = hb.ancho;
     alto = hb.alto;
@@ -79,6 +86,7 @@ export function iniciarJugador(jugador, teclas) {
     invulFrames = 0;
     knockbackVx = 0;
     estaAgachado = false;
+    saltoCortado = false;
     estado = 'idle';
     frameAnim = 0;
     contadorAnim = 0;
@@ -152,6 +160,13 @@ export function actualizarJugador() {
         vy = fuerzaSaltoActual;
         jumpBufferFrames = 0;
         coyoteFrames = 0;
+        saltoCortado = false;
+    }
+
+    // Jump cut: si suelta salto mientras sube, cortar impulso
+    if (!saltoCortado && vy < 0 && !teclasRef['ArrowUp']) {
+        vy *= FIS.jumpCutFactor;
+        saltoCortado = true;
     }
 
     // Gravedad
@@ -163,6 +178,7 @@ export function actualizarJugador() {
     y = resY.y;
     vy = resY.vy;
     estaEnSuelo = resY.enSuelo;
+    if (estaEnSuelo) saltoCortado = false;
 
     // Invulnerabilidad
     if (invulFrames > 0) invulFrames--;
@@ -241,6 +257,11 @@ export function recibirDano(dano, desdeX) {
 
 export function aplicarStompRebote(saltandoActivo) {
     vy = saltandoActivo ? FIS.fuerzaStompReboteAlto : FIS.fuerzaStompReboteBajo;
+    saltoCortado = false;
+}
+
+export function obtenerEscala() {
+    return escalaJugador;
 }
 
 export function renderizarJugador(ctx, camaraX) {

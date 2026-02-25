@@ -329,8 +329,16 @@ const SCHEMA_ABISMO = {
         'invulnerabilidad',
         'knockbackX',
         'knockbackY',
+        'jumpCutFactor',
     ],
-    enemigos: ['stompMargen', 'stompVyMin', 'cooldownAtaque', 'invulStomp', 'stunStomp'],
+    enemigos: [
+        'stompMargenRatio',
+        'stompVyMinBase',
+        'stompVyMinEscalaFactor',
+        'cooldownAtaque',
+        'invulStomp',
+        'stunStomp',
+    ],
     boss: ['fasesCambio', 'velocidadFases'],
     render: ['colorSuelo', 'colorPlataforma', 'colorEnemigo', 'colorBoss'],
     escalado: [

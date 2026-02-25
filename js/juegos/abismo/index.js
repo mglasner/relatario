@@ -48,6 +48,7 @@ import {
     detectarMetaTile,
     acabaDeAterrizar,
     obtenerColor,
+    obtenerEscala,
 } from './jugadorPlat.js';
 import {
     iniciarEnemigos,
@@ -151,15 +152,19 @@ function verificarColisionesEnemigos() {
         if (!aabbColision(jugRect, eneRect)) continue;
 
         // Stomp: requiere 3 condiciones simultáneas:
-        // 1. Cayendo con fuerza suficiente (vy >= stompVyMin)
-        // 2. Pies sobre la mitad superior del enemigo (con margen)
+        // 1. Cayendo con fuerza suficiente (vy >= stompVyMin ajustado por escala)
+        // 2. Pies sobre la mitad superior del enemigo (margen proporcional al alto)
         // 3. En el frame anterior los pies no habían pasado la base del enemigo
         //    (valida que el jugador viene genuinamente "desde arriba")
         const mitadEnemigo = e.y + e.alto / 2;
+        const margenStomp = e.alto * CFG.enemigos.stompMargenRatio;
+        const escJug = obtenerEscala();
+        const vyMin =
+            CFG.enemigos.stompVyMinBase * (1 - CFG.enemigos.stompVyMinEscalaFactor * (1 - escJug));
 
         if (
-            jug.vy >= CFG.enemigos.stompVyMin &&
-            pieJugador <= mitadEnemigo + CFG.enemigos.stompMargen &&
+            jug.vy >= vyMin &&
+            pieJugador <= mitadEnemigo + margenStomp &&
             pieAnterior <= e.y + e.alto
         ) {
             const dano = est.jugador.ataques[0] ? est.jugador.ataques[0].dano : 10;

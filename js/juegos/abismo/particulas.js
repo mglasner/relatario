@@ -2,6 +2,8 @@
 // Pool preallocado de 150 particulas con culling horizontal
 // Optimizado: puntero circular para busqueda O(1) amortizada y conteo de activas
 
+import { esSolido } from './fisicas.js';
+
 const POOL_SIZE = 150;
 const GRAVEDAD_PART = 0.15;
 
@@ -123,6 +125,7 @@ export function emitirStompExplosion(x, y, colorR, colorG, colorB) {
             g: colorG,
             b: colorB,
             alpha: 0.9,
+            gravedad: true,
             tipo: 'chispa',
         });
     }
@@ -239,6 +242,7 @@ export function emitirBossFase(bossX, bossY, bossAncho, bossAlto) {
             g: 100,
             b: 50,
             alpha: 0.9,
+            gravedad: true,
             tipo: 'chispa',
         });
     }
@@ -279,6 +283,19 @@ export function actualizarParticulas() {
 
         if (p.gravedad) {
             p.vy += GRAVEDAD_PART;
+        }
+
+        // Colision con suelo para chispas y fragmentos
+        if ((p.tipo === 'chispa' || p.tipo === 'fragmento') && p.vy > 0) {
+            if (esSolido(p.x, p.y + p.tamano / 2)) {
+                p.vy *= -0.3;
+                p.vx *= 0.5;
+                p.y -= p.vy;
+                if (Math.abs(p.vy) < 0.3) {
+                    p.vy = 0;
+                    p.vx *= 0.8;
+                }
+            }
         }
 
         // Friccion leve en particulas de polvo

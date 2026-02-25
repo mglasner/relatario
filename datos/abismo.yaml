@@ -6,19 +6,19 @@
 
 # --- Información general del juego ---
 meta:
-    titulo: "El Abismo"
-    itemInventario: ""
-    timeoutExito: 1500                   # ms antes de volver al pasillo tras ganar
+    titulo: 'El Abismo'
+    itemInventario: ''
+    timeoutExito: 1500 # ms antes de volver al pasillo tras ganar
 
 # --- Dimensiones del canvas ---
 canvas:
-    anchoBase: 480               # ancho lógico del canvas (px)
-    altoBase: 270                # alto lógico del canvas (px)
+    anchoBase: 480 # ancho lógico del canvas (px)
+    altoBase: 270 # alto lógico del canvas (px)
 
 # --- Tiles del nivel ---
 tiles:
-    tamano: 16                   # px por tile
-    tipos:                       # enum de tipos de tile (valores usados en el mapa)
+    tamano: 16 # px por tile
+    tipos: # enum de tipos de tile (valores usados en el mapa)
         VACIO: 0
         SUELO: 1
         PLATAFORMA: 2
@@ -30,37 +30,39 @@ tiles:
 
 # --- Físicas del platformer ---
 fisicas:
-    gravedad: 0.5                # aceleración vertical por frame
-    velocidadMaxCaida: 8         # velocidad máxima de caída (px/frame)
-    velocidadJugador: 2.5        # velocidad horizontal base (px/frame)
-    fuerzaSalto: -7.5            # impulso vertical al saltar (negativo = arriba)
-    fuerzaStompReboteBajo: -3    # rebote bajo al hacer stomp (sin input de salto)
-    fuerzaStompReboteAlto: -6    # rebote alto al hacer stomp (con input de salto)
-    coyoteTime: 6                # frames de gracia para saltar tras dejar el suelo
-    jumpBuffer: 6                # frames de buffer para input de salto anticipado
-    invulnerabilidad: 60         # frames de invulnerabilidad tras recibir daño
-    knockbackX: 3                # retroceso horizontal al recibir daño
-    knockbackY: -4               # impulso vertical al recibir daño
+    gravedad: 0.5 # aceleración vertical por frame
+    velocidadMaxCaida: 8 # velocidad máxima de caída (px/frame)
+    velocidadJugador: 2.5 # velocidad horizontal base (px/frame)
+    fuerzaSalto: -7.5 # impulso vertical al saltar (negativo = arriba)
+    fuerzaStompReboteBajo: -3 # rebote bajo al hacer stomp (sin input de salto)
+    fuerzaStompReboteAlto: -6 # rebote alto al hacer stomp (con input de salto)
+    coyoteTime: 6 # frames de gracia para saltar tras dejar el suelo
+    jumpBuffer: 6 # frames de buffer para input de salto anticipado
+    invulnerabilidad: 60 # frames de invulnerabilidad tras recibir daño
+    knockbackX: 3 # retroceso horizontal al recibir daño
+    knockbackY: -4 # impulso vertical al recibir daño
+    jumpCutFactor: 0.4 # multiplicador de vy al soltar salto (0.4 = corta al 40%)
 
 # --- Enemigos (esbirros) ---
 enemigos:
-    stompMargen: 2               # px de margen para detectar stomp (pisada desde arriba)
-    stompVyMin: 2                # vy mínima para stomp (evita kills al caminar entre personajes de distinta estatura)
-    cooldownAtaque: 60           # frames de cooldown entre ataques del enemigo
-    invulStomp: 30               # frames de invulnerabilidad del boss tras recibir stomp
-    stunStomp: 10                # frames de stun del boss tras recibir stomp
+    stompMargenRatio: 0.3 # fracción del alto del enemigo como margen de stomp (30%)
+    stompVyMinBase: 1.5 # vy mínima base para stomp (px/frame)
+    stompVyMinEscalaFactor: 0.5 # cuánto se reduce stompVyMin para personajes lentos (0=nada, 1=todo)
+    cooldownAtaque: 60 # frames de cooldown entre ataques del enemigo
+    invulStomp: 30 # frames de invulnerabilidad del boss tras recibir stomp
+    stunStomp: 10 # frames de stun del boss tras recibir stomp
 
 # --- Boss ---
 boss:
-    fasesCambio: [0.66, 0.33]    # umbrales de vida (%) para cambio de fase
-    velocidadFases: [1.0, 1.4]   # multiplicador de velocidad por fase
+    fasesCambio: [0.66, 0.33] # umbrales de vida (%) para cambio de fase
+    velocidadFases: [1.0, 1.4] # multiplicador de velocidad por fase
 
 # --- Renderizado ---
 render:
-    colorSuelo: "#2a2a5e"        # color fallback para tiles de suelo (sin textura)
-    colorPlataforma: "#3a3a7e"   # color fallback para tiles de plataforma (sin textura)
-    colorEnemigo: "#e94560"      # color de sprite para enemigos sin sprite sheet
-    colorBoss: "#bb86fc"         # color de sprite para el boss sin sprite sheet
+    colorSuelo: '#2a2a5e' # color fallback para tiles de suelo (sin textura)
+    colorPlataforma: '#3a3a7e' # color fallback para tiles de plataforma (sin textura)
+    colorEnemigo: '#e94560' # color de sprite para enemigos sin sprite sheet
+    colorBoss: '#bb86fc' # color de sprite para el boss sin sprite sheet
 
 # --- Escalado de personajes ---
 # Ajusta tamaño, velocidad y salto según la estatura del personaje.
@@ -75,26 +77,26 @@ render:
 #   9 = el más rápido: Orejas (conejo con patas largas)
 # Distribución tipo campana centrada en 5-6.
 escalado:
-    estaturaRef: 1.55            # estatura de referencia (Lina = escala 1.0)
-    escalaMin: 0.45              # escala mínima permitida
-    escalaMax: 1.45              # escala máxima permitida
-    hitboxBaseW: 12              # ancho base del hitbox (px)
-    hitboxBaseH: 14              # alto base del hitbox (px)
-    spriteBaseW: 48              # ancho base del sprite visual (px)
-    spriteBaseH: 60              # alto base del sprite visual (px)
-    velAttrMin: 3                # atributo velocidad mínimo
-    velAttrMax: 9                # atributo velocidad máximo
-    velPlatMin: 1.0              # px/frame para vel=3 (ratio 3x con velPlatMax)
-    velPlatMax: 3.0              # px/frame para vel=9
-    fuerzaSaltoBase: -7.5        # fuerza de salto base
-    fuerzaSaltoFactor: 0.3       # cuánto se ajusta por escala
+    estaturaRef: 1.55 # estatura de referencia (Lina = escala 1.0)
+    escalaMin: 0.45 # escala mínima permitida
+    escalaMax: 1.45 # escala máxima permitida
+    hitboxBaseW: 12 # ancho base del hitbox (px)
+    hitboxBaseH: 14 # alto base del hitbox (px)
+    spriteBaseW: 48 # ancho base del sprite visual (px)
+    spriteBaseH: 60 # alto base del sprite visual (px)
+    velAttrMin: 3 # atributo velocidad mínimo
+    velAttrMax: 9 # atributo velocidad máximo
+    velPlatMin: 1.0 # px/frame para vel=3 (ratio 3x con velPlatMax)
+    velPlatMax: 3.0 # px/frame para vel=9
+    fuerzaSaltoBase: -7.5 # fuerza de salto base
+    fuerzaSaltoFactor: 0.3 # cuánto se ajusta por escala
 
 # --- Cámara ---
 camara:
-    shakeDecay: 0.9              # factor de decaimiento del screen shake
+    shakeDecay: 0.9 # factor de decaimiento del screen shake
 
 # --- Sprites del jugador ---
 sprites:
-    jugadorIdleVel: 30           # frames entre cada frame de idle
-    jugadorCorrerVel: 6          # frames entre cada frame de correr
-    jugadorAgacharseVel: 20      # frames entre cada frame de agacharse
+    jugadorIdleVel: 30 # frames entre cada frame de idle
+    jugadorCorrerVel: 6 # frames entre cada frame de correr
+    jugadorAgacharseVel: 20 # frames entre cada frame de agacharse
