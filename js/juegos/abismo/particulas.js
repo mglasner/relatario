@@ -1,10 +1,10 @@
 // Habitacion 4 — El Abismo: Sistema de particulas 2D
-// Pool preallocado de 150 particulas con culling horizontal
+// Pool preallocado de 200 particulas con culling horizontal
 // Optimizado: puntero circular para busqueda O(1) amortizada y conteo de activas
 
 import { esSolido } from './fisicas.js';
 
-const POOL_SIZE = 150;
+const POOL_SIZE = 200;
 const GRAVEDAD_PART = 0.15;
 
 // Pool preasignado
@@ -55,17 +55,17 @@ function emitir(config) {
     activeCount++;
     p.x = config.x;
     p.y = config.y;
-    p.vx = config.vx || 0;
-    p.vy = config.vy || 0;
-    p.vida = config.vida || 20;
-    p.vidaMax = config.vida || 20;
-    p.tamano = config.tamano || 2;
-    p.r = config.r || 255;
-    p.g = config.g || 255;
-    p.b = config.b || 255;
-    p.alpha = config.alpha || 1;
-    p.gravedad = config.gravedad || false;
-    p.tipo = config.tipo || '';
+    p.vx = config.vx ?? 0;
+    p.vy = config.vy ?? 0;
+    p.vida = config.vida ?? 20;
+    p.vidaMax = config.vida ?? 20;
+    p.tamano = config.tamano ?? 2;
+    p.r = config.r ?? 255;
+    p.g = config.g ?? 255;
+    p.b = config.b ?? 255;
+    p.alpha = config.alpha ?? 1;
+    p.gravedad = config.gravedad ?? false;
+    p.tipo = config.tipo ?? '';
 }
 
 // --- Emisores por tipo ---
@@ -203,6 +203,60 @@ export function emitirOjosAbismo(abismoX, abismoY) {
     });
 }
 
+// Chispas de fuego ascendentes desde el abismo
+export function emitirChispaFuego(x, y) {
+    if (Math.random() > 0.3) return;
+    emitir({
+        x: x + Math.random() * 16,
+        y: y,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: -0.8 - Math.random() * 1.2,
+        vida: 20 + Math.floor(Math.random() * 15),
+        tamano: 1 + Math.random() * 1.5,
+        r: 255,
+        g: 150 + Math.floor(Math.random() * 100),
+        b: 20 + Math.floor(Math.random() * 30),
+        alpha: 0.8,
+        tipo: 'brasa',
+    });
+}
+
+// Destellos de cristales parpadeantes
+export function emitirDestellosCristal(x, y) {
+    if (Math.random() > 0.15) return;
+    emitir({
+        x: x + Math.random() * 16,
+        y: y - Math.random() * 8,
+        vx: 0,
+        vy: -0.1 - Math.random() * 0.2,
+        vida: 10 + Math.floor(Math.random() * 10),
+        tamano: 1 + Math.random(),
+        r: 200 + Math.floor(Math.random() * 55),
+        g: 150 + Math.floor(Math.random() * 60),
+        b: 255,
+        alpha: 0.9,
+        tipo: 'destello',
+    });
+}
+
+// Burbujas toxicas ascendentes del pantano
+export function emitirBurbujaPantano(x, y) {
+    if (Math.random() > 0.2) return;
+    emitir({
+        x: x + Math.random() * 16,
+        y: y,
+        vx: (Math.random() - 0.5) * 0.2,
+        vy: -0.3 - Math.random() * 0.5,
+        vida: 30 + Math.floor(Math.random() * 20),
+        tamano: 1.5 + Math.random() * 2,
+        r: 80 + Math.floor(Math.random() * 40),
+        g: 200 + Math.floor(Math.random() * 55),
+        b: 30 + Math.floor(Math.random() * 30),
+        alpha: 0.5,
+        tipo: 'burbuja',
+    });
+}
+
 // Aura alrededor del boss
 export function emitirAuraBoss(bossX, bossY, bossAncho, bossAlto) {
     if (Math.random() > 0.5) return;
@@ -317,6 +371,15 @@ export function actualizarParticulas() {
             p.alpha = fadeIn * ratio * 0.2;
         } else if (p.tipo === 'afterimage') {
             p.alpha = ratio * 0.2;
+        } else if (p.tipo === 'brasa') {
+            p.alpha = ratio * 0.8;
+            p.tamano *= 0.98;
+            if (ratio < 0.3) p.g = Math.max(50, p.g - 3);
+        } else if (p.tipo === 'destello') {
+            p.alpha = ratio * 0.9 * (0.5 + 0.5 * Math.abs(Math.sin(frameCount * 0.3 + p.x)));
+        } else if (p.tipo === 'burbuja') {
+            p.vx = Math.sin(frameCount * 0.1 + p.y * 0.2) * 0.1;
+            p.alpha = ratio > 0.1 ? ratio * 0.5 : 0;
         } else {
             p.alpha = ratio;
         }
@@ -351,7 +414,12 @@ export function renderizarParticulas(ctx, camaraX, anchoCanvas) {
         const a = ((p.alpha * 100 + 0.5) | 0) * 0.01;
         ctx.fillStyle = 'rgba(' + p.r + ',' + p.g + ',' + p.b + ',' + a + ')';
 
-        if (p.tipo === 'niebla' || p.tipo === 'aura' || p.tipo === 'afterimage') {
+        if (
+            p.tipo === 'niebla' ||
+            p.tipo === 'aura' ||
+            p.tipo === 'afterimage' ||
+            p.tipo === 'burbuja'
+        ) {
             // Circulos para efecto suave
             ctx.beginPath();
             ctx.arc(px, py, p.tamano, 0, TAU);

@@ -4,7 +4,13 @@
 
 import { CFG } from './config.js';
 import { est, resetearEstado, timeouts } from './estado.js';
-import { obtenerSpawns, resetearMapa, obtenerFilas, obtenerColumnas } from './nivel.js';
+import {
+    obtenerSpawns,
+    resetearMapa,
+    obtenerFilas,
+    obtenerColumnas,
+    obtenerTile,
+} from './nivel.js';
 import {
     crearPantalla,
     actualizarHUDJugador,
@@ -34,6 +40,7 @@ import {
     renderizarFlash,
     renderizarIndicadorBoss,
     limpiarRenderer,
+    tipoAbismo,
 } from './renderer.js';
 import { aabbColision } from './fisicas.js';
 import {
@@ -70,6 +77,9 @@ import {
     emitirMuerteEnemigo,
     emitirNieblaAbismo,
     emitirOjosAbismo,
+    emitirChispaFuego,
+    emitirDestellosCristal,
+    emitirBurbujaPantano,
     emitirAuraBoss,
     emitirBossFase,
     emitirEstelaBoss,
@@ -247,6 +257,25 @@ function emitirParticulasAmbientales(camaraX) {
         }
     }
 
+    // Particulas por variante de abismo (fuego, cristales, pantano)
+    const filaSuelo = obtenerFilas() - 3;
+    if (frameNum % 3 === 0) {
+        const tipoAbis = CFG.tiles.tipos.ABISMO;
+        for (let col = colInicio; col < colFin; col += 2) {
+            if (obtenerTile(filaSuelo, col) !== tipoAbis) continue;
+            const va = tipoAbismo(filaSuelo, col);
+            const abX = col * TAM;
+            const abY = filaSuelo * TAM;
+            if (va === 'FUEGO') {
+                emitirChispaFuego(abX, abY);
+            } else if (va === 'CRISTALES') {
+                emitirDestellosCristal(abX, abY);
+            } else if (va === 'PANTANO') {
+                emitirBurbujaPantano(abX, abY);
+            }
+        }
+    }
+
     // Particulas del boss
     const bossInfo = obtenerInfoBoss();
     if (bossInfo) {
@@ -292,12 +321,10 @@ const gameLoop4 = crearGameLoop(function (_tiempo, _dt) {
         return;
     }
 
-    // Actualizar
-    actualizarJugador();
-    actualizarEnemigos();
-
-    // Colisiones
+    // Actualizar (solo si el jugador sigue vivo)
     if (!est.muerto) {
+        actualizarJugador();
+        actualizarEnemigos();
         verificarColisionesEnemigos();
         verificarAbismo();
         verificarVictoria();
@@ -336,7 +363,7 @@ function renderFrame() {
     renderizarParallax(est.ctx, camX, tiempo);
 
     // Tiles con texturas
-    renderizarTiles(est.ctx, camX, est.anchoCanvas, est.altoCanvas, esBossVivo(), tiempo);
+    renderizarTiles(est.ctx, camX, est.anchoCanvas, esBossVivo(), tiempo);
 
     // Particulas detras de personajes (niebla, aura)
     renderizarParticulas(est.ctx, camX, est.anchoCanvas);
@@ -360,7 +387,15 @@ function renderFrame() {
     const bossInfo = obtenerInfoBoss();
     if (esBossVivo() && bossInfo) {
         actualizarHUDBoss(bossInfo.nombre, bossInfo.vidaActual / bossInfo.vidaMax);
-        renderizarIndicadorBoss(est.ctx, bossInfo.x, bossInfo.ancho, camX, est.anchoCanvas, tiempo);
+        renderizarIndicadorBoss(
+            est.ctx,
+            bossInfo.x,
+            bossInfo.ancho,
+            camX,
+            est.anchoCanvas,
+            est.altoCanvas,
+            tiempo
+        );
     } else {
         ocultarHUDBoss();
     }
@@ -432,9 +467,7 @@ export function iniciarAbismo(jugadorRef, callback, dpadArgumento) {
     lanzarToast('El Abismo: \u00a1Cuidado con las ca\u00eddas!', '\ud83c\udf0a', 'estado');
 
     // Mostrar toast del boss
-    const bossActual = obtenerEnemigosVivos().find(function (e) {
-        return e.esBoss;
-    });
+    const bossActual = obtenerInfoBoss();
     if (bossActual) {
         timeouts.set(function () {
             if (est.activo) {

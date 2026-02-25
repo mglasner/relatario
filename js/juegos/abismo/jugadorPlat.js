@@ -94,22 +94,16 @@ export function iniciarJugador(jugador, teclas) {
     yAnterior = y;
 }
 
-export function actualizarJugador() {
-    if (!jugadorRef) return;
+// --- Sub-funciones de actualizacion ---
 
-    yAnterior = y;
-    const anteriorEnSuelo = estaEnSuelo;
-
-    // Agacharse (solo en suelo, sin knockback)
+function procesarAgacharse() {
     const quiereAgacharse = !!teclasRef['ArrowDown'] && estaEnSuelo && knockbackVx === 0;
     if (quiereAgacharse && !estaAgachado) {
-        // Agacharse: reducir hitbox, ajustar Y para mantener pies
         estaAgachado = true;
         const altoAgachado = Math.round(altoNormal * 0.6);
         y += alto - altoAgachado;
         alto = altoAgachado;
     } else if (!quiereAgacharse && estaAgachado) {
-        // Levantarse: verificar que no hay techo antes de expandir hitbox
         const nuevaY = y - (altoNormal - alto);
         const margen = 2;
         if (!esSolido(x + margen, nuevaY) && !esSolido(x + ancho - margen, nuevaY)) {
@@ -118,15 +112,15 @@ export function actualizarJugador() {
             alto = altoNormal;
         }
     }
+}
 
-    // Input horizontal (bloqueado si esta agachado)
+function procesarMovimientoX() {
     let inputX = 0;
     if (!estaAgachado) {
         if (teclasRef['ArrowLeft']) inputX -= 1;
         if (teclasRef['ArrowRight']) inputX += 1;
     }
 
-    // Knockback override
     if (knockbackVx !== 0) {
         vx = knockbackVx;
         knockbackVx *= 0.85;
@@ -135,27 +129,24 @@ export function actualizarJugador() {
         vx = inputX * velocidadMov;
     }
 
-    // Direccion visual
     if (inputX !== 0) direccion = inputX;
-
-    // Resolver colision X
     x = resolverColisionX(x, y, ancho, alto, vx);
+    return inputX;
+}
 
-    // Jump buffer: recordar intencion de saltar (bloqueado si agachado)
+function procesarSalto() {
     if (!estaAgachado && teclasRef['ArrowUp']) {
         jumpBufferFrames = FIS.jumpBuffer;
     } else if (jumpBufferFrames > 0) {
         jumpBufferFrames--;
     }
 
-    // Coyote time: gracia al borde
     if (estaEnSuelo) {
         coyoteFrames = FIS.coyoteTime;
     } else if (coyoteFrames > 0) {
         coyoteFrames--;
     }
 
-    // Saltar (no si esta agachado)
     if (!estaAgachado && jumpBufferFrames > 0 && coyoteFrames > 0) {
         vy = fuerzaSaltoActual;
         jumpBufferFrames = 0;
@@ -163,30 +154,36 @@ export function actualizarJugador() {
         saltoCortado = false;
     }
 
-    // Jump cut: si suelta salto mientras sube, cortar impulso
     if (!saltoCortado && vy < 0 && !teclasRef['ArrowUp']) {
         vy *= FIS.jumpCutFactor;
         saltoCortado = true;
     }
+}
 
-    // Gravedad
+function aplicarGravedad() {
     vy += FIS.gravedad;
     if (vy > FIS.velocidadMaxCaida) vy = FIS.velocidadMaxCaida;
 
-    // Resolver colision Y
     const resY = resolverColisionY(x, y, ancho, alto, vy);
     y = resY.y;
     vy = resY.vy;
     estaEnSuelo = resY.enSuelo;
     if (estaEnSuelo) saltoCortado = false;
+}
 
-    // Invulnerabilidad
+export function actualizarJugador() {
+    if (!jugadorRef) return;
+
+    yAnterior = y;
+    const anteriorEnSuelo = estaEnSuelo;
+
+    procesarAgacharse();
+    const inputX = procesarMovimientoX();
+    procesarSalto();
+    aplicarGravedad();
+
     if (invulFrames > 0) invulFrames--;
-
-    // Detectar aterrizaje (transicion aire→suelo)
     estabaSuelo = anteriorEnSuelo;
-
-    // Actualizar estado de animacion
     actualizarEstado(inputX);
 }
 
@@ -258,6 +255,8 @@ export function recibirDano(dano, desdeX) {
 export function aplicarStompRebote(saltandoActivo) {
     vy = saltandoActivo ? FIS.fuerzaStompReboteAlto : FIS.fuerzaStompReboteBajo;
     saltoCortado = false;
+    // Breve invulnerabilidad post-stomp para que el rebote separe al jugador
+    if (invulFrames < FIS.invulPostStomp) invulFrames = FIS.invulPostStomp;
 }
 
 export function obtenerEscala() {

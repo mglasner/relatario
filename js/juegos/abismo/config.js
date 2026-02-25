@@ -36,6 +36,7 @@ export const CFG = {
         knockbackX: 3,
         knockbackY: -4,
         jumpCutFactor: 0.4,
+        invulPostStomp: 12,
     },
     enemigos: {
         stompMargenRatio: 0.3,

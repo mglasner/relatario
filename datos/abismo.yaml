@@ -42,6 +42,7 @@ fisicas:
     knockbackX: 3 # retroceso horizontal al recibir daño
     knockbackY: -4 # impulso vertical al recibir daño
     jumpCutFactor: 0.4 # multiplicador de vy al soltar salto (0.4 = corta al 40%)
+    invulPostStomp: 12 # frames de invulnerabilidad del jugador tras realizar un stomp
 
 # --- Enemigos (esbirros) ---
 enemigos:
