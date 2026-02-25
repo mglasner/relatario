@@ -4,7 +4,7 @@
 
 | # | Feature | Dificultad | Estado |
 |---|---------|-----------|--------|
-| 1 | [Cuartos secretos en El Laberinto](#1-cuartos-secretos-en-el-laberinto) | Baja | [ ] |
+| 1 | [Cuartos secretos en El Laberinto](#1-cuartos-secretos-en-el-laberinto) | Baja | [x] |
 | 2 | [Sistema de logros con medallas](#2-sistema-de-logros-con-medallas) | Baja | [ ] |
 | 3 | [Power-ups en El Abismo](#3-power-ups-coleccionables-en-el-abismo) | Media-Baja | [ ] |
 | 4 | [Niveles de dificultad en El Memorice](#4-niveles-de-dificultad-en-el-memorice) | Media-Baja | [x] |
@@ -14,10 +14,17 @@
 | 8 | [Modo Boss Rush](#8-modo-boss-rush) | Media | [ ] |
 | 9 | [Mascotas acompanantes](#9-mascotas-acompanantes) | Media-Alta | [ ] |
 | 10 | [Editor de niveles para El Abismo](#10-editor-de-niveles-para-el-abismo) | Alta | [ ] |
-| 11 | [Ajedrez local (heroes vs villanos)](#11-ajedrez-local-heroes-vs-villanos) | Alta | [ ] |
+| 11 | [Ajedrez local (heroes vs villanos)](#11-ajedrez-local-heroes-vs-villanos) | Alta | [x] |
 | 12 | [Modo Historia / Campana](#12-modo-historia-cooperativo-campana) | Muy Alta | [ ] |
 | 13 | [Ajedrez online (multidispositivo)](#13-ajedrez-online-multidispositivo) | Muy Alta | [ ] |
 | 14 | [Sistema de autenticacion y backend](#14-sistema-de-autenticacion-y-backend) | Muy Alta | [ ] |
+| 15 | [Fix deteccion de stomp en El Abismo](#15-fix-deteccion-de-stomp-en-el-abismo) | Baja | [ ] |
+| 16 | [Particulas con colision al suelo en El Abismo](#16-particulas-con-colision-al-suelo-en-el-abismo) | Baja | [ ] |
+| 17 | [Salto variable (jump cut) en El Abismo](#17-salto-variable-jump-cut-en-el-abismo) | Media-Baja | [ ] |
+| 18 | [Esbirros con patron diferenciado en El Abismo](#18-esbirros-con-patron-diferenciado-en-el-abismo) | Media-Baja | [ ] |
+| 19 | [Rediseno del mapa con rutas alternativas en El Abismo](#19-rediseno-del-mapa-con-rutas-alternativas-en-el-abismo) | Media-Baja | [ ] |
+| 20 | [Boss con patrones de ataque en El Abismo](#20-boss-con-patrones-de-ataque-en-el-abismo) | Media | [ ] |
+| 21 | [Generacion procedural de secciones en El Abismo](#21-generacion-procedural-de-secciones-en-el-abismo) | Media | [ ] |
 
 ---
 
@@ -260,3 +267,110 @@ Infraestructura para que los datos del jugador (tesoros, logros, stats, niveles 
 Este item es prerequisito para features sociales futuras (rankings, compartir niveles, ajedrez con cuenta) y habilita persistencia real de progreso.
 
 **Por que es divertido**: "No importa si papa formatea el computador — mis tesoros estan guardados". Tambien permite jugar en el tablet de la abuela y tener el mismo progreso.
+
+---
+
+## 15. Fix deteccion de stomp en El Abismo
+
+**Dificultad: Baja** | Archivos: `js/juegos/abismo/index.js`, `datos/abismo.yaml`
+
+La deteccion de stomp (saltar sobre enemigos) usa un margen fijo de 2px para decidir si el jugador cayo encima o choco de lado. Con personajes de distinta estatura (hitbox de 6 a 20px de alto) ese margen es muy restrictivo y causa stomps fallidos que registran como golpe lateral.
+
+- **Margen proporcional**: cambiar de `stompMargen: 2` fijo a un porcentaje del alto del enemigo (~30%), garantizando consistencia independiente de la estatura
+- **Zona de stomp visual**: opcionalmente mostrar un breve destello en la cabeza del enemigo cuando el jugador esta en rango de stomp valido
+- **Tolerancia de velocidad**: relajar `stompVyMin` (actualmente 2 px/frame) para personajes mas lentos que caen con menos velocidad
+
+**Por que es importante**: Elimina frustracion. El jugador siente que hizo bien el salto pero recibe dano — es injusto.
+
+---
+
+## 16. Particulas con colision al suelo en El Abismo
+
+**Dificultad: Baja** | Archivos: `js/juegos/abismo/particulas.js`, `js/juegos/abismo/fisicas.js`
+
+Las particulas de tipo chispa (stomp) y fragmento (muerte de enemigo) caen al vacio atravesando los tiles solidos. Deberian rebotar o detenerse al tocar el suelo.
+
+- **Check de colision**: en el update de cada particula con gravedad, verificar `esSolido(x, y)` antes de mover
+- **Rebote**: al colisionar, invertir `vy *= -0.4` (rebote amortiguado) y aplicar friccion `vx *= 0.7`
+- **Limite de rebotes**: despues de 2 rebotes, la particula se queda quieta y desvanece (reducir vida restante)
+
+**Por que es importante**: Las particulas que respetan la fisica del mundo se sienten muchisimo mejor. Es un polish pequeno con impacto visual grande.
+
+---
+
+## 17. Salto variable (jump cut) en El Abismo
+
+**Dificultad: Media-Baja** | Archivos: `js/juegos/abismo/jugadorPlat.js`, `datos/abismo.yaml`
+
+Actualmente el salto es fijo: siempre sube la misma altura (-7.5 px/frame). El jump cut permite saltos cortos y largos segun cuanto tiempo se mantiene presionado el boton.
+
+- **Mecanica**: si el jugador suelta ArrowUp mientras `vy < 0` (subiendo), aplicar `vy *= jumpCutFactor` (ej: 0.4) para frenar la subida
+- **Parametro YAML**: `jumpCutFactor: 0.4` configurable en `datos/abismo.yaml`
+- **Resultado**: tap rapido = salto bajo para plataformas cercanas, mantener = salto completo para huecos grandes
+
+**Por que es importante**: Es una mecanica estandar en platformers modernos (Celeste, Hollow Knight, Mario). Da al jugador control fino sobre la altura del salto, lo que hace el movimiento mas expresivo y preciso.
+
+---
+
+## 18. Esbirros con patron diferenciado en El Abismo
+
+**Dificultad: Media-Baja** | Archivos: `js/juegos/abismo/enemigoPlat.js`, `datos/abismo.yaml`
+
+Los 3 esbirros del nivel son identicos: patrullan horizontalmente y giran al chocar con paredes o precipicios. Darle un patron distinto a cada uno segun su indice de spawn.
+
+- **Esbirro 1 (patrullero)**: el actual, camina de lado a lado. Es el mas predecible y facil
+- **Esbirro 2 (saltarin)**: patrulla pero salta periodicamente cada ~90 frames. El salto lo hace impredecible y dificil de stompar
+- **Esbirro 3 (centinela)**: camina, se detiene 60 frames (mira alrededor), y reanuda en direccion aleatoria. Requiere paciencia
+
+Cada patron se selecciona por indice de spawn (no aleatorio) para que la curva de dificultad sea consistente.
+
+**Por que es importante**: Variedad en enemigos hace que cada seccion del nivel se sienta diferente y requiera estrategias distintas.
+
+---
+
+## 19. Rediseno del mapa con rutas alternativas en El Abismo
+
+**Dificultad: Media-Baja** | Archivos: `js/juegos/abismo/nivel.js`
+
+El mapa actual es completamente lineal: una sola ruta de izquierda a derecha sin decisiones. Agregar caminos altos (plataformas) y bajos (suelo) en cada seccion.
+
+- **Ruta alta**: mas plataformas y saltos de precision, permite esquivar enemigos por arriba. Mas rapida pero arriesgada (caida = dano o volver abajo)
+- **Ruta baja**: suelo con enemigos, mas segura pero mas lenta y con mas combate
+- **Reconexion**: ambas rutas se juntan antes de cada seccion nueva, para que el jugador pueda cambiar de estrategia
+- **Secretos**: tiles ocultos en la ruta alta con items de curacion (preparacion para power-ups futuros)
+
+Solo requiere editar el array `mapa[][]` en `nivel.js`. No necesita cambios en el motor.
+
+**Por que es importante**: Rutas alternativas dan rejugabilidad ("esta vez voy por arriba") y permiten que jugadores de distintos niveles completen el juego con estrategias diferentes.
+
+---
+
+## 20. Boss con patrones de ataque en El Abismo
+
+**Dificultad: Media** | Archivos: `js/juegos/abismo/enemigoPlat.js`, `js/juegos/abismo/index.js`, `datos/abismo.yaml`
+
+El boss actual solo patrulla y hace dano por contacto — es anticlimático para un jefe final. Darle ataques telegrafados por fase:
+
+- **Fase 1 (>66% HP) — Embestida**: se detiene, parpadea rojo 30 frames (telegrafeo), y carga horizontalmente al doble de velocidad durante 60 frames. El jugador debe saltar para esquivar
+- **Fase 2 (33-66% HP) — Salto aplastante**: salta alto y cae con fuerza generando una onda expansiva (particulas + dano en area de 2 tiles a cada lado del impacto). El jugador debe alejarse del punto de caida
+- **Fase 3 (<33% HP) — Invocacion**: invoca 1 mini-esbirro temporal (vida baja, desaparece en 10 segundos). Maximo 1 invocado a la vez. Combina con embestida
+
+Cada ataque tiene un cooldown y se alterna con la patrulla normal. Los ataques se telegrafean visualmente para que el jugador pueda reaccionar.
+
+**Por que es importante**: Un boss memorable es el climax del juego. Patrones telegrafados ensenan al jugador a observar, esquivar y buscar ventanas de ataque — la esencia de un buen platformer.
+
+---
+
+## 21. Generacion procedural de secciones en El Abismo
+
+**Dificultad: Media** | Archivos: `js/juegos/abismo/nivel.js`, `datos/abismo.yaml`
+
+Reemplazar el mapa hardcodeado por un sistema de secciones modulares que se ensamblan aleatoriamente.
+
+- **Secciones prefabricadas**: definir ~10-12 bloques de ~15 tiles de ancho cada uno, con dificultad etiquetada (facil, media, dificil)
+- **Ensamblaje**: al iniciar partida, seleccionar N secciones con dificultad progresiva (2 faciles → 2 medias → 1 dificil → boss arena → meta)
+- **Conectores**: cada seccion tiene una "entrada" (izquierda) y "salida" (derecha) a la misma altura para que encajen
+- **Spawns dinamicos**: los puntos de spawn de enemigos estan definidos dentro de cada seccion, no globalmente
+- **Semilla opcional**: guardar la semilla para poder compartir niveles ("prueba la semilla 4521")
+
+**Por que es importante**: Cada partida es un nivel diferente, lo que multiplica la rejugabilidad drasticamente. "A ver que me toca hoy" genera expectativa.
