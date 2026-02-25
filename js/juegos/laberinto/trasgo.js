@@ -4,64 +4,26 @@
 import { ENEMIGOS } from '../../enemigos.js';
 import { mezclar } from '../../laberinto.js';
 import { CONFIG, CFG, est, getCeldaJugador, aplicarDanoJugador } from './estado.js';
+import {
+    getCeldaEnemigo,
+    calcularDistanciasBFS,
+    filtrarCandidatasPorDistancia,
+    detectarTrampasEnemigo,
+    crearBarraVida,
+} from './enemigoComun.js';
 import { lanzarToast } from '../../componentes/toast.js';
 
 // Busca una celda a distancia media de la entrada para colocar al Trasgo
 function posicionInicialTrasgo() {
-    const cola = [[est.entradaFila, est.entradaCol, 0]];
-    let idx = 0;
-    const distancias = {};
-    distancias[est.entradaFila + ',' + est.entradaCol] = 0;
-    const dirs = [
-        [-1, 0],
-        [0, 1],
-        [1, 0],
-        [0, -1],
-    ];
-    let maxDist = 0;
-
-    while (idx < cola.length) {
-        const actual = cola[idx++];
-        const f = actual[0],
-            c = actual[1],
-            d = actual[2];
-        if (d > maxDist) maxDist = d;
-
-        for (let i = 0; i < dirs.length; i++) {
-            const nf = f + dirs[i][0],
-                nc = c + dirs[i][1];
-            const key = nf + ',' + nc;
-            if (
-                nf >= 0 &&
-                nf < CONFIG.FILAS &&
-                nc >= 0 &&
-                nc < CONFIG.COLS &&
-                est.mapa[nf][nc] === 0 &&
-                !(key in distancias)
-            ) {
-                distancias[key] = d + 1;
-                cola.push([nf, nc, d + 1]);
-            }
-        }
-    }
-
-    // Elegir celdas lógicas a rango configurado de la distancia máxima
-    const distMin = Math.floor(maxDist * CFG.trasgo.posicionDistMin);
-    const distMax = Math.floor(maxDist * CFG.trasgo.posicionDistMax);
-    const candidatas = [];
-
-    for (const key in distancias) {
-        const dist = distancias[key];
-        if (dist >= distMin && dist <= distMax) {
-            const partes = key.split(',');
-            const f = parseInt(partes[0]),
-                c = parseInt(partes[1]);
-            if (f % 2 === 1 && c % 2 === 1) {
-                if (f === est.llaveFila && c === est.llaveCol) continue;
-                candidatas.push([f, c]);
-            }
-        }
-    }
+    const { distancias, maxDist } = calcularDistanciasBFS(est.entradaFila, est.entradaCol);
+    const excluir = [[est.llaveFila, est.llaveCol]];
+    const candidatas = filtrarCandidatasPorDistancia(
+        distancias,
+        maxDist,
+        CFG.trasgo.posicionDistMin,
+        CFG.trasgo.posicionDistMax,
+        excluir
+    );
 
     mezclar(candidatas);
     return candidatas.length > 0 ? candidatas[0] : [1, 1];
@@ -120,14 +82,21 @@ export function calcularCamino(origenF, origenC, destinoF, destinoC) {
 // Inicializa el Trasgo en el laberinto
 export function iniciarTrasgo() {
     const pos = posicionInicialTrasgo();
+    const datos = ENEMIGOS.Trasgo;
     est.trasgo = {
-        datos: ENEMIGOS.Trasgo,
+        datos: datos,
+        vida: datos.vidaMax,
+        vidaMax: datos.vidaMax,
         posX: pos[1] * CONFIG.TAM_CELDA + (CONFIG.TAM_CELDA - CONFIG.TAM_TRASGO) / 2,
         posY: pos[0] * CONFIG.TAM_CELDA + (CONFIG.TAM_CELDA - CONFIG.TAM_TRASGO) / 2,
         camino: [],
         ultimoGolpe: 0,
+        ultimoGolpeTrampa: 0,
         ultimoPathfinding: 0,
+        velocidadMult: 1,
+        timerLentitud: null,
         elemento: null,
+        elementoBarraVida: null,
     };
 }
 
@@ -140,15 +109,13 @@ export function actualizarTrasgo() {
     if (ahora - est.trasgo.ultimoPathfinding >= CONFIG.INTERVALO_PATHFINDING) {
         est.trasgo.ultimoPathfinding = ahora;
 
-        const celdaT = {
-            fila: Math.floor((est.trasgo.posY + CONFIG.TAM_TRASGO / 2) / CONFIG.TAM_CELDA),
-            col: Math.floor((est.trasgo.posX + CONFIG.TAM_TRASGO / 2) / CONFIG.TAM_CELDA),
-        };
+        const celdaT = getCeldaEnemigo(est.trasgo, CONFIG.TAM_TRASGO);
         const celdaJ = getCeldaJugador();
         est.trasgo.camino = calcularCamino(celdaT.fila, celdaT.col, celdaJ.fila, celdaJ.col);
     }
 
     // Mover hacia el siguiente punto del camino
+    const vel = CONFIG.VELOCIDAD_TRASGO * est.trasgo.velocidadMult;
     if (est.trasgo.camino.length > 0) {
         const objetivo = est.trasgo.camino[0];
         const targetX = objetivo[1] * CONFIG.TAM_CELDA + (CONFIG.TAM_CELDA - CONFIG.TAM_TRASGO) / 2;
@@ -158,17 +125,20 @@ export function actualizarTrasgo() {
         const dy = targetY - est.trasgo.posY;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
-        if (dist <= CONFIG.VELOCIDAD_TRASGO) {
+        if (dist <= vel) {
             est.trasgo.posX = targetX;
             est.trasgo.posY = targetY;
             est.trasgo.camino.shift();
         } else {
-            est.trasgo.posX += (dx / dist) * CONFIG.VELOCIDAD_TRASGO;
-            est.trasgo.posY += (dy / dist) * CONFIG.VELOCIDAD_TRASGO;
+            est.trasgo.posX += (dx / dist) * vel;
+            est.trasgo.posY += (dy / dist) * vel;
         }
 
         est.trasgo.elemento.style.transform = `translate(${est.trasgo.posX}px, ${est.trasgo.posY}px)`;
     }
+
+    // Trampas afectan al trasgo
+    if (detectarTrampasEnemigo('trasgo', CONFIG.TAM_TRASGO)) return;
 
     // Detectar colisión con jugador
     detectarColisionTrasgo();
@@ -210,6 +180,8 @@ export function renderizarTrasgo() {
     img.src = 'assets/img/enemigos/trasgo.webp';
     img.alt = 'Trasgo';
     elem.appendChild(img);
+    est.trasgo.elementoBarraVida = crearBarraVida(elem);
+
     est.contenedorLaberinto.appendChild(elem);
     est.trasgo.elemento = elem;
 }

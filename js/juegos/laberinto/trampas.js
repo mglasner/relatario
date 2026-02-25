@@ -5,6 +5,28 @@ import { mezclar } from '../../laberinto.js';
 import { CONFIG, CFG, est, getCeldaJugador, aplicarDanoJugador } from './estado.js';
 import { lanzarToast } from '../../componentes/toast.js';
 
+// --- Celdas candidatas ---
+
+// Obtiene celdas lógicas libres, filtrando entrada, llave, cuartos secretos y ocupadas
+function obtenerCeldasLibres(distanciaMin, ocupadas) {
+    const celdasLibres = [];
+    for (let f = 1; f < CONFIG.FILAS - 1; f++) {
+        for (let c = 1; c < CONFIG.COLS - 1; c++) {
+            if (est.mapa[f][c] !== 0) continue;
+            if (f === est.entradaFila && c === est.entradaCol) continue;
+            if (f === est.llaveFila && c === est.llaveCol) continue;
+            if (Math.abs(f - est.entradaFila) + Math.abs(c - est.entradaCol) <= distanciaMin)
+                continue;
+            if (f % 2 !== 1 || c % 2 !== 1) continue;
+            if (ocupadas && ocupadas[f + ',' + c]) continue;
+            const esCuarto = est.cuartosSecretos.some((cs) => cs.fila === f && cs.col === c);
+            if (esCuarto) continue;
+            celdasLibres.push([f, c]);
+        }
+    }
+    return celdasLibres;
+}
+
 // --- Trampas de fuego ---
 
 // Coloca trampas de fuego en celdas lógicas lejos de la entrada y la llave
@@ -12,22 +34,7 @@ export function colocarTrampas() {
     const tf = CFG.trampasFuego;
     const rango = tf.cantidadMax - tf.cantidadMin + 1;
     const numTrampas = tf.cantidadMin + Math.floor(Math.random() * rango);
-    const celdasLibres = [];
-
-    for (let f = 1; f < CONFIG.FILAS - 1; f++) {
-        for (let c = 1; c < CONFIG.COLS - 1; c++) {
-            if (est.mapa[f][c] !== 0) continue;
-            if (f === est.entradaFila && c === est.entradaCol) continue;
-            if (f === est.llaveFila && c === est.llaveCol) continue;
-            if (
-                Math.abs(f - est.entradaFila) + Math.abs(c - est.entradaCol) <=
-                tf.distanciaMinEntrada
-            )
-                continue;
-            if (f % 2 !== 1 || c % 2 !== 1) continue;
-            celdasLibres.push([f, c]);
-        }
-    }
+    const celdasLibres = obtenerCeldasLibres(tf.distanciaMinEntrada, null);
 
     mezclar(celdasLibres);
     est.trampas = [];
@@ -106,7 +113,6 @@ export function colocarTrampasLentas() {
     const tl = CFG.trampasLentitud;
     const rango = tl.cantidadMax - tl.cantidadMin + 1;
     const numTrampas = tl.cantidadMin + Math.floor(Math.random() * rango);
-    const celdasLibres = [];
 
     // Evitar celdas ocupadas por trampas de fuego
     const ocupadas = {};
@@ -114,21 +120,7 @@ export function colocarTrampasLentas() {
         ocupadas[est.trampas[i].fila + ',' + est.trampas[i].col] = true;
     }
 
-    for (let f = 1; f < CONFIG.FILAS - 1; f++) {
-        for (let c = 1; c < CONFIG.COLS - 1; c++) {
-            if (est.mapa[f][c] !== 0) continue;
-            if (f === est.entradaFila && c === est.entradaCol) continue;
-            if (f === est.llaveFila && c === est.llaveCol) continue;
-            if (
-                Math.abs(f - est.entradaFila) + Math.abs(c - est.entradaCol) <=
-                tl.distanciaMinEntrada
-            )
-                continue;
-            if (f % 2 !== 1 || c % 2 !== 1) continue;
-            if (ocupadas[f + ',' + c]) continue;
-            celdasLibres.push([f, c]);
-        }
-    }
+    const celdasLibres = obtenerCeldasLibres(tl.distanciaMinEntrada, ocupadas);
 
     mezclar(celdasLibres);
     est.trampasLentas = [];

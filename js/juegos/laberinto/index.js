@@ -3,6 +3,13 @@
 // El laberinto se genera aleatoriamente cada vez
 
 import { generarMapa, encontrarPuntoLejano } from '../../laberinto.js';
+import {
+    colocarCuartosSecretos,
+    renderizarCuartosSecretos,
+    detectarProximidad,
+    detectarEmpuje,
+    detectarRecompensa,
+} from './cuartosSecretos.js';
 import { CONFIG, CFG, est, calcularTamCelda, getCeldaJugador } from './estado.js';
 import {
     colocarTrampas,
@@ -110,6 +117,9 @@ export function iniciarLaberinto(jugadorRef, callback, dpadRef) {
     est.llaveFila = puntoLlave[0];
     est.llaveCol = puntoLlave[1];
 
+    // Colocar cuartos secretos (antes de trampas para reservar dead-ends)
+    colocarCuartosSecretos();
+
     // Colocar trampas aleatorias
     colocarTrampas();
     colocarTrampasLentas();
@@ -174,27 +184,62 @@ export function iniciarLaberinto(jugadorRef, callback, dpadRef) {
 // --- Renderizado ---
 
 function renderizarLaberinto() {
-    const fragment = document.createDocumentFragment();
+    // Paredes: canvas estático (reemplaza ~280 divs por 1 canvas dibujado una sola vez)
+    const tam = CONFIG.TAM_CELDA;
+    const ancho = CONFIG.COLS * tam;
+    const alto = CONFIG.FILAS * tam;
+    const dpr = window.devicePixelRatio || 1;
 
-    // Paredes
-    for (let fila = 0; fila < est.mapa.length; fila++) {
-        for (let col = 0; col < est.mapa[fila].length; col++) {
-            if (est.mapa[fila][col] === 1) {
-                const pared = document.createElement('div');
-                pared.className = 'laberinto-pared';
-                pared.style.left = col * CONFIG.TAM_CELDA + 'px';
-                pared.style.top = fila * CONFIG.TAM_CELDA + 'px';
-                pared.style.width = CONFIG.TAM_CELDA + 'px';
-                pared.style.height = CONFIG.TAM_CELDA + 'px';
-                fragment.appendChild(pared);
+    const canvas = document.createElement('canvas');
+    canvas.className = 'laberinto-canvas';
+    canvas.width = ancho * dpr;
+    canvas.height = alto * dpr;
+    canvas.style.width = ancho + 'px';
+    canvas.style.height = alto + 'px';
+
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+
+    // Colores de pared desde CSS variables
+    const styles = getComputedStyle(est.contenedorLaberinto);
+    const colorPared = styles.getPropertyValue('--juego-pared').trim() || '#3d2560';
+    const colorOscuro = styles.getPropertyValue('--juego-pared-oscuro').trim() || '#201035';
+    const colorBorde = styles.getPropertyValue('--juego-borde').trim() || 'rgba(100,60,150,0.25)';
+
+    // Gradiente global diagonal (simula iluminación)
+    const grad = ctx.createLinearGradient(0, 0, ancho, alto);
+    grad.addColorStop(0, colorPared);
+    grad.addColorStop(1, colorOscuro);
+
+    // Dibujar todas las paredes (valor >= 1: paredes normales y falsas)
+    ctx.fillStyle = grad;
+    for (let fila = 0; fila < CONFIG.FILAS; fila++) {
+        for (let col = 0; col < CONFIG.COLS; col++) {
+            if (est.mapa[fila][col] >= 1) {
+                ctx.fillRect(col * tam, fila * tam, tam, tam);
             }
         }
     }
 
+    // Bordes sutiles entre celdas
+    ctx.strokeStyle = colorBorde;
+    ctx.lineWidth = 0.5;
+    for (let fila = 0; fila < CONFIG.FILAS; fila++) {
+        for (let col = 0; col < CONFIG.COLS; col++) {
+            if (est.mapa[fila][col] >= 1) {
+                ctx.strokeRect(col * tam + 0.5, fila * tam + 0.5, tam - 1, tam - 1);
+            }
+        }
+    }
+
+    est.contenedorLaberinto.appendChild(canvas);
+    est.canvasMapa = canvas;
+    est.ctxMapa = ctx;
+
     // Trampas (delegadas a submódulos, appenden al contenedor directamente)
-    est.contenedorLaberinto.appendChild(fragment);
     renderizarTrampas();
     renderizarTrampasLentas();
+    renderizarCuartosSecretos();
 
     // Llave
     est.elementoLlave = document.createElement('div');
@@ -232,7 +277,7 @@ function esPared(pixelX, pixelY) {
     if (fila < 0 || fila >= CONFIG.FILAS || col < 0 || col >= CONFIG.COLS) {
         return true;
     }
-    return est.mapa[fila][col] === 1;
+    return est.mapa[fila][col] !== 0;
 }
 
 function hayColision(x, y) {
@@ -369,6 +414,9 @@ const gameLoop = crearGameLoop(function (_tiempo, _dt) {
     actualizarVillanoElite();
     detectarLlave();
     detectarSalida();
+    detectarProximidad();
+    detectarEmpuje(dx, dy);
+    detectarRecompensa();
 });
 
 // --- Handlers de teclado ---
@@ -399,6 +447,7 @@ export function limpiarLaberinto() {
     }
     est.trampas = [];
     est.trampasLentas = [];
+    est.cuartosSecretos = [];
     est.trasgo = null;
     limpiarVillanoElite();
     est.velocidadActual = CONFIG.VELOCIDAD;
@@ -412,9 +461,7 @@ export function limpiarLaberinto() {
     document.removeEventListener('keydown', onKeyDown);
     document.removeEventListener('keyup', onKeyUp);
 
-    Object.keys(est.teclas).forEach(function (k) {
-        delete est.teclas[k];
-    });
+    est.teclas = {};
 
     if (est.pantalla) {
         est.pantalla.remove();

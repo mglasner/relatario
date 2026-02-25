@@ -5,6 +5,13 @@ import { ENEMIGOS } from '../../enemigos.js';
 import { mezclar } from '../../laberinto.js';
 import { CONFIG, CFG, est, getCeldaJugador, aplicarDanoJugador } from './estado.js';
 import { calcularCamino } from './trasgo.js';
+import {
+    getCeldaEnemigo,
+    calcularDistanciasBFS,
+    filtrarCandidatasPorDistancia,
+    detectarTrampasEnemigo,
+    crearBarraVida,
+} from './enemigoComun.js';
 import { lanzarToast } from '../../componentes/toast.js';
 
 // Filtra enemigos de tier elite
@@ -21,71 +28,24 @@ function obtenerEnemigosElite() {
 // Posición aleatoria lejos del jugador (50-80% de distancia máxima)
 function posicionInicialElite() {
     const celdaJ = getCeldaJugador();
-    const cola = [[celdaJ.fila, celdaJ.col, 0]];
-    let idx = 0;
-    const distancias = {};
-    distancias[celdaJ.fila + ',' + celdaJ.col] = 0;
-    const dirs = [
-        [-1, 0],
-        [0, 1],
-        [1, 0],
-        [0, -1],
+    const { distancias, maxDist } = calcularDistanciasBFS(celdaJ.fila, celdaJ.col);
+
+    const celdaTrasgo = est.trasgo
+        ? getCeldaEnemigo(est.trasgo, CONFIG.TAM_TRASGO)
+        : { fila: -1, col: -1 };
+
+    const excluir = [
+        [est.entradaFila, est.entradaCol],
+        [est.llaveFila, est.llaveCol],
+        [celdaTrasgo.fila, celdaTrasgo.col],
     ];
-    let maxDist = 0;
-
-    while (idx < cola.length) {
-        const actual = cola[idx++];
-        const f = actual[0],
-            c = actual[1],
-            d = actual[2];
-        if (d > maxDist) maxDist = d;
-
-        for (let i = 0; i < dirs.length; i++) {
-            const nf = f + dirs[i][0],
-                nc = c + dirs[i][1];
-            const key = nf + ',' + nc;
-            if (
-                nf >= 0 &&
-                nf < CONFIG.FILAS &&
-                nc >= 0 &&
-                nc < CONFIG.COLS &&
-                est.mapa[nf][nc] === 0 &&
-                !(key in distancias)
-            ) {
-                distancias[key] = d + 1;
-                cola.push([nf, nc, d + 1]);
-            }
-        }
-    }
-
-    // Elegir celdas a rango configurado de la distancia máxima (más lejos que el Trasgo)
-    const distMin = Math.floor(maxDist * CFG.villanoElite.posicionDistMin);
-    const distMax = Math.floor(maxDist * CFG.villanoElite.posicionDistMax);
-    const candidatas = [];
-
-    // Celda del Trasgo para evitarla
-    const trasgoF = est.trasgo
-        ? Math.floor((est.trasgo.posY + CONFIG.TAM_TRASGO / 2) / CONFIG.TAM_CELDA)
-        : -1;
-    const trasgoC = est.trasgo
-        ? Math.floor((est.trasgo.posX + CONFIG.TAM_TRASGO / 2) / CONFIG.TAM_CELDA)
-        : -1;
-
-    for (const key in distancias) {
-        const dist = distancias[key];
-        if (dist >= distMin && dist <= distMax) {
-            const partes = key.split(',');
-            const f = parseInt(partes[0]),
-                c = parseInt(partes[1]);
-            if (f % 2 === 1 && c % 2 === 1) {
-                // Evitar entrada, llave y posición del Trasgo
-                if (f === est.entradaFila && c === est.entradaCol) continue;
-                if (f === est.llaveFila && c === est.llaveCol) continue;
-                if (f === trasgoF && c === trasgoC) continue;
-                candidatas.push([f, c]);
-            }
-        }
-    }
+    const candidatas = filtrarCandidatasPorDistancia(
+        distancias,
+        maxDist,
+        CFG.villanoElite.posicionDistMin,
+        CFG.villanoElite.posicionDistMax,
+        excluir
+    );
 
     mezclar(candidatas);
     return candidatas.length > 0 ? candidatas[0] : [1, CONFIG.COLS - 2];
@@ -106,13 +66,19 @@ function iniciarVillanoElite() {
 
     est.villanoElite = {
         datos: datos,
+        vida: datos.vidaMax,
+        vidaMax: datos.vidaMax,
         posX: pos[1] * CONFIG.TAM_CELDA + (CONFIG.TAM_CELDA - CONFIG.TAM_ELITE) / 2,
         posY: pos[0] * CONFIG.TAM_CELDA + (CONFIG.TAM_CELDA - CONFIG.TAM_ELITE) / 2,
         camino: [],
         ultimoGolpe: 0,
+        ultimoGolpeTrampa: 0,
         ultimoPathfinding: 0,
+        velocidadMult: 1,
+        timerLentitud: null,
         escalaVisual: escalaVisual,
         elemento: null,
+        elementoBarraVida: null,
     };
 
     // Renderizar el villano
@@ -131,19 +97,14 @@ function renderizarVillanoElite() {
     elem.className = 'elite-laberinto elite-aparicion';
     elem.style.width = CONFIG.TAM_ELITE + 'px';
     elem.style.height = CONFIG.TAM_ELITE + 'px';
-    elem.style.transform =
-        'translate(' +
-        est.villanoElite.posX +
-        'px, ' +
-        est.villanoElite.posY +
-        'px) scale(' +
-        est.villanoElite.escalaVisual +
-        ')';
+    elem.style.transform = `translate(${est.villanoElite.posX}px, ${est.villanoElite.posY}px) scale(${est.villanoElite.escalaVisual})`;
 
     const img = document.createElement('img');
     img.src = datos.img;
     img.alt = datos.nombre;
     elem.appendChild(img);
+    est.villanoElite.elementoBarraVida = crearBarraVida(elem);
+
     est.contenedorLaberinto.appendChild(elem);
     est.villanoElite.elemento = elem;
 
@@ -163,18 +124,16 @@ export function actualizarVillanoElite() {
     if (ahora - est.villanoElite.ultimoPathfinding >= CONFIG.INTERVALO_PATHFINDING_ELITE) {
         est.villanoElite.ultimoPathfinding = ahora;
 
-        const celdaV = {
-            fila: Math.floor((est.villanoElite.posY + CONFIG.TAM_ELITE / 2) / CONFIG.TAM_CELDA),
-            col: Math.floor((est.villanoElite.posX + CONFIG.TAM_ELITE / 2) / CONFIG.TAM_CELDA),
-        };
+        const celdaV = getCeldaEnemigo(est.villanoElite, CONFIG.TAM_ELITE);
         const celdaJ = getCeldaJugador();
         est.villanoElite.camino = calcularCamino(celdaV.fila, celdaV.col, celdaJ.fila, celdaJ.col);
     }
 
-    // Velocidad escalada por atributo del enemigo
+    // Velocidad escalada por atributo del enemigo + multiplicador de lentitud
     const velocidad =
         CONFIG.VELOCIDAD_ELITE *
-        (est.villanoElite.datos.velocidad / CFG.villanoElite.velocidadReferencia);
+        (est.villanoElite.datos.velocidad / CFG.villanoElite.velocidadReferencia) *
+        est.villanoElite.velocidadMult;
 
     // Mover hacia el siguiente punto del camino
     if (est.villanoElite.camino.length > 0) {
@@ -195,15 +154,11 @@ export function actualizarVillanoElite() {
             est.villanoElite.posY += (dy / dist) * velocidad;
         }
 
-        est.villanoElite.elemento.style.transform =
-            'translate(' +
-            est.villanoElite.posX +
-            'px, ' +
-            est.villanoElite.posY +
-            'px) scale(' +
-            est.villanoElite.escalaVisual +
-            ')';
+        est.villanoElite.elemento.style.transform = `translate(${est.villanoElite.posX}px, ${est.villanoElite.posY}px) scale(${est.villanoElite.escalaVisual})`;
     }
+
+    // Trampas afectan al villano élite
+    if (detectarTrampasEnemigo('villanoElite', CONFIG.TAM_ELITE)) return;
 
     // Detectar colisión con jugador
     detectarColisionElite();
@@ -355,6 +310,9 @@ export function limpiarVillanoElite() {
     if (est.countdownElite) {
         clearInterval(est.countdownElite);
         est.countdownElite = null;
+    }
+    if (est.villanoElite && est.villanoElite.timerLentitud) {
+        clearTimeout(est.villanoElite.timerLentitud);
     }
     if (est.contenedorLaberinto) limpiarBordeAmenaza();
     est.villanoElite = null;

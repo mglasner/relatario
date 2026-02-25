@@ -115,6 +115,29 @@ function abrirAtajos(mapa, filas, cols, cantidad) {
     }
 }
 
+// Encuentra todos los dead-ends (callejones sin salida) del mapa
+// Un dead-end es una celda lógica (impar,impar) con exactamente 1 pared intermedia abierta
+export function encontrarDeadEnds(mapa, filas, cols) {
+    const resultado = [];
+    const dirs = [
+        [-1, 0],
+        [0, 1],
+        [1, 0],
+        [0, -1],
+    ];
+    for (let f = 1; f < filas - 1; f += 2) {
+        for (let c = 1; c < cols - 1; c += 2) {
+            if (mapa[f][c] !== 0) continue;
+            let salidas = 0;
+            for (const [df, dc] of dirs) {
+                if (mapa[f + df][c + dc] === 0) salidas++;
+            }
+            if (salidas === 1) resultado.push([f, c]);
+        }
+    }
+    return resultado;
+}
+
 // Busca la celda más lejana desde un punto usando BFS
 // Solo considera celdas lógicas (posiciones impares) como candidatas
 export function encontrarPuntoLejano(mapa, filas, cols, inicioF, inicioC) {

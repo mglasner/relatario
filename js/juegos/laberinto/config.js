@@ -14,9 +14,9 @@ export const CFG = {
         toastElite: '¡{nombre} ha aparecido!',
     },
     laberinto: {
-        filas: 17,
-        columnas: 17,
-        atajos: 8,
+        filas: 21,
+        columnas: 21,
+        atajos: 12,
     },
     jugador: {
         tamBase: 22,
@@ -28,8 +28,8 @@ export const CFG = {
         estaturaReferencia: 1.55,
     },
     trampasFuego: {
-        cantidadMin: 2,
-        cantidadMax: 3,
+        cantidadMin: 3,
+        cantidadMax: 4,
         distanciaMinEntrada: 3,
         periodoMin: 1500,
         periodoMax: 3500,
@@ -39,8 +39,8 @@ export const CFG = {
         danoMax: 10,
     },
     trampasLentitud: {
-        cantidadMin: 1,
-        cantidadMax: 2,
+        cantidadMin: 2,
+        cantidadMax: 3,
         distanciaMinEntrada: 3,
         periodoMin: 2000,
         periodoMax: 4000,
@@ -52,7 +52,7 @@ export const CFG = {
         duracionMax: 4000,
     },
     trasgo: {
-        delay: 5,
+        delay: 10,
         tamBase: 20,
         velocidadBase: 2,
         cooldownBaseAtaque: 10500,
@@ -64,7 +64,7 @@ export const CFG = {
         tamBase: 22,
         velocidadBase: 2,
         velocidadReferencia: 6,
-        countdown: 10,
+        countdown: 15,
         intervaloPathfinding: 500,
         posicionDistMin: 0.5,
         posicionDistMax: 0.8,
@@ -73,5 +73,20 @@ export const CFG = {
     },
     render: {
         tamCeldaBase: 30,
+    },
+    cuartosSecretos: {
+        cantidadMin: 3,
+        cantidadMax: 5,
+        tiempoEmpujar: 1000,
+        distanciaMinEntrada: 5,
+        distanciaMinLlave: 3,
+        radioProximidad: 3,
+        curacionMin: 15,
+        curacionMax: 25,
+        probabilidadFuente: 0.6,
+        toastPista: 'Sientes una brisa extraña...',
+        toastAbierto: '¡Pasaje secreto descubierto!',
+        toastFuente: 'Fuente mágica — vida restaurada',
+        toastTesoro: '¡Tesoro escondido!',
     },
 };

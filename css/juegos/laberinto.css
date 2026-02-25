@@ -49,17 +49,12 @@
         0 0 15px rgb(0 0 0 / 50%);
 }
 
-/* Paredes del laberinto */
-.laberinto-pared {
+/* Canvas del laberinto (reemplaza divs de pared individuales) */
+.laberinto-canvas {
     position: absolute;
-    background: linear-gradient(
-        135deg,
-        var(--juego-pared) 0%,
-        var(--juego-pared-medio) 50%,
-        var(--juego-pared-oscuro) 100%
-    );
-    border: 1px solid var(--juego-borde);
-    box-shadow: inset 0 0 6px rgb(0 0 0 / 40%);
+    top: 0;
+    left: 0;
+    pointer-events: none;
 }
 
 /* Trampas del laberinto */
@@ -291,7 +286,7 @@
 .trasgo-laberinto {
     position: absolute;
     z-index: 4;
-    transform: scale(1.6);
+    will-change: transform;
 }
 
 .trasgo-laberinto img {
@@ -318,6 +313,7 @@
 .elite-laberinto {
     position: absolute;
     z-index: 4;
+    will-change: transform;
 }
 
 .elite-laberinto img {
@@ -338,6 +334,18 @@
     box-shadow: 0 0 14px rgb(168 85 247 / 60%);
     animation: pulso-opacity 2s ease-in-out infinite;
     pointer-events: none;
+}
+
+/* Pulso de glow en enemigos (opacity = GPU-composited) */
+@keyframes pulso-opacity {
+    0%,
+    100% {
+        opacity: 0.4;
+    }
+
+    50% {
+        opacity: 1;
+    }
 }
 
 /* Animación de aparición */
@@ -642,6 +650,7 @@
 .jugador-laberinto {
     position: absolute;
     z-index: 5;
+    will-change: transform;
 }
 
 .jugador-laberinto img {
@@ -728,5 +737,216 @@
 @media (hover: none), (pointer: coarse) {
     .laberinto-hint {
         display: none;
+    }
+}
+
+/* --- Cuartos secretos --- */
+
+/* Pared falsa: overlay con grieta teal sobre canvas */
+.laberinto-pared-falsa {
+    position: absolute;
+    z-index: 1;
+    border: 1px solid rgb(94 234 219 / 25%);
+    background: linear-gradient(
+        150deg,
+        transparent 20%,
+        rgb(94 234 219 / 30%) 21%,
+        rgb(0 0 0 / 60%) 22%,
+        transparent 24%,
+        transparent 42%,
+        rgb(94 234 219 / 25%) 43%,
+        rgb(0 0 0 / 50%) 44%,
+        transparent 46%,
+        transparent 60%,
+        rgb(94 234 219 / 20%) 61%,
+        rgb(0 0 0 / 45%) 62%,
+        transparent 64%
+    );
+    pointer-events: none;
+    animation: grieta-brillo 2s ease-in-out infinite;
+}
+
+@keyframes grieta-brillo {
+    0%,
+    100% {
+        opacity: 0.6;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Animación al abrir la pared */
+.pared-abriendo {
+    animation: pared-desmoronar 0.6s ease-in forwards;
+    pointer-events: none;
+}
+
+@keyframes pared-desmoronar {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    40% {
+        transform: scale(1.05) rotate(1deg);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: scale(0) rotate(5deg);
+        opacity: 0;
+    }
+}
+
+/* Recompensa dentro del cuarto */
+.cuarto-recompensa {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    font-size: 1.2rem;
+}
+
+.cuarto-fuente {
+    text-shadow: 0 0 8px rgb(94 234 219 / 70%);
+    animation: flotar-recompensa 2s ease-in-out infinite;
+}
+
+.cuarto-tesoro {
+    text-shadow: 0 0 8px rgb(255 215 0 / 70%);
+    animation: flotar-recompensa 2s ease-in-out infinite;
+}
+
+@keyframes flotar-recompensa {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-3px);
+    }
+}
+
+/* Aparición de recompensa */
+.recompensa-aparecer {
+    animation: recompensa-aparecer 0.5s ease-out;
+}
+
+@keyframes recompensa-aparecer {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Recompensa recogida (reutiliza estilo de llave) */
+.recompensa-recogida {
+    animation: absorber-llave 0.5s ease-in forwards;
+    pointer-events: none;
+}
+
+/* Anillo de progreso SVG (sobre el jugador) */
+.cuarto-progreso {
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.cuarto-progreso-svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+    filter: drop-shadow(0 0 4px rgb(94 234 219 / 50%));
+}
+
+.cuarto-pista {
+    fill: none;
+    stroke: rgb(94 234 219 / 15%);
+    stroke-width: 4;
+}
+
+.cuarto-progreso-circulo {
+    fill: none;
+    stroke: #5eeadb;
+    stroke-width: 4;
+    stroke-linecap: round;
+}
+
+/* Efecto de curación flotante */
+.efecto-curacion {
+    color: #6bfc86;
+    text-shadow: 0 0 6px rgb(107 252 134 / 70%);
+}
+
+/* --- Barras de vida de enemigos --- */
+
+.barra-vida-enemigo {
+    position: absolute;
+    bottom: -6px;
+    left: 10%;
+    width: 80%;
+    height: 3px;
+    background: rgb(0 0 0 / 60%);
+    border-radius: 2px;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.barra-vida-enemigo.barra-vida-visible {
+    opacity: 1;
+}
+
+.barra-vida-enemigo-relleno {
+    height: 100%;
+    width: 100%;
+    background: #e94560;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+/* Flash al recibir daño (enemigos) */
+.enemigo-golpeado img {
+    animation: golpe-flash 0.3s ease !important;
+}
+
+/* Efecto de lentitud en enemigos */
+.enemigo-lento img {
+    filter: brightness(0.7) saturate(0.5) hue-rotate(200deg) !important;
+}
+
+/* Animación de muerte de enemigo */
+.enemigo-muerte {
+    animation: enemigo-morir 0.6s ease-in forwards;
+    pointer-events: none;
+}
+
+@keyframes enemigo-morir {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+        filter: brightness(1);
+    }
+
+    30% {
+        transform: scale(1.2);
+        filter: brightness(2);
+    }
+
+    100% {
+        transform: scale(0);
+        opacity: 0;
+        filter: brightness(3);
     }
 }

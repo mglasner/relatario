@@ -254,6 +254,21 @@ const SCHEMA_LABERINTO = {
         'estaturaReferencia',
     ],
     render: ['tamCeldaBase'],
+    cuartosSecretos: [
+        'cantidadMin',
+        'cantidadMax',
+        'tiempoEmpujar',
+        'distanciaMinEntrada',
+        'distanciaMinLlave',
+        'radioProximidad',
+        'curacionMin',
+        'curacionMax',
+        'probabilidadFuente',
+        'toastPista',
+        'toastAbierto',
+        'toastFuente',
+        'toastTesoro',
+    ],
 };
 
 const SCHEMA_LABERINTO3D = {

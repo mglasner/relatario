@@ -5,88 +5,105 @@
 
 # --- Información general del juego ---
 meta:
-    titulo: "El Laberinto"
-    itemInventario: ""
-    timeoutExito: 1500                       # ms antes de volver al pasillo tras escapar
+    titulo: 'El Laberinto'
+    itemInventario: ''
+    timeoutExito: 1500 # ms antes de volver al pasillo tras escapar
 
 # --- Textos mostrados en pantalla ---
 textos:
-    indicadorBusqueda: "Encuentra la llave"               # texto superior al entrar (icono de llave se agrega en JS)
-    indicadorLlaveObtenida: "¡Llave obtenida! Vuelve a la salida"
-    toastLlave: "¡Llave encontrada!"                     # notificación al recoger llave
-    mensajeExito: "¡Escapaste con la llave!"             # mensaje central al escapar
-    toastElite: "¡{nombre} ha aparecido!"                 # {nombre} se reemplaza por el villano
+    indicadorBusqueda: 'Encuentra la llave' # texto superior al entrar (icono de llave se agrega en JS)
+    indicadorLlaveObtenida: '¡Llave obtenida! Vuelve a la salida'
+    toastLlave: '¡Llave encontrada!' # notificación al recoger llave
+    mensajeExito: '¡Escapaste con la llave!' # mensaje central al escapar
+    toastElite: '¡{nombre} ha aparecido!' # {nombre} se reemplaza por el villano
 
 # --- Dimensiones del laberinto ---
 # El laberinto se genera aleatoriamente con estas dimensiones
 # Filas y columnas deben ser impares para que el algoritmo funcione
 laberinto:
-    filas: 17                # alto del grid (celdas)
-    columnas: 17             # ancho del grid (celdas)
-    atajos: 8                # paredes extra que se eliminan para crear rutas alternativas
+    filas: 21 # alto del grid (celdas)
+    columnas: 21 # ancho del grid (celdas)
+    atajos: 12 # paredes extra que se eliminan para crear rutas alternativas
 
 # --- Jugador dentro del laberinto ---
 jugador:
-    tamBase: 22              # px base del sprite (se escala al viewport)
-    velocidadBase: 3         # px/frame base de movimiento (se escala al viewport)
-    velocidadReferencia: 7   # atributo de velocidad que equivale a velocidadBase (Lina=7)
-    margenColision: 2        # px de tolerancia en detección de paredes
-    toleranciaEsquina: 8     # px de corner-sliding para girar en esquinas suavemente
-    escalaVisualBase: 1.45   # escala visual para estatura de referencia
+    tamBase: 22 # px base del sprite (se escala al viewport)
+    velocidadBase: 3 # px/frame base de movimiento (se escala al viewport)
+    velocidadReferencia: 7 # atributo de velocidad que equivale a velocidadBase (Lina=7)
+    margenColision: 2 # px de tolerancia en detección de paredes
+    toleranciaEsquina: 8 # px de corner-sliding para girar en esquinas suavemente
+    escalaVisualBase: 1.45 # escala visual para estatura de referencia
     estaturaReferencia: 1.55 # estatura (m) que produce escala 1.45x (Lina=1.55)
 
 # --- Trampas de fuego 🔥 ---
 # Casillas que parpadean entre activa/inactiva y hacen daño al pisar
 trampasFuego:
-    cantidadMin: 2           # mínimo de trampas generadas
-    cantidadMax: 3           # máximo de trampas generadas
-    distanciaMinEntrada: 3   # distancia Manhattan mínima desde la entrada (zona segura)
-    periodoMin: 1500         # ms — ciclo más rápido activa↔inactiva
-    periodoMax: 3500         # ms — ciclo más lento activa↔inactiva
-    desfaseMax: 3000         # ms — desfase aleatorio para que no parpadeen sincronizadas
-    cooldown: 1000           # ms entre golpes consecutivos de la misma trampa
-    danoMin: 5               # daño mínimo por activación
-    danoMax: 10              # daño máximo por activación
+    cantidadMin: 3 # mínimo de trampas generadas
+    cantidadMax: 4 # máximo de trampas generadas
+    distanciaMinEntrada: 3 # distancia Manhattan mínima desde la entrada (zona segura)
+    periodoMin: 1500 # ms — ciclo más rápido activa↔inactiva
+    periodoMax: 3500 # ms — ciclo más lento activa↔inactiva
+    desfaseMax: 3000 # ms — desfase aleatorio para que no parpadeen sincronizadas
+    cooldown: 1000 # ms entre golpes consecutivos de la misma trampa
+    danoMin: 5 # daño mínimo por activación
+    danoMax: 10 # daño máximo por activación
 
 # --- Trampas de lentitud 🕸️ ---
 # Telarañas que reducen la velocidad del jugador temporalmente
 trampasLentitud:
-    cantidadMin: 1           # mínimo de trampas generadas
-    cantidadMax: 2           # máximo de trampas generadas
-    distanciaMinEntrada: 3   # distancia Manhattan mínima desde la entrada
-    periodoMin: 2000         # ms — ciclo más rápido activa↔inactiva
-    periodoMax: 4000         # ms — ciclo más lento activa↔inactiva
-    desfaseMax: 3000         # ms — desfase aleatorio
-    cooldown: 500            # ms entre activaciones consecutivas
-    reduccionMin: 0.3        # reducción mínima de velocidad (30%)
-    reduccionMax: 0.6        # reducción máxima de velocidad (60%)
-    duracionMin: 3000        # ms — duración mínima del efecto de lentitud
-    duracionMax: 4000        # ms — duración máxima del efecto de lentitud
+    cantidadMin: 2 # mínimo de trampas generadas
+    cantidadMax: 3 # máximo de trampas generadas
+    distanciaMinEntrada: 3 # distancia Manhattan mínima desde la entrada
+    periodoMin: 2000 # ms — ciclo más rápido activa↔inactiva
+    periodoMax: 4000 # ms — ciclo más lento activa↔inactiva
+    desfaseMax: 3000 # ms — desfase aleatorio
+    cooldown: 500 # ms entre activaciones consecutivas
+    reduccionMin: 0.3 # reducción mínima de velocidad (30%)
+    reduccionMax: 0.6 # reducción máxima de velocidad (60%)
+    duracionMin: 3000 # ms — duración mínima del efecto de lentitud
+    duracionMax: 4000 # ms — duración máxima del efecto de lentitud
 
 # --- Trasgo 👹 (enemigo esbirro) ---
 # Persigue al jugador con pathfinding BFS
 trasgo:
-    delay: 5                 # segundos de exploración libre antes de que aparezca
-    tamBase: 20              # px base del sprite
-    velocidadBase: 2         # px/frame base de movimiento
+    delay: 10 # segundos de exploración libre antes de que aparezca
+    tamBase: 20 # px base del sprite
+    velocidadBase: 2 # px/frame base de movimiento
     cooldownBaseAtaque: 10500 # ms base de cooldown, dividido por velAtaque del enemigo
     intervaloPathfinding: 500 # ms entre recálculos de ruta BFS
-    posicionDistMin: 0.4     # aparece a mínimo 40% de la distancia máxima desde la entrada
-    posicionDistMax: 0.7     # aparece a máximo 70% de la distancia máxima
+    posicionDistMin: 0.4 # aparece a mínimo 40% de la distancia máxima desde la entrada
+    posicionDistMax: 0.7 # aparece a máximo 70% de la distancia máxima
 
 # --- Villano Élite ⚔️ (enemigo de tier alto) ---
 # Aparece tras un countdown y persigue al jugador
 villanoElite:
-    tamBase: 22              # px base del sprite
-    velocidadBase: 2         # px/frame base de movimiento
-    velocidadReferencia: 6   # atributo de velocidad que equivale a velocidadBase
-    countdown: 10            # segundos del countdown antes de aparecer (empieza tras el delay del trasgo)
+    tamBase: 22 # px base del sprite
+    velocidadBase: 2 # px/frame base de movimiento
+    velocidadReferencia: 6 # atributo de velocidad que equivale a velocidadBase
+    countdown: 15 # segundos del countdown antes de aparecer (empieza tras el delay del trasgo)
     intervaloPathfinding: 500 # ms entre recálculos de ruta BFS
-    posicionDistMin: 0.5     # aparece a mínimo 50% de la distancia máxima desde el jugador
-    posicionDistMax: 0.8     # aparece a máximo 80% de la distancia máxima
-    escalaVisualBase: 1.45   # escala visual para estatura de referencia
+    posicionDistMin: 0.5 # aparece a mínimo 50% de la distancia máxima desde el jugador
+    posicionDistMax: 0.8 # aparece a máximo 80% de la distancia máxima
+    escalaVisualBase: 1.45 # escala visual para estatura de referencia
     estaturaReferencia: 1.55 # estatura (m) que produce escala 1.45x
 
 # --- Renderizado ---
 render:
-    tamCeldaBase: 30         # px base por celda (se escala al viewport en móvil/desktop)
+    tamCeldaBase: 30 # px base por celda (se escala al viewport en móvil/desktop)
+
+# --- Cuartos secretos 🚪 ---
+# Dead-ends sellados tras paredes falsas con recompensas ocultas
+cuartosSecretos:
+    cantidadMin: 3 # mínimo de cuartos por partida
+    cantidadMax: 5 # máximo de cuartos por partida
+    tiempoEmpujar: 1000 # ms empujando contra pared falsa para abrirla
+    distanciaMinEntrada: 5 # Manhattan mínima desde entrada
+    distanciaMinLlave: 3 # Manhattan mínima desde llave
+    radioProximidad: 3 # celdas lógicas para pista "brisa"
+    curacionMin: 15 # % vida restaurada (mín)
+    curacionMax: 25 # % vida restaurada (máx)
+    probabilidadFuente: 0.6 # 60% fuente mágica, 40% tesoro
+    toastPista: 'Sientes una brisa extraña...'
+    toastAbierto: '¡Pasaje secreto descubierto!'
+    toastFuente: 'Fuente mágica — vida restaurada'
+    toastTesoro: '¡Tesoro escondido!'

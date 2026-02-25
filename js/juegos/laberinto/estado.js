@@ -40,6 +40,7 @@ export const est = {
     entradaCol: 0,
     trampas: [],
     trampasLentas: [],
+    cuartosSecretos: [],
     trasgo: null,
     villanoElite: null,
     countdownElite: null,
@@ -57,6 +58,8 @@ export const est = {
     activo: false,
     teclas: {},
     // Referencias DOM (se crean dinámicamente)
+    canvasMapa: null,
+    ctxMapa: null,
     pantalla: null,
     contenedorLaberinto: null,
     elementoJugador: null,

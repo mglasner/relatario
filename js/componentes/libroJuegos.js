@@ -20,9 +20,9 @@ const JUEGOS = {
         parrafos: [
             '¡Bienvenido al laberinto más enredado de todos! Sus pasillos oscuros esconden una llave mágica que necesitas para escapar.',
             'Camina con cuidado entre las paredes sombrías. Dicen que algunos aventureros se perdieron durante horas buscando la salida...',
-            '¡Cuidado! Si te cruzas con enemigos podrías perder vida.',
+            '¡Cuidado! Si te cruzas con enemigos podrías perder vida. Pero dicen que algunas paredes guardan secretos...',
         ],
-        tip: 'Explora cada rincón. La llave podría estar donde menos lo esperas.',
+        tip: 'Explora cada rincón. Si sientes una brisa extraña, ¡empuja contra la pared!',
     },
     laberinto3d: {
         nombre: 'El Laberinto 3D',
