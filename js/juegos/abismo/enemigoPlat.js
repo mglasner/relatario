@@ -144,27 +144,28 @@ export function iniciarEnemigos(spawnsEnemigos, spawnBoss) {
 }
 
 // Movimiento horizontal con detección de paredes y precipicios.
-// timerBloqueoInversion evita que el enemigo oscile izquierda/derecha
+// COOLDOWN_INVERSION evita que el enemigo oscile izquierda/derecha
 // en plataformas angostas o bordes con vacío a ambos lados.
+const COOLDOWN_INVERSION = 8; // frames de espera entre inversiones de dirección
+
+function girarDireccion(e) {
+    e.direccion *= -1;
+    e.timerBloqueoInversion = COOLDOWN_INVERSION;
+}
+
 function moverPatrulla(e, enPiso) {
     const nuevaX = resolverColisionX(e.x, e.y, e.ancho, e.alto, e.vx, enPiso);
     if (nuevaX === e.x && e.vx !== 0) {
-        // Chocó contra una pared: girar (con cooldown anti-oscilación)
-        if (e.timerBloqueoInversion <= 0) {
-            e.direccion *= -1;
-            e.timerBloqueoInversion = 8;
-        }
+        // Chocó contra una pared: girar con cooldown
+        if (e.timerBloqueoInversion <= 0) girarDireccion(e);
     } else {
         const bordeX = e.direccion > 0 ? nuevaX + e.ancho + 2 : nuevaX - 2;
         const pieY = e.y + e.alto + 2;
         if (!esSolido(bordeX, pieY) && enPiso) {
-            // Precipicio adelante: girar sin mover (con cooldown anti-oscilación)
-            // Con timer activo simplemente no moverse — el saltarín saltará por su
-            // propio timer; el boss nunca arriesga caer al abismo
-            if (e.timerBloqueoInversion <= 0) {
-                e.direccion *= -1;
-                e.timerBloqueoInversion = 8;
-            }
+            // Precipicio adelante: girar sin mover (con cooldown).
+            // Con timer activo no moverse — el saltarín escapa por su propio timer;
+            // el boss nunca arriesga caer al abismo.
+            if (e.timerBloqueoInversion <= 0) girarDireccion(e);
         } else {
             e.x = nuevaX;
         }

@@ -3,6 +3,7 @@
 
 import { crearElemento } from '../utils.js';
 import { PERSONAJES } from '../personajes.js';
+import { ENEMIGOS } from '../enemigos.js';
 import { crearLibro, generarPortada } from './libro.js';
 import { CFG as CFG_MEMORICE } from '../juegos/memorice/config.js';
 
@@ -95,6 +96,17 @@ const JUEGOS = {
             },
         ],
         tip: 'Piensa antes de mover. Protege a tu rey y busca debilidades en el rival.',
+    },
+    duelo: {
+        nombre: 'El Duelo',
+        img: 'assets/img/juegos/duelo.webp',
+        accent: '#a050dc',
+        parrafos: [
+            '\u00a1Un combate cara a cara! Elige tu luchador y enfrenta a un rival en una arena m\u00e1gica. Golpes r\u00e1pidos, ataques poderosos, bloqueos y esquivas: todo vale en este duelo.',
+            'Puedes jugar como h\u00e9roe o como villano. Elige tu bando, escoge a tu luchador favorito y desaf\u00eda a un oponente del bando contrario.',
+            'Cada luchador tiene sus propias estad\u00edsticas y ataques. Los villanos m\u00e1s temibles son m\u00e1s agresivos y peligrosos. \u00bfPodr\u00e1s derrotar a un villano pesadilla?',
+        ],
+        tip: 'Bloquea manteniendo la direcci\u00f3n opuesta al rival. Ag\u00e1chate para esquivar ataques altos. Alterna golpes r\u00e1pidos y fuertes.',
     },
 };
 
@@ -306,10 +318,182 @@ function crearModalHeroe(onConfirmar) {
 }
 
 // Juegos que no usan el modal de selección de héroe (eligen dentro del juego)
-const JUEGOS_SIN_MODAL_HEROE = { ajedrez: true };
+const JUEGOS_SIN_MODAL_HEROE = { ajedrez: true, duelo: true };
+
+// --- Modal de selección dual para El Duelo ---
+
+function crearModalDuelo(onConfirmar) {
+    const overlay = crearElemento('div', 'modal-heroe-overlay oculto');
+    const panel = crearElemento('div', 'modal-heroe duelo-modal-seleccion');
+
+    // Paso 1: Elegir bando
+    const tituloBando = crearElemento('h3', 'modal-heroe-titulo', 'Elige tu bando');
+    panel.appendChild(tituloBando);
+    panel.appendChild(crearElemento('div', 'libro-ornamento'));
+
+    let bandoElegido = null; // 'heroe' | 'villano'
+    let luchadorElegido = null;
+    let oponenteElegido = null;
+    let pasoActual = 'bando'; // 'bando' | 'luchador' | 'oponente'
+
+    // Contenedor de bandos
+    const bandos = crearElemento('div', 'duelo-bandos');
+    const btnHeroe = crearElemento('button', 'duelo-bando-btn', 'H\u00e9roe');
+    btnHeroe.type = 'button';
+    btnHeroe.addEventListener('click', function () {
+        bandoElegido = 'heroe';
+        mostrarPasoLuchador();
+    });
+    const btnVillano = crearElemento('button', 'duelo-bando-btn duelo-bando-villano', 'Villano');
+    btnVillano.type = 'button';
+    btnVillano.addEventListener('click', function () {
+        bandoElegido = 'villano';
+        mostrarPasoLuchador();
+    });
+    bandos.appendChild(btnHeroe);
+    bandos.appendChild(btnVillano);
+    panel.appendChild(bandos);
+
+    // Contenedor selector (reutilizado para luchador y oponente)
+    const selectorContenedor = crearElemento('div', 'duelo-selector oculto');
+    const tituloSelector = crearElemento('h3', 'modal-heroe-titulo', '');
+    const selectorGrid = crearElemento('div', 'selector-heroe');
+    selectorContenedor.appendChild(tituloSelector);
+    selectorContenedor.appendChild(crearElemento('div', 'libro-ornamento'));
+    selectorContenedor.appendChild(selectorGrid);
+    panel.appendChild(selectorContenedor);
+
+    // Acciones
+    const acciones = crearElemento('div', 'modal-heroe-acciones');
+    const btnVolver = crearElemento('button', 'modal-heroe-btn-cancelar', 'Volver');
+    btnVolver.type = 'button';
+    btnVolver.addEventListener('click', function () {
+        if (pasoActual === 'oponente') {
+            mostrarPasoLuchador();
+        } else if (pasoActual === 'luchador') {
+            mostrarPasoBando();
+        } else {
+            cerrar();
+        }
+    });
+    const btnConfirmar = crearElemento('button', 'libro-juego-btn-jugar', '\u00a1Pelear!');
+    btnConfirmar.type = 'button';
+    btnConfirmar.disabled = true;
+    btnConfirmar.addEventListener('click', function () {
+        if (!luchadorElegido || !oponenteElegido) return;
+        const jugadorEsVillano = bandoElegido === 'villano';
+        const oponente = (jugadorEsVillano ? PERSONAJES : ENEMIGOS)[oponenteElegido];
+        onConfirmar('duelo', luchadorElegido, null, {
+            oponente: oponente,
+            jugadorEsVillano: jugadorEsVillano,
+        });
+    });
+    acciones.appendChild(btnVolver);
+    acciones.appendChild(btnConfirmar);
+    panel.appendChild(acciones);
+
+    overlay.appendChild(panel);
+
+    // Cerrar al click fuera
+    overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) cerrar();
+    });
+
+    function poblarSelector(coleccion, onSeleccionar) {
+        selectorGrid.innerHTML = '';
+        Object.keys(coleccion).forEach(function (nombre) {
+            const ent = coleccion[nombre];
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'selector-heroe-btn';
+            btn.title = nombre;
+
+            const avatar = document.createElement('img');
+            avatar.src = ent.img;
+            avatar.alt = nombre;
+            avatar.className = 'selector-heroe-avatar';
+            avatar.loading = 'lazy';
+            btn.appendChild(avatar);
+            btn.appendChild(crearElemento('span', 'selector-heroe-nombre', nombre));
+
+            btn.addEventListener('click', function () {
+                selectorGrid.querySelectorAll('.selector-heroe-btn').forEach(function (b) {
+                    b.classList.remove('selector-heroe-activo');
+                });
+                btn.classList.add('selector-heroe-activo');
+                onSeleccionar(nombre);
+            });
+
+            selectorGrid.appendChild(btn);
+        });
+    }
+
+    function mostrarPasoBando() {
+        pasoActual = 'bando';
+        bandoElegido = null;
+        luchadorElegido = null;
+        oponenteElegido = null;
+        bandos.classList.remove('oculto');
+        selectorContenedor.classList.add('oculto');
+        btnConfirmar.disabled = true;
+        tituloBando.textContent = 'Elige tu bando';
+    }
+
+    function mostrarPasoLuchador() {
+        pasoActual = 'luchador';
+        luchadorElegido = null;
+        oponenteElegido = null;
+        bandos.classList.add('oculto');
+        selectorContenedor.classList.remove('oculto');
+        btnConfirmar.disabled = true;
+
+        const esVillano = bandoElegido === 'villano';
+        tituloSelector.textContent = esVillano ? 'Elige tu villano' : 'Elige tu h\u00e9roe';
+        const coleccion = esVillano ? ENEMIGOS : PERSONAJES;
+
+        poblarSelector(coleccion, function (nombre) {
+            luchadorElegido = nombre;
+            mostrarPasoOponente();
+        });
+    }
+
+    function mostrarPasoOponente() {
+        pasoActual = 'oponente';
+        oponenteElegido = null;
+        btnConfirmar.disabled = true;
+
+        const esVillano = bandoElegido === 'villano';
+        tituloSelector.textContent = esVillano
+            ? 'Elige tu rival h\u00e9roe'
+            : 'Elige tu rival villano';
+        const oponenteColeccion = esVillano ? PERSONAJES : ENEMIGOS;
+
+        poblarSelector(oponenteColeccion, function (nombre) {
+            oponenteElegido = nombre;
+            btnConfirmar.disabled = false;
+        });
+    }
+
+    function abrir() {
+        mostrarPasoBando();
+        overlay.classList.remove('oculto');
+    }
+
+    function cerrar() {
+        overlay.classList.add('oculto');
+    }
+
+    return { overlay: overlay, abrir: abrir, cerrar: cerrar };
+}
 
 // Genera la página de detalle de un juego: descripción + botón Jugar
-function generarDetalleJuego(nombre, _tabAnterior, abrirModalHeroe, onJugarDirecto) {
+function generarDetalleJuego(
+    nombre,
+    _tabAnterior,
+    abrirModalHeroe,
+    onJugarDirecto,
+    abrirModalDuelo
+) {
     const entidades = adaptarJuegos();
     const datos = entidades[nombre];
     const juego = JUEGOS[datos.juegoId];
@@ -320,7 +504,9 @@ function generarDetalleJuego(nombre, _tabAnterior, abrirModalHeroe, onJugarDirec
     const btnJugar = crearElemento('button', 'libro-juego-btn-jugar', 'Jugar');
     btnJugar.type = 'button';
     btnJugar.addEventListener('click', function () {
-        if (JUEGOS_SIN_MODAL_HEROE[datos.juegoId]) {
+        if (datos.juegoId === 'duelo') {
+            abrirModalDuelo();
+        } else if (JUEGOS_SIN_MODAL_HEROE[datos.juegoId]) {
             // Iniciar directo sin modal de héroe (el juego maneja la selección)
             const primerHeroe = Object.keys(PERSONAJES)[0];
             onJugarDirecto(datos.juegoId, primerHeroe, null);
@@ -376,10 +562,21 @@ export function crearLibroJuegos(contenedor, onJugar) {
     // Modal de selección de héroe (se crea una vez, se reutiliza)
     const modalHeroe = crearModalHeroe(onJugar);
 
+    // Modal de selección dual para El Duelo
+    const modalDuelo = crearModalDuelo(function (juegoId, nombreLuchador, dificultad, opciones) {
+        onJugar(juegoId, nombreLuchador, dificultad, opciones);
+    });
+
     const { libro, manejarTecladoLibro } = crearLibro({
         entidades: entidades,
         generarDetalle: function (nombre, tabAnterior) {
-            return generarDetalleJuego(nombre, tabAnterior, modalHeroe.abrir, onJugar);
+            return generarDetalleJuego(
+                nombre,
+                tabAnterior,
+                modalHeroe.abrir,
+                onJugar,
+                modalDuelo.abrir
+            );
         },
         claseRaiz: 'libro-juegos',
         titulo: 'Libro de Juegos',
@@ -410,8 +607,9 @@ export function crearLibroJuegos(contenedor, onJugar) {
         },
     });
 
-    // Montar el modal de héroe dentro del libro
+    // Montar los modales dentro del libro
     libro.appendChild(modalHeroe.overlay);
+    libro.appendChild(modalDuelo.overlay);
 
     return {
         libro: libro,
