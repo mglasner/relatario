@@ -677,17 +677,20 @@ export function renderizarParticulas(ctx, camaraX, camaraY, anchoCanvas, altoCan
         } else if (p.tipo === 'petalo') {
             // Pétalo: elipse alargada rotada según dirección de movimiento
             const angPetalo = Math.atan2(p.vy, p.vx);
+            const escalaP = 1 + 0.28 * Math.sin(p.vida * 0.12 + p.vidaMax * 0.43);
+            const tamP = p.tamano * escalaP;
             ctx.save();
             ctx.translate(px, py);
             ctx.rotate(angPetalo);
             ctx.beginPath();
-            ctx.ellipse(0, 0, p.tamano * 1.4, p.tamano * 0.55, 0, 0, TAU);
+            ctx.ellipse(0, 0, tamP * 1.4, tamP * 0.55, 0, 0, TAU);
             ctx.fill();
             ctx.restore();
         } else if (p.tipo === 'hoja') {
             // Hoja: óvalo puntiagudo con bezier, orientado según movimiento
             const angHoja = Math.atan2(p.vy, p.vx) + Math.PI * 0.5;
-            const rh = p.tamano;
+            const escalaH = 1 + 0.28 * Math.sin(p.vida * 0.12 + p.vidaMax * 0.43);
+            const rh = p.tamano * escalaH;
             ctx.save();
             ctx.translate(px, py);
             ctx.rotate(angHoja);

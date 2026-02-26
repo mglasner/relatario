@@ -541,18 +541,21 @@ export function renderizarParticulas(ctx, zBuffer, jugadorX, jugadorY, angulo) {
         } else if (p.tipo === 'petalo-3d') {
             // Pétalo 3D: elipse alargada con rotación en pantalla
             const angP = climaFrame3D * 0.03 + p.vidaMax * 0.73;
+            const escalaP3 = 1 + 0.28 * Math.sin(p.vida * 0.12 + p.vidaMax * 0.43);
+            const tamP3 = tamano * escalaP3;
             ctx.save();
             ctx.translate(screenX, screenY);
             ctx.rotate(angP);
             ctx.beginPath();
-            ctx.ellipse(0, 0, tamano * 1.4, tamano * 0.55, 0, 0, Math.PI * 2);
+            ctx.ellipse(0, 0, tamP3 * 1.4, tamP3 * 0.55, 0, 0, Math.PI * 2);
             ctx.fill();
             ctx.restore();
             _lastColorKey = -1; // restore() revierte fillStyle
         } else if (p.tipo === 'hoja-3d') {
             // Hoja 3D: óvalo puntiagudo con bezier
             const angH = climaFrame3D * 0.025 + p.vidaMax * 0.51;
-            const rh3 = tamano;
+            const escalaH3 = 1 + 0.28 * Math.sin(p.vida * 0.12 + p.vidaMax * 0.43);
+            const rh3 = tamano * escalaH3;
             ctx.save();
             ctx.translate(screenX, screenY);
             ctx.rotate(angH);

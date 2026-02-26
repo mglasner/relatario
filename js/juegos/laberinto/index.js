@@ -244,17 +244,20 @@ function loopClimaLab() {
         } else if (p.tipo === 'petalo') {
             // Pétalo: elipse alargada rotada según dirección de movimiento
             const angPetalo = Math.atan2(p.vy, p.vx);
+            const escalaP = 1 + 0.28 * Math.sin(p.vida * 0.12 + p.vidaMax * 0.43);
+            const tamP = p.tam * escalaP;
             climaCtx.save();
             climaCtx.translate(p.x, p.y);
             climaCtx.rotate(angPetalo);
             climaCtx.beginPath();
-            climaCtx.ellipse(0, 0, p.tam * 1.4, p.tam * 0.55, 0, 0, Math.PI * 2);
+            climaCtx.ellipse(0, 0, tamP * 1.4, tamP * 0.55, 0, 0, Math.PI * 2);
             climaCtx.fill();
             climaCtx.restore();
         } else if (p.tipo === 'hoja') {
             // Hoja: óvalo puntiagudo con bezier, orientado según movimiento
             const angHoja = Math.atan2(p.vy, p.vx) + Math.PI * 0.5;
-            const rh = p.tam;
+            const escalaH = 1 + 0.28 * Math.sin(p.vida * 0.12 + p.vidaMax * 0.43);
+            const rh = p.tam * escalaH;
             climaCtx.save();
             climaCtx.translate(p.x, p.y);
             climaCtx.rotate(angHoja);
