@@ -16,7 +16,7 @@
 | 10 | [Editor de niveles para El Abismo](#10-editor-de-niveles-para-el-abismo) | Alta | [ ] |
 | 11 | [Ajedrez local (heroes vs villanos)](#11-ajedrez-local-heroes-vs-villanos) | Alta | [x] |
 | 12 | [Modo Historia / Campana](#12-modo-historia-cooperativo-campana) | Muy Alta | [ ] |
-| 13 | [Ajedrez online (multidispositivo)](#13-ajedrez-online-multidispositivo) | Muy Alta | [ ] |
+| 13 | [Multijugador online (turnos)](#13-multijugador-online-para-juegos-por-turnos) | Alta | [ ] |
 | 14 | [Sistema de autenticacion y backend](#14-sistema-de-autenticacion-y-backend) | Muy Alta | [ ] |
 | 15 | [Fix deteccion de stomp en El Abismo](#15-fix-deteccion-de-stomp-en-el-abismo) | Baja | [x] |
 | 16 | [Particulas con colision al suelo en El Abismo](#16-particulas-con-colision-al-suelo-en-el-abismo) | Baja | [x] |
@@ -233,22 +233,56 @@ Requiere un sistema de progresion persistente, integracion con el sistema de cue
 
 ---
 
-## 13. Ajedrez online (multidispositivo)
+## 13. Multijugador online para juegos por turnos
 
-**Dificultad: Muy Alta** | Archivos: los del ajedrez local + `js/juegos/ajedrez/online.js`, backend nuevo
+**Dificultad: Alta** | Archivos: `js/juegos/ajedrez/online.js` (nuevo), `js/juegos/memorice/online.js` (nuevo), `js/componentes/salaOnline.js` (nuevo)
 
-Extension del ajedrez local (item 11) para jugar desde dispositivos distintos en tiempo real. Requiere el item 11 completado como prerequisito.
+Sistema multijugador para 2 jugadores en dispositivos distintos, enfocado en juegos por turnos. Sin backend propio: usa Firebase Realtime Database como relay (gratis hasta 100 conexiones simultaneas, SDK client-side compatible con GitHub Pages).
 
-- **Crear partida**: un jugador crea una sala y recibe un codigo de 4 letras (ej: "ABCD")
-- **Unirse**: el otro jugador ingresa el codigo para conectarse a la sala
-- **Sincronizacion**: cada movimiento se envia al servidor y se replica en el otro dispositivo. El tablero muestra siempre la perspectiva del jugador (heroes abajo, villanos arriba, o viceversa)
-- **Reconexion**: si un jugador se desconecta, tiene 60 segundos para reconectarse antes de perder por abandono
-- **Backend**: WebSocket server minimo (Node.js o similar) que administra salas, valida movimientos y retransmite estado. Puede hostearse en un servicio gratuito (Railway, Fly.io, etc.)
-- **Sin cuenta requerida**: las partidas son efimeras, no requieren autenticacion. Solo un codigo de sala
+### Prerequisitos
 
-Es el primer feature que rompe el modelo "todo client-side" de El Relatario, pero la complejidad del backend es minima (solo relay de movimientos + validacion).
+- Ajedrez local completado (#11) [x]
+- Niveles de dificultad en Memorice completado (#4) [x]
 
-**Por que es divertido**: Permite jugar con primos, amigos o familiares que no estan en la misma casa. "Te mando el codigo y jugamos" es una experiencia social nueva para El Relatario.
+### Arquitectura
+
+- **Infraestructura**: Firebase Realtime Database (BaaS). Sin servidor propio, sin cambios al hosting en GitHub Pages. El SDK de Firebase (~50KB) se consume directamente desde el cliente
+- **Matchmaking**: codigo de sala de 4 letras. Jugador A crea sala → recibe codigo → lo comparte → Jugador B ingresa codigo → conectados. Sin cuentas, sin lobby, sin autenticacion
+- **Sincronizacion**: solo se envian acciones/movimientos (~50 bytes por mensaje, cada varios segundos). Ambos clientes tienen la logica completa del juego y aplican las acciones recibidas. No se sincroniza estado completo
+- **Reconexion**: si un jugador se desconecta, 60 segundos para reconectarse antes de perder por abandono
+- **Latencia**: tolerancia alta (500ms+ esta bien para turnos)
+
+### Fase 1: Ajedrez online
+
+El ajedrez local ya tiene toda la logica de reglas, tablero y renderizado. Solo falta la capa de red:
+
+- **Nuevo modo**: "Online" como tercera opcion junto a "vs IA" y "vs Humano" en el selector de modo
+- **Sala**: UI para crear/unirse a sala con codigo de 4 letras
+- **Perspectiva**: cada jugador ve el tablero desde su lado (heroes abajo)
+- **Sincronizacion**: enviar movimiento (`{desde: "e2", hasta: "e4"}`) al otro jugador via Firebase
+- **Turno**: indicador claro de "Tu turno" / "Esperando rival..."
+- **Fin de partida**: jaque mate, tablas, abandono o timeout por desconexion
+
+### Fase 2: Memorice cooperativo online
+
+Reutiliza toda la infraestructura Firebase de Fase 1:
+
+- **Modo cooperativo**: ambos jugadores ven el mismo tablero y se turnan volteando cartas
+- **Sincronizacion**: enviar accion (`{tipo: "voltear", carta: 7}`) al otro jugador
+- **Turnos compartidos**: los intentos se comparten (ambos contribuyen al limite de 25)
+- **Victoria conjunta**: ambos ganan si completan todos los pares
+
+### Componente compartido: sala online
+
+`js/componentes/salaOnline.js` — modulo reutilizable para cualquier juego por turnos:
+
+- Crear sala (generar codigo, registrar en Firebase)
+- Unirse a sala (validar codigo, conectar)
+- Enviar/recibir acciones (pub/sub sobre la sala)
+- Detectar desconexion (heartbeat)
+- UI de espera ("Esperando rival...")
+
+**Por que es divertido**: "Te mando el codigo y jugamos" — permite jugar con primos, amigos o familiares que no estan en la misma casa. Es la primera experiencia social de El Relatario, sin friccion de cuentas ni instalacion.
 
 ---
 
