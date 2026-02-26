@@ -438,19 +438,30 @@ export function emitirClima(estacion, anchoCanvas, camaraX, camaraY) {
             });
         }
     } else if (estacion === 'primavera') {
-        // Pétalos: cada 3 frames
-        if (frameCount % 3 === 0) {
+        // Pétalos: cada 4 frames — colores saturados rosados/fucsia, tamaño mayor
+        if (frameCount % 4 === 0) {
+            // Alternar entre rosa fucsia, cerezo y lavanda para que se vean claramente como pétalos
+            const paletas = [
+                [230, 80, 130],   // rosa fucsia
+                [220, 60, 110],   // cerezo intenso
+                [200, 80, 160],   // magenta-lavanda
+                [245, 110, 150],  // rosa coral
+            ];
+            const c = paletas[Math.floor(Math.random() * paletas.length)];
+            // vidaMax variable sirve como semilla de fase para la oscilación
+            const vidaMax = 140 + Math.floor(Math.random() * 80);
             emitir({
                 x: camaraX + Math.random() * anchoCanvas,
                 y: camaraY - 4,
-                vx: Math.sin(frameCount * 0.03) * 0.6,
-                vy: 0.3 + Math.random() * 0.25,
-                vida: 160 + Math.floor(Math.random() * 80),
-                tamano: 2 + Math.random() * 2,
-                r: 247,
-                g: 197 + Math.floor(Math.random() * 30),
-                b: 213,
-                alpha: 0.7,
+                // Deriva lateral inicial variada: algunos van a la izquierda, otros a la derecha
+                vx: (Math.random() - 0.5) * 1.2,
+                vy: 0.5 + Math.random() * 0.5,
+                vida: vidaMax,
+                tamano: 3.5 + Math.random() * 2.5,
+                r: c[0],
+                g: c[1],
+                b: c[2],
+                alpha: 0.85,
                 tipo: 'petalo',
             });
         }
@@ -568,7 +579,8 @@ export function actualizarParticulas() {
 
         // Oscilacion horizontal para pétalos y polvo de clima
         if (p.tipo === 'petalo') {
-            p.vx = Math.sin(frameCount * 0.03 + p.x * 0.01) * 0.6;
+            // Fase única por partícula usando vidaMax como semilla → cada pétalo oscila distinto
+            p.vx = Math.sin(frameCount * 0.04 + p.vidaMax * 0.27) * 1.1;
         } else if (p.tipo === 'polvo-clima') {
             p.vy = Math.sin(frameCount * 0.02 + p.x * 0.05) * 0.15;
         }

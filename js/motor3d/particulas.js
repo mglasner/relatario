@@ -280,17 +280,19 @@ function emitirClima3D(estacion, jugadorX, jugadorY) {
                 p.x = jugadorX + Math.cos(ang) * dist;
                 p.y = jugadorY + Math.sin(ang) * dist;
                 p.z = 0.8 + Math.random() * 0.2;
-                p.vx = Math.sin(climaFrame3D * 0.03) * 0.001;
-                p.vy = Math.cos(climaFrame3D * 0.03) * 0.001;
+                p.vx = (Math.random() - 0.5) * 0.002;
+                p.vy = (Math.random() - 0.5) * 0.002;
                 p.vz = -0.004; // Cae lentamente
                 p.vida = 120 + Math.floor(Math.random() * 60);
                 p.vidaMax = p.vida;
                 p.tipo = 'petalo-3d';
-                p.r = 247;
-                p.g = 197 + Math.floor(Math.random() * 30);
-                p.b = 213;
-                p.alpha = 0.7;
-                p.tamano = 2 + Math.random() * 1;
+                // Colores rosados saturados (no blancos)
+                const pIdx = Math.floor(Math.random() * 4);
+                p.r = [230, 220, 200, 245][pIdx];
+                p.g = [80, 60, 80, 110][pIdx];
+                p.b = [130, 110, 160, 150][pIdx];
+                p.alpha = 0.85;
+                p.tamano = 3 + Math.random() * 1.5;
             }
         }
     } else if (estacion === 'verano') {
@@ -410,7 +412,8 @@ export function actualizarParticulas(ahora, antorchas, jugadorX, jugadorY, zona,
 
         // Oscilación horizontal para pétalos y hojas 3D
         if (p.tipo === 'petalo-3d') {
-            p.vx = Math.sin(climaFrame3D * 0.03 + p.x) * 0.001;
+            // Fase única por partícula usando vidaMax como semilla
+            p.vx = Math.sin(climaFrame3D * 0.04 + p.vidaMax * 0.27) * 0.002;
         } else if (p.tipo === 'hoja-3d') {
             p.vx = Math.sin(climaFrame3D * 0.04 + p.y) * 0.003;
         } else if (p.tipo === 'mota-3d') {

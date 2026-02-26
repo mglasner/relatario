@@ -70,20 +70,28 @@ function emitirParticulasClimaLab(ancho, alto) {
             });
         }
     } else if (climaEstacion === 'primavera') {
-        if (climaFrame % 3 === 0) {
+        if (climaFrame % 4 === 0) {
+            const paletas = [
+                [230, 80, 130],
+                [220, 60, 110],
+                [200, 80, 160],
+                [245, 110, 150],
+            ];
+            const c = paletas[Math.floor(Math.random() * paletas.length)];
+            const vidaMax = 140 + Math.floor(Math.random() * 80);
             climaParticulas.push({
                 x: Math.random() * ancho,
                 y: -5,
-                vx: Math.sin(climaFrame * 0.03) * 0.6,
-                vy: 0.3 + Math.random() * 0.25,
-                vida: 160 + Math.floor(Math.random() * 80),
-                vidaMax: 240,
-                r: 247,
-                g: 197 + Math.floor(Math.random() * 30),
-                b: 213,
-                alpha: 0.7,
+                vx: (Math.random() - 0.5) * 1.2,
+                vy: 0.5 + Math.random() * 0.5,
+                vida: vidaMax,
+                vidaMax,
+                r: c[0],
+                g: c[1],
+                b: c[2],
+                alpha: 0.85,
                 tipo: 'petalo',
-                tam: 2 + Math.random() * 2,
+                tam: 3.5 + Math.random() * 2.5,
             });
         }
         if (climaFrame % 7 === 0) {
@@ -190,7 +198,7 @@ function loopClimaLab() {
 
         // Movimiento especial por tipo
         if (p.tipo === 'petalo') {
-            p.vx = Math.sin(climaFrame * 0.03 + p.x * 0.01) * 0.6;
+            p.vx = Math.sin(climaFrame * 0.04 + p.vidaMax * 0.27) * 1.1;
         } else if (p.tipo === 'mota') {
             p.vy = Math.sin(climaFrame * 0.02 + p.x * 0.05) * 0.15;
         }
