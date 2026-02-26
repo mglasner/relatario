@@ -17,7 +17,7 @@ const valoresIniciales = {
     anchoCanvas: CFG.canvas.anchoBase,
     altoCanvas: CFG.canvas.altoBase,
     muerto: false,
-    modoInmersivo: null,
+    modoLandscape: null,
     dpadRef: null,
     // Filas del subsuelo para emision de particulas (desacoplado del tile ABISMO)
     filaNiebla: -1,

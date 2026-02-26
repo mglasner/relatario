@@ -21,7 +21,7 @@ import {
     obtenerDPR,
     limpiarDOM,
 } from './domPlat.js';
-import { crearModoInmersivo } from '../../componentes/modoInmersivo.js';
+import { crearModoLandscape } from '../../componentes/modoLandscape.js';
 import {
     iniciarCamara,
     actualizarCamara,
@@ -527,8 +527,8 @@ export function iniciarAbismo(jugadorRef, callback, dpadArgumento) {
     est.filaOjos = totalFilas - 1;
 
     // Crear pantalla
-    est.modoInmersivo = crearModoInmersivo(reescalarCanvas);
-    iniciarDOM(est.modoInmersivo.esMobile);
+    est.modoLandscape = crearModoLandscape(reescalarCanvas);
+    iniciarDOM(est.modoLandscape.esMobile);
 
     // Mostrar llaves ya recolectadas en el HUD
     actualizarHUDInventario(est.jugador.inventario);
@@ -571,7 +571,7 @@ export function iniciarAbismo(jugadorRef, callback, dpadArgumento) {
     }
 
     // Overlay de rotación y pantalla completa (solo mobile)
-    est.modoInmersivo.activar();
+    est.modoLandscape.activar();
 
     // Iniciar loop
     gameLoop4.iniciar();
@@ -590,8 +590,8 @@ export function limpiarAbismo() {
     document.removeEventListener('keyup', onKeyUp);
 
     // Salir de pantalla completa y desactivar overlay
-    if (est.modoInmersivo) {
-        est.modoInmersivo.desactivar();
+    if (est.modoLandscape) {
+        est.modoLandscape.desactivar();
     }
 
     // Restaurar D-pad a modo centrado (default para otros juegos)

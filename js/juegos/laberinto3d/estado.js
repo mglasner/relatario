@@ -56,7 +56,7 @@ export const est = {
     flashDano: 0,
 
     // Landscape mobile
-    modoInmersivo: null,
+    modoLandscape: null,
     dpadRef: null,
     hudJugadorContenedor: null,
     hudJugadorVida: null,

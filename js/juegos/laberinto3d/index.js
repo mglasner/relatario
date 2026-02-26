@@ -38,7 +38,7 @@ import {
     renderizarHUD,
     limpiarHUD,
 } from '../../motor3d/hudPrimeraPersona.js';
-import { crearModoInmersivo } from '../../componentes/modoInmersivo.js';
+import { crearModoLandscape } from '../../componentes/modoLandscape.js';
 import { crearBarraVida } from '../../componentes/barraVida.js';
 import { crearInventario } from '../../componentes/inventario.js';
 import { crearPantallaJuego } from '../../componentes/pantallaJuego.js';
@@ -119,7 +119,7 @@ function redimensionarLandscape() {
     if (!est.activo || !est.canvas3D) return;
 
     const enLandscape =
-        est.modoInmersivo && est.modoInmersivo.esMobile && window.innerWidth > window.innerHeight;
+        est.modoLandscape && est.modoLandscape.esMobile && window.innerWidth > window.innerHeight;
     calcularDimensiones(enLandscape ? { landscape: true } : undefined);
 
     // Solo redimensionar si las dimensiones cambiaron
@@ -443,7 +443,7 @@ function onKeyUp(e) {
 export function iniciarLaberinto3d(jugadorRef, callback, dpadArgumento) {
     est.jugador = jugadorRef;
     est.callbackSalir = callback;
-    est.modoInmersivo = crearModoInmersivo(redimensionarLandscape);
+    est.modoLandscape = crearModoLandscape(redimensionarLandscape);
     est.dpadRef = dpadArgumento;
     est.hudJugadorVidaAnterior = -1;
     est.tieneLlave = false;
@@ -516,7 +516,7 @@ export function iniciarLaberinto3d(jugadorRef, callback, dpadArgumento) {
     juegoEl.style.setProperty('--ancho-3d', canvas.ancho + 6 + 'px');
 
     // Crear pantalla DOM
-    crearPantalla(est.modoInmersivo.esMobile);
+    crearPantalla(est.modoLandscape.esMobile);
 
     // Pre-renderizar minimapa base
     est.minimapBase = crearMinimapBase(est.mapa, FILAS, COLS, canvas.anchoMini, canvas.altoMini);
@@ -544,7 +544,7 @@ export function iniciarLaberinto3d(jugadorRef, callback, dpadArgumento) {
     }
 
     // Overlay de rotación y pantalla completa (solo mobile)
-    est.modoInmersivo.activar();
+    est.modoLandscape.activar();
 
     // Inicializar HUD landscape
     actualizarHUDVida();
@@ -567,9 +567,9 @@ export function limpiarLaberinto3d() {
     });
 
     // Salir de pantalla completa y desactivar overlay
-    if (est.modoInmersivo) {
-        est.modoInmersivo.desactivar();
-        est.modoInmersivo = null;
+    if (est.modoLandscape) {
+        est.modoLandscape.desactivar();
+        est.modoLandscape = null;
     }
     if (est.dpadRef) {
         est.dpadRef.setModoCentrado();
