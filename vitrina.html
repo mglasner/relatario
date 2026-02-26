@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Showcase Sprites — El Abismo (DEV)</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                background: #0e0e1a;
+                color: #e0e0e0;
+                font-family: 'Segoe UI', system-ui, sans-serif;
+                padding: 24px;
+            }
+            h1 {
+                color: #bb86fc;
+                margin-bottom: 4px;
+            }
+            .subtitle {
+                color: #666;
+                font-size: 0.85em;
+                margin-bottom: 20px;
+            }
+
+            /* --- Controles --- */
+            .toolbar {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                margin-bottom: 20px;
+                flex-wrap: wrap;
+                background: #14142a;
+                padding: 10px 14px;
+                border-radius: 8px;
+                border: 1px solid #2a2a4e;
+            }
+            .state-indicator {
+                font-size: 1.1em;
+                color: #bb86fc;
+                font-weight: bold;
+                min-width: 90px;
+            }
+            .btn-group {
+                display: flex;
+                gap: 4px;
+                flex-wrap: wrap;
+            }
+            .state-btn {
+                padding: 3px 8px;
+                border: 1px solid #3a3a5e;
+                background: #1a1a2e;
+                color: #aaa;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 0.78em;
+                transition: all 0.15s;
+            }
+            .state-btn:hover {
+                border-color: #bb86fc;
+                color: #ddd;
+            }
+            .state-btn.active {
+                background: #bb86fc;
+                color: #0e0e1a;
+                border-color: #bb86fc;
+                font-weight: bold;
+            }
+            .toolbar label {
+                color: #888;
+                font-size: 0.8em;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            input[type='range'] {
+                accent-color: #bb86fc;
+                width: 80px;
+            }
+            .toolbar .sep {
+                width: 1px;
+                height: 20px;
+                background: #333;
+            }
+
+            /* --- Secciones --- */
+            h2 {
+                color: #5eeadb;
+                font-size: 1em;
+                margin: 20px 0 10px;
+                border-bottom: 1px solid #222;
+                padding-bottom: 4px;
+            }
+
+            /* --- Grid de tarjetas --- */
+            .grid {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+            .card {
+                text-align: center;
+                background: #14142a;
+                border-radius: 8px;
+                padding: 10px 16px 8px;
+                border: 1px solid #2a2a4e;
+                min-width: 140px;
+            }
+            .card canvas {
+                display: block;
+                margin: 0 auto 4px;
+                image-rendering: pixelated;
+                image-rendering: crisp-edges;
+                border-radius: 4px;
+                background: repeating-conic-gradient(#1a1a2e 0% 25%, #12121f 0% 50%) 50% / 8px 8px;
+            }
+            .card .name {
+                display: block;
+                font-size: 0.72em;
+                font-weight: bold;
+                color: #eee;
+                line-height: 1.2;
+                min-height: 2.4em;
+            }
+
+            .atk-selector {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+                margin-top: 4px;
+                text-align: left;
+            }
+            .atk-check {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                font-size: 0.65em;
+                color: #777;
+                cursor: pointer;
+                line-height: 1.2;
+            }
+            .atk-check input[type='checkbox'] {
+                accent-color: #bb86fc;
+                width: 11px;
+                height: 11px;
+                cursor: pointer;
+                margin: 0;
+            }
+            .atk-check.playing {
+                color: #bb86fc;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Showcase de Sprites</h1>
+        <p class="subtitle">Herramienta de desarrollo — no se incluye en producción</p>
+
+        <div class="toolbar">
+            <span class="state-indicator" id="stateLabel">—</span>
+            <div class="sep"></div>
+            <div class="btn-group" id="stateButtons"></div>
+            <div class="sep"></div>
+            <label
+                >Vel <input type="range" id="speed" min="0.25" max="3" step="0.25" value="1"
+            /></label>
+            <label>Zoom <input type="range" id="zoom" min="1" max="4" step="1" value="2" /></label>
+            <label><input type="checkbox" id="flip" /> Voltear</label>
+        </div>
+
+        <h2>Héroes (8)</h2>
+        <div id="heroes" class="grid"></div>
+
+        <h2>Villanos (10)</h2>
+        <div id="villanos" class="grid"></div>
+
+        <h2>Ataques — Héroes (8)</h2>
+        <div id="demosHeroes" class="grid"></div>
+
+        <h2>Ataques — Villanos (10)</h2>
+        <div id="demosVillanos" class="grid"></div>
+
+        <script type="module" src="js/dev/showcase.js"></script>
+    </body>
+</html>
