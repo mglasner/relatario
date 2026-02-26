@@ -2,30 +2,30 @@
 
 > Ideas de features entretenidas para agregar, ordenadas por dificultad de implementacion.
 
-| # | Feature | Dificultad | Estado |
-|---|---------|-----------|--------|
-| 1 | [Cuartos secretos en El Laberinto](#1-cuartos-secretos-en-el-laberinto) | Baja | [x] |
-| 2 | [Sistema de logros con medallas](#2-sistema-de-logros-con-medallas) | Baja | [ ] |
-| 3 | [Power-ups en El Abismo](#3-power-ups-coleccionables-en-el-abismo) | Media-Baja | [ ] |
-| 4 | [Niveles de dificultad en El Memorice](#4-niveles-de-dificultad-en-el-memorice) | Media-Baja | [x] |
-| 5 | [Efectos climaticos en los juegos](#5-efectos-climaticos-en-los-juegos) | Media-Baja | [ ] |
-| 6 | [Diario de aventuras (stats y records)](#6-diario-de-aventuras-stats-y-records) | Media | [ ] |
-| 7 | [Enemigos con habilidades especiales](#7-enemigos-con-habilidades-especiales-en-el-laberinto) | Media | [ ] |
-| 8 | [Modo Boss Rush](#8-modo-boss-rush) | Media | [ ] |
-| 9 | [Mascotas acompanantes](#9-mascotas-acompanantes) | Media-Alta | [ ] |
-| 10 | [Editor de niveles para El Abismo](#10-editor-de-niveles-para-el-abismo) | Alta | [ ] |
-| 11 | [Ajedrez local (heroes vs villanos)](#11-ajedrez-local-heroes-vs-villanos) | Alta | [x] |
-| 12 | [Modo Historia / Campana](#12-modo-historia-cooperativo-campana) | Muy Alta | [ ] |
-| 13 | [Multijugador online (turnos)](#13-multijugador-online-para-juegos-por-turnos) | Alta | [ ] |
-| 14 | [Sistema de autenticacion y backend](#14-sistema-de-autenticacion-y-backend) | Muy Alta | [ ] |
-| 15 | [Fix deteccion de stomp en El Abismo](#15-fix-deteccion-de-stomp-en-el-abismo) | Baja | [x] |
-| 16 | [Particulas con colision al suelo en El Abismo](#16-particulas-con-colision-al-suelo-en-el-abismo) | Baja | [x] |
-| 17 | [Salto variable (jump cut) en El Abismo](#17-salto-variable-jump-cut-en-el-abismo) | Media-Baja | [x] |
-| 18 | [Esbirros con patron diferenciado en El Abismo](#18-esbirros-con-patron-diferenciado-en-el-abismo) | Media-Baja | [x] |
-| 19 | [Rediseno del mapa con rutas alternativas en El Abismo](#19-rediseno-del-mapa-con-rutas-alternativas-en-el-abismo) | Media-Baja | [x] |
-| 20 | [Boss con patrones de ataque en El Abismo](#20-boss-con-patrones-de-ataque-en-el-abismo) | Media | [x] |
-| 21 | [Generacion procedural de secciones en El Abismo](#21-generacion-procedural-de-secciones-en-el-abismo) | Media | [ ] |
-| 22 | [Archienemigos: rivalidades narrativas en los juegos](#22-archienemigos-rivalidades-narrativas-en-los-juegos) | Media | [ ] |
+| # | Feature | Dificultad | Requiere | Estado |
+|---|---------|-----------|----------|--------|
+| 1 | [Cuartos secretos en El Laberinto](#1-cuartos-secretos-en-el-laberinto) | Baja | — | [x] |
+| 2 | [Sistema de logros con medallas](#2-sistema-de-logros-con-medallas) | Baja | #14 | 🔒 |
+| 3 | [Power-ups en El Abismo](#3-power-ups-coleccionables-en-el-abismo) | Media-Baja | — | [ ] |
+| 4 | [Niveles de dificultad en El Memorice](#4-niveles-de-dificultad-en-el-memorice) | Media-Baja | — | [x] |
+| 5 | [Efectos climaticos en los juegos](#5-efectos-climaticos-en-los-juegos) | Media-Baja | — | [x] |
+| 6 | [Diario de aventuras (stats y records)](#6-diario-de-aventuras-stats-y-records) | Media | #14 | 🔒 |
+| 7 | [Enemigos con habilidades especiales](#7-enemigos-con-habilidades-especiales-en-el-laberinto) | Media | — | [ ] |
+| 8 | [Modo Boss Rush](#8-modo-boss-rush) | Media | — | [ ] |
+| 9 | [Mascotas acompanantes](#9-mascotas-acompanantes) | Media-Alta | — | [ ] |
+| 10 | [Editor de niveles para El Abismo](#10-editor-de-niveles-para-el-abismo) | Alta | — | [ ] |
+| 11 | [Ajedrez local (heroes vs villanos)](#11-ajedrez-local-heroes-vs-villanos) | Alta | — | [x] |
+| 12 | [Modo Historia / Campana](#12-modo-historia-cooperativo-campana) | Muy Alta | — | [ ] |
+| 13 | [Multijugador online (turnos)](#13-multijugador-online-para-juegos-por-turnos) | Alta | #11, #4 | [ ] |
+| 14 | [Sistema de autenticacion y backend](#14-sistema-de-autenticacion-y-backend) | Muy Alta | — | [ ] |
+| 15 | [Fix deteccion de stomp en El Abismo](#15-fix-deteccion-de-stomp-en-el-abismo) | Baja | — | [x] |
+| 16 | [Particulas con colision al suelo en El Abismo](#16-particulas-con-colision-al-suelo-en-el-abismo) | Baja | — | [x] |
+| 17 | [Salto variable (jump cut) en El Abismo](#17-salto-variable-jump-cut-en-el-abismo) | Media-Baja | — | [x] |
+| 18 | [Esbirros con patron diferenciado en El Abismo](#18-esbirros-con-patron-diferenciado-en-el-abismo) | Media-Baja | — | [x] |
+| 19 | [Rediseno del mapa con rutas alternativas en El Abismo](#19-rediseno-del-mapa-con-rutas-alternativas-en-el-abismo) | Media-Baja | — | [x] |
+| 20 | [Boss con patrones de ataque en El Abismo](#20-boss-con-patrones-de-ataque-en-el-abismo) | Media | — | [x] |
+| 21 | [Generacion procedural de secciones en El Abismo](#21-generacion-procedural-de-secciones-en-el-abismo) | Media | — | [ ] |
+| 22 | [Archienemigos: rivalidades narrativas en los juegos](#22-archienemigos-rivalidades-narrativas-en-los-juegos) | Media | — | [ ] |
 
 ---
 
