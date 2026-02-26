@@ -68,6 +68,29 @@ boss:
     fasesCambio: [0.66, 0.33] # umbrales de vida (%) para cambio de fase
     velocidadFases: [1.0, 1.4] # multiplicador de velocidad por fase
 
+# --- Ataques de boss ---
+# El boss ejecuta ataques especiales según sus arquetipos definidos en enemigos.yaml.
+# 4 arquetipos: proyectil (orbe dirigido), carga (embestida), salto (impacto), aoe (área)
+bossAtaques:
+    cooldown: 180 # frames entre ataques (~3s a 60fps)
+    cooldownFase2: 150 # frames en fase herida (~2.5s)
+    cooldownFase3: 120 # frames en fase crítica (~2s)
+    telegrafoFrames: 45 # frames de aviso visual antes del ataque (~0.75s)
+    recuperacionFrames: 30 # frames de pausa después del ataque (~0.5s)
+    rangoDeteccion: 120 # px de distancia máxima para activar ataque
+    # Proyectil
+    proyectilVel: 2.5 # velocidad del proyectil (px/frame)
+    proyectilVida: 180 # frames de vida del proyectil (~3s)
+    proyectilTamano: 6 # tamaño visual del proyectil (px)
+    # Carga
+    cargaVelMultiplier: 2.5 # multiplicador de velocidad base durante carga
+    cargaDuracion: 40 # frames de duración de la carga (~0.67s)
+    # Salto
+    saltoFuerza: -9 # fuerza vertical del salto de ataque
+    # AOE
+    aoeDuracion: 30 # frames de duración del efecto de área (~0.5s)
+    aoeRadioBase: 48 # radio base del aoe (px), escalado por ataque.radio
+
 # --- Renderizado ---
 render:
     colorSuelo: '#2a2a5e' # color fallback para tiles de suelo (sin textura)

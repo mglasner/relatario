@@ -23,6 +23,7 @@ import {
     calcularSpriteDrawSize,
     calcularVelocidadPlat,
 } from './escaladoPlat.js';
+import { initAtaqueBoss, actualizarAtaqueBoss } from './ataquesBoss.js';
 
 const TAM = CFG.tiles.tamano;
 const BOSS = CFG.boss;
@@ -135,7 +136,9 @@ export function iniciarEnemigos(spawnsEnemigos, spawnBoss) {
     // Crear boss: elegir un elite aleatorio
     if (spawnBoss) {
         const bossData = ELITES[Math.floor(Math.random() * ELITES.length)];
-        enemigos.push(crearEnemigo(spawnBoss.col, spawnBoss.fila, true, bossData));
+        const boss = crearEnemigo(spawnBoss.col, spawnBoss.fila, true, bossData);
+        initAtaqueBoss(boss);
+        enemigos.push(boss);
     }
 }
 
@@ -155,7 +158,11 @@ function moverPatrulla(e, enPiso) {
     }
 }
 
-export function actualizarEnemigos() {
+export function actualizarEnemigos(jugadorPos) {
+    // Centro del jugador (para ataques del boss)
+    const jugCx = jugadorPos ? jugadorPos.x + jugadorPos.ancho / 2 : 0;
+    const jugCy = jugadorPos ? jugadorPos.y + jugadorPos.alto / 2 : 0;
+
     for (let i = 0; i < enemigos.length; i++) {
         const e = enemigos[i];
         if (!e.vivo) {
@@ -177,6 +184,8 @@ export function actualizarEnemigos() {
             const resY = resolverColisionY(e.x, e.y, e.ancho, e.alto, e.vy);
             e.y = resY.y;
             e.vy = resY.vy;
+            // El stun también interrumpe ataques del boss
+            if (e.esBoss) actualizarAtaqueBoss(e, jugCx, jugCy);
             continue;
         }
 
@@ -195,7 +204,15 @@ export function actualizarEnemigos() {
         const ignorarPlat = e.patron === 'saltarin';
         const enPiso = enSuelo(e.x, e.y, e.ancho, e.alto, ignorarPlat);
 
-        if (e.patron === 'centinela') {
+        if (e.esBoss) {
+            // Boss: la máquina de ataques puede anular la patrulla
+            const enAtaque = actualizarAtaqueBoss(e, jugCx, jugCy);
+            if (!enAtaque) {
+                // Patrulla normal cuando no está atacando
+                e.vx = vel * e.direccion;
+                moverPatrulla(e, enPiso);
+            }
+        } else if (e.patron === 'centinela') {
             // Centinela: alterna entre marcha y pausa, elige dirección al azar
             if (e.centinelaEstado === 'pausa') {
                 e.vx = 0;
@@ -455,6 +472,13 @@ export function obtenerInfoBoss() {
                 alto: e.alto,
             };
         }
+    }
+    return null;
+}
+
+export function obtenerBossRef() {
+    for (let i = 0; i < enemigos.length; i++) {
+        if (enemigos[i].esBoss && enemigos[i].vivo) return enemigos[i];
     }
     return null;
 }

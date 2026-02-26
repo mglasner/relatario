@@ -68,6 +68,17 @@ import {
     obtenerInfoBoss,
     limpiarEnemigos,
 } from './enemigoPlat.js';
+import {
+    actualizarProyectiles,
+    actualizarZonas,
+    colisionProyectilesJugador,
+    colisionZonasJugador,
+    renderizarAtaques,
+    obtenerProyectiles,
+    obtenerBossAtaque,
+    hexARgb,
+    limpiarAtaques,
+} from './ataquesBoss.js';
 import { iniciarParallax, renderizarParallax, limpiarParallax } from './parallax.js';
 import { iniciarTexturas, limpiarTexturas } from './texturasTiles.js';
 import {
@@ -83,6 +94,8 @@ import {
     emitirAuraBoss,
     emitirBossFase,
     emitirEstelaBoss,
+    emitirTelegrafo,
+    emitirProyectilEstela,
     actualizarParticulas,
     renderizarParticulas,
     obtenerFrameCount,
@@ -115,10 +128,7 @@ function iniciarDOM(esTouch) {
 // --- Colisiones jugador-enemigo ---
 
 function procesarStomp(e, resultado) {
-    const colorJug = obtenerColor();
-    const r = parseInt(colorJug.slice(1, 3), 16);
-    const g = parseInt(colorJug.slice(3, 5), 16);
-    const b = parseInt(colorJug.slice(5, 7), 16);
+    const { r, g, b } = hexARgb(obtenerColor());
     const cx = e.x + e.ancho / 2;
     const cy = e.y + e.alto / 2;
 
@@ -196,6 +206,42 @@ function verificarColisionesEnemigos() {
             } else {
                 lanzarToast('-' + dano + ' HP', '\ud83d\udc94', 'dano');
             }
+        }
+    }
+}
+
+// --- Colisiones jugador-ataques del boss ---
+
+function verificarColisionesAtaques() {
+    if (esInvulnerable()) return;
+
+    const jug = obtenerPosicion();
+    const jugRect = { x: jug.x, y: jug.y, ancho: jug.ancho, alto: jug.alto };
+
+    // Proyectiles
+    const hitProy = colisionProyectilesJugador(jugRect);
+    if (hitProy) {
+        const murio = recibirDano(hitProy.dano, hitProy.desdeX);
+        sacudir(3);
+        if (murio) {
+            est.muerto = true;
+        } else {
+            lanzarToast('-' + hitProy.dano + ' HP', '\ud83d\udc94', 'dano');
+        }
+        return;
+    }
+
+    // Zonas de daño (aoe, impacto de salto)
+    const jugCx = jug.x + jug.ancho / 2;
+    const jugCy = jug.y + jug.alto / 2;
+    const hitZona = colisionZonasJugador(jugCx, jugCy);
+    if (hitZona) {
+        const murio = recibirDano(hitZona.dano, hitZona.desdeX);
+        sacudir(4);
+        if (murio) {
+            est.muerto = true;
+        } else {
+            lanzarToast('-' + hitZona.dano + ' HP', '\ud83d\udc94', 'dano');
         }
     }
 }
@@ -310,6 +356,38 @@ function emitirParticulasJugador() {
     }
 }
 
+// --- Emision de particulas de ataques del boss ---
+
+function emitirParticulasAtaques() {
+    const bossAtq = obtenerBossAtaque();
+    if (!bossAtq) return;
+
+    // Telégrafo: chispas en color del ataque
+    if (bossAtq.ataqueEstado === 'telegrafo' && bossAtq.ataqueActual) {
+        const c = hexARgb(bossAtq.ataqueActual.color);
+        emitirTelegrafo(bossAtq.x, bossAtq.y, bossAtq.ancho, bossAtq.alto, c.r, c.g, c.b);
+    }
+
+    // Carga: polvo detrás del boss
+    if (
+        bossAtq.ataqueEstado === 'ejecutando' &&
+        bossAtq.ataqueActual &&
+        bossAtq.ataqueActual.arquetipo === 'carga'
+    ) {
+        const trailX = bossAtq.cargaDir > 0 ? bossAtq.x : bossAtq.x + bossAtq.ancho;
+        emitirEstela(trailX, bossAtq.y + bossAtq.alto, -bossAtq.cargaDir);
+        emitirEstela(trailX, bossAtq.y + bossAtq.alto, -bossAtq.cargaDir);
+    }
+
+    // Estela de proyectiles
+    const proys = obtenerProyectiles();
+    for (let i = 0; i < proys.length; i++) {
+        const p = proys[i];
+        const c = hexARgb(p.color);
+        emitirProyectilEstela(p.x, p.y, c.r, c.g, c.b);
+    }
+}
+
 // --- Game loop ---
 
 const gameLoop4 = crearGameLoop(function (_tiempo, _dt) {
@@ -329,8 +407,12 @@ const gameLoop4 = crearGameLoop(function (_tiempo, _dt) {
     // Actualizar (solo si el jugador sigue vivo)
     if (!est.muerto) {
         actualizarJugador();
-        actualizarEnemigos();
+        const jugPos = obtenerPosicion();
+        actualizarEnemigos(jugPos);
+        actualizarProyectiles();
+        actualizarZonas();
         verificarColisionesEnemigos();
+        verificarColisionesAtaques();
         verificarAbismo();
         verificarVictoria();
     }
@@ -341,6 +423,7 @@ const gameLoop4 = crearGameLoop(function (_tiempo, _dt) {
 
     // Particulas
     emitirParticulasJugador();
+    emitirParticulasAtaques();
     const camX = obtenerCamaraX();
     const camY = obtenerCamaraY();
     emitirParticulasAmbientales(camX, camY);
@@ -368,8 +451,9 @@ function renderFrame() {
     // Particulas detras de personajes (niebla, aura)
     renderizarParticulas(est.ctx, camX, camY, est.anchoCanvas, est.altoCanvas);
 
-    // Enemigos y jugador
+    // Enemigos, ataques y jugador
     renderizarEnemigos(est.ctx, camX, camY);
+    renderizarAtaques(est.ctx, camX, camY);
     renderizarJugador(est.ctx, camX, camY);
 
     // Vineta
@@ -516,6 +600,7 @@ export function limpiarAbismo() {
     }
 
     limpiarEnemigos();
+    limpiarAtaques();
     limpiarParticulas();
     limpiarParallax();
     limpiarTexturas();

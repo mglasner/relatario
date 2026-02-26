@@ -1,10 +1,10 @@
 // Habitacion 4 — El Abismo: Sistema de particulas 2D
-// Pool preallocado de 200 particulas con culling horizontal y vertical
+// Pool preallocado de 250 particulas con culling horizontal y vertical
 // Optimizado: puntero circular para busqueda O(1) amortizada y conteo de activas
 
 import { esSolido } from './fisicas.js';
 
-const POOL_SIZE = 200;
+const POOL_SIZE = 250;
 const GRAVEDAD_PART = 0.15;
 
 // Pool preasignado
@@ -317,6 +317,67 @@ export function emitirEstelaBoss(bossX, bossY, bossAncho, bossAlto) {
         alpha: 0.2,
         tipo: 'afterimage',
     });
+}
+
+// Partículas de telégrafo del boss (chispas en color del ataque)
+export function emitirTelegrafo(x, y, ancho, alto, r, g, b) {
+    if (Math.random() > 0.6) return;
+    const ang = Math.random() * Math.PI * 2;
+    const dist = Math.max(ancho, alto) * 0.6 + Math.random() * 4;
+    emitir({
+        x: x + ancho / 2 + Math.cos(ang) * dist,
+        y: y + alto / 2 + Math.sin(ang) * dist,
+        vx: Math.cos(ang) * 0.5,
+        vy: Math.sin(ang) * 0.5 - 0.3,
+        vida: 10 + Math.floor(Math.random() * 8),
+        tamano: 1.5 + Math.random(),
+        r,
+        g,
+        b,
+        alpha: 0.8,
+        tipo: 'chispa',
+    });
+}
+
+// Estela detrás de un proyectil
+export function emitirProyectilEstela(x, y, r, g, b) {
+    if (Math.random() > 0.5) return;
+    emitir({
+        x: x + (Math.random() - 0.5) * 3,
+        y: y + (Math.random() - 0.5) * 3,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        vida: 8 + Math.floor(Math.random() * 5),
+        tamano: 1.5 + Math.random(),
+        r,
+        g,
+        b,
+        alpha: 0.5,
+        tipo: 'aura',
+    });
+}
+
+// Impacto en el suelo (salto del boss o zona de daño)
+export function emitirImpactoSuelo(cx, cy, r, g, b) {
+    const cantidad = 8 + Math.floor(Math.random() * 4);
+    for (let i = 0; i < cantidad; i++) {
+        const ang = (i / cantidad) * Math.PI * 2;
+        const vel = 1 + Math.random() * 1.5;
+        emitir({
+            x: cx,
+            y: cy,
+            vx: Math.cos(ang) * vel,
+            vy: Math.sin(ang) * vel * 0.3 - 0.5,
+            vida: 12 + Math.floor(Math.random() * 8),
+            tamano: 1.5 + Math.random() * 1.5,
+            r,
+            g,
+            b,
+            alpha: 0.7,
+            gravedad: true,
+            tipo: 'chispa',
+        });
+    }
 }
 
 // --- Actualizar y renderizar ---

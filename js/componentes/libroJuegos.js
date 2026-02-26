@@ -68,7 +68,7 @@ const JUEGOS = {
         accent: '#5eeadb',
         parrafos: [
             'Un abismo sin fondo se extiende ante ti. Plataformas flotantes son tu único camino. ¡Un paso en falso y caerás al vacío!',
-            'Esbirros patrullan las plataformas y un temible boss te espera al final. Salta sobre los enemigos para derrotarlos, pero cuidado con tocarlos de lado.',
+            'Esbirros patrullan las plataformas y un temible boss te espera al final. Salta sobre los enemigos para derrotarlos, pero cuidado: el boss tiene ataques especiales que deberás esquivar.',
             'Derrota al boss para abrir la salida y conseguir la llave.',
         ],
         tip: 'Salta sobre los enemigos para hacerles daño. Usa las plataformas y no mires abajo.',
