@@ -11,7 +11,7 @@ const FRAME_W = 96;
 const FRAME_H = 120;
 
 // Layout unificado (17 frames): idle(2) run(6) jump fall hit atk1(2) atk2(2) crouch(2)
-const HERO_LAYOUT = {
+export const HERO_LAYOUT = {
     idle: { inicio: 0, cantidad: 2 },
     correr: { inicio: 2, cantidad: 6 },
     saltar: { inicio: 8, cantidad: 1 },

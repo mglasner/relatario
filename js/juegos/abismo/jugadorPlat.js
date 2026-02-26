@@ -4,7 +4,7 @@
 import { CFG } from './config.js';
 import { resolverColisionX, resolverColisionY, esMeta, esSolido } from './fisicas.js';
 import { obtenerSpawnJugador } from './nivel.js';
-import { obtenerSpriteJugador } from './spritesPlat.js';
+import { obtenerSpriteJugador, HERO_LAYOUT } from './spritesPlat.js';
 import { notificarVidaCambio, notificarJugadorMuerto } from '../../eventos.js';
 import {
     calcularEscala,
@@ -213,7 +213,12 @@ function actualizarEstado(inputX) {
         else if (estado === 'agacharse') vel = SPR.jugadorAgacharseVel;
         if (contadorAnim >= vel) {
             contadorAnim = 0;
-            frameAnim++;
+            // Agacharse: detener en el último frame (pose estática, no ciclar)
+            if (estado === 'agacharse') {
+                if (frameAnim < HERO_LAYOUT.agacharse.cantidad - 1) frameAnim++;
+            } else {
+                frameAnim++;
+            }
         }
     }
 }
