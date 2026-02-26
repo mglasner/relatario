@@ -388,7 +388,6 @@ function emitirParticulasAtaques() {
     ) {
         const trailX = bossAtq.cargaDir > 0 ? bossAtq.x : bossAtq.x + bossAtq.ancho;
         emitirEstela(trailX, bossAtq.y + bossAtq.alto, -bossAtq.cargaDir);
-        emitirEstela(trailX, bossAtq.y + bossAtq.alto, -bossAtq.cargaDir);
     }
 
     // Estela de proyectiles

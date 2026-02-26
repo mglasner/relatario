@@ -3,6 +3,7 @@
 // Optimizado: puntero circular para busqueda O(1) amortizada y conteo de activas
 
 import { esSolido } from './fisicas.js';
+import { PALETAS_PETALO, PALETAS_HOJA } from '../clima.js';
 
 const POOL_SIZE = 250;
 const GRAVEDAD_PART = 0.15;
@@ -401,13 +402,6 @@ function manejarRafagaOtono() {
     }
 }
 
-// Paletas de colores para hojas de otoño [r, g, b]
-const COLORES_HOJAS = [
-    [210, 80, 30],
-    [230, 150, 40],
-    [140, 50, 20],
-];
-
 /**
  * Emite partículas climáticas para la estación activa.
  * Llamar cada frame desde emitirParticulasAmbientales.
@@ -440,17 +434,7 @@ export function emitirClima(estacion, anchoCanvas, camaraX, camaraY) {
     } else if (estacion === 'primavera') {
         // Pétalos: cada 4 frames — colores saturados rosados/fucsia, tamaño mayor
         if (frameCount % 4 === 0) {
-            const paletas = [
-                [255, 185, 215], // rosa pastel
-                [255, 175, 200], // cerezo pastel
-                [225, 185, 245], // lavanda
-                [255, 215, 175], // durazno pastel
-                [185, 225, 250], // celeste pastel
-                [255, 240, 175], // amarillo pastel
-                [195, 240, 190], // menta pastel
-                [255, 205, 225], // rosa suave
-            ];
-            const c = paletas[Math.floor(Math.random() * paletas.length)];
+            const c = PALETAS_PETALO[Math.floor(Math.random() * PALETAS_PETALO.length)];
             // vidaMax variable sirve como semilla de fase para la oscilación
             const vidaMax = 140 + Math.floor(Math.random() * 80);
             emitir({
@@ -506,7 +490,7 @@ export function emitirClima(estacion, anchoCanvas, camaraX, camaraY) {
 
         // Hojas: cada 4 frames (vx aumentado durante ráfaga)
         if (frameCount % 4 === 0) {
-            const c = COLORES_HOJAS[Math.floor(Math.random() * 3)];
+            const c = PALETAS_HOJA[Math.floor(Math.random() * PALETAS_HOJA.length)];
             const baseVx = rafagaActiva ? -2.5 - Math.random() * 0.5 : -0.8 - Math.random() * 1.4;
             emitir({
                 x: camaraX + Math.random() * anchoCanvas,

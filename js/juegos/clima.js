@@ -51,6 +51,27 @@ export const ESTACIONES = {
     },
 };
 
+// Paletas de colores para partículas de primavera y otoño
+// Compartidas entre los 3 juegos y la vitrina de desarrollo
+export const PALETAS_PETALO = [
+    [255, 185, 215], // rosa pastel
+    [255, 175, 200], // cerezo pastel
+    [225, 185, 245], // lavanda
+    [255, 215, 175], // durazno pastel
+    [185, 225, 250], // celeste pastel
+    [255, 240, 175], // amarillo pastel
+    [195, 240, 190], // menta pastel
+    [255, 205, 225], // rosa suave
+];
+
+export const PALETAS_HOJA = [
+    [210, 80, 30],
+    [230, 150, 40],
+    [140, 50, 20],
+    [180, 100, 20],
+    [200, 120, 50],
+];
+
 /**
  * Sortea una estación aleatoria.
  * @returns {string|null} Clave de estación ('invierno'|'primavera'|'verano'|'otono') o null (40%)

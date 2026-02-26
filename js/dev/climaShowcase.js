@@ -1,10 +1,13 @@
 // Showcase de climas — herramienta de desarrollo
 // Paneles animados para El Abismo y El Laberinto 3D
 
+import { PALETAS_PETALO, PALETAS_HOJA } from '../juegos/clima.js';
+
 const W = 480;
 const H = 270;
 const TAM = 16;
 const SUELO_Y = H - 3 * TAM;
+const PI2 = Math.PI * 2;
 
 const CLIMAS = [
     { id: 'ninguno', label: 'Sin clima', sub: '— Sin estación —' },
@@ -307,24 +310,6 @@ function crearEstado(id) {
 
 // ─── Sistema de partículas compartido ────────────────────────────────────────
 
-const PALETAS_PETALO = [
-    [255, 185, 215],
-    [255, 175, 200],
-    [225, 185, 245],
-    [255, 215, 175],
-    [185, 225, 250],
-    [255, 240, 175],
-    [195, 240, 190],
-    [255, 205, 225],
-];
-const PALETAS_HOJA = [
-    [210, 80, 30],
-    [230, 150, 40],
-    [140, 50, 20],
-    [180, 100, 20],
-    [200, 120, 50],
-];
-
 function emitir(est) {
     const { id, partic, t } = est;
 
@@ -480,7 +465,6 @@ function actualizar(est) {
 }
 
 function renderParticulas(ctx, partic, t) {
-    const pi2 = Math.PI * 2;
     for (const p of partic) {
         const vr = p.vida / p.vidaMax;
         const a = Math.max(0, Math.min(1, vr > 0.15 ? p.alpha : (vr / 0.15) * p.alpha));
@@ -496,7 +480,7 @@ function renderParticulas(ctx, partic, t) {
             ctx.translate(p.x, p.y);
             ctx.rotate(ang);
             ctx.beginPath();
-            ctx.ellipse(0, 0, tam * 1.4, tam * 0.55, 0, 0, pi2);
+            ctx.ellipse(0, 0, tam * 1.4, tam * 0.55, 0, 0, PI2);
             ctx.fill();
             ctx.restore();
         } else if (p.tipo === 'hoja') {

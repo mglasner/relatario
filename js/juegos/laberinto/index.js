@@ -24,7 +24,7 @@ import {
 import { iniciarTrasgo, actualizarTrasgo, renderizarTrasgo } from './trasgo.js';
 import { iniciarCountdown, actualizarVillanoElite, limpiarVillanoElite } from './villanoElite.js';
 import { lanzarToast } from '../../componentes/toast.js';
-import { sortearEstacion, ESTACIONES } from '../clima.js';
+import { sortearEstacion, ESTACIONES, PALETAS_PETALO, PALETAS_HOJA } from '../clima.js';
 
 import { crearPantallaJuego } from '../../componentes/pantallaJuego.js';
 import { crearModoPortrait } from '../../componentes/modoPortrait.js';
@@ -43,12 +43,6 @@ let climaRafagaCounter = 0;
 let climaRafagaProx = 200 + Math.floor(Math.random() * 100);
 let climaRafagaActiva = false;
 let climaRafagaFrames = 0;
-
-const COLORES_HOJAS_LAB = [
-    [210, 80, 30],
-    [230, 150, 40],
-    [140, 50, 20],
-];
 
 function emitirParticulasClimaLab(ancho, alto) {
     if (climaEstacion === 'invierno') {
@@ -71,17 +65,7 @@ function emitirParticulasClimaLab(ancho, alto) {
         }
     } else if (climaEstacion === 'primavera') {
         if (climaFrame % 4 === 0) {
-            const paletas = [
-                [255, 185, 215], // rosa pastel
-                [255, 175, 200], // cerezo pastel
-                [225, 185, 245], // lavanda
-                [255, 215, 175], // durazno pastel
-                [185, 225, 250], // celeste pastel
-                [255, 240, 175], // amarillo pastel
-                [195, 240, 190], // menta pastel
-                [255, 205, 225], // rosa suave
-            ];
-            const c = paletas[Math.floor(Math.random() * paletas.length)];
+            const c = PALETAS_PETALO[Math.floor(Math.random() * PALETAS_PETALO.length)];
             const vidaMax = 140 + Math.floor(Math.random() * 80);
             climaParticulas.push({
                 x: Math.random() * ancho,
@@ -144,7 +128,7 @@ function emitirParticulasClimaLab(ancho, alto) {
             if (climaRafagaFrames <= 0) climaRafagaActiva = false;
         }
         if (climaFrame % 4 === 0) {
-            const c = COLORES_HOJAS_LAB[Math.floor(Math.random() * 3)];
+            const c = PALETAS_HOJA[Math.floor(Math.random() * PALETAS_HOJA.length)];
             const vxHoja = climaRafagaActiva
                 ? -2.5 - Math.random() * 0.5
                 : -0.8 - Math.random() * 1.4;
