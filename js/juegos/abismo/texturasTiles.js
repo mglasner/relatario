@@ -151,11 +151,32 @@ function generarPlataforma(variante) {
     const seed = variante * 13.7 + 50;
     const grosor = Math.round(5 * ESCALA);
 
-    // Superficie de roca
+    // Superficie de roca (franja superior)
     ctx.fillStyle = '#4a4a8e';
     ctx.fillRect(0, 0, TAM_TEX, grosor);
 
-    // Ruido en la superficie (via ImageData)
+    // Bajo-relieve: cuerpo de la losa debajo de la superficie
+    // Gradiente que se oscurece y desvanece hacia abajo
+    const margenLat = Math.round(2 * ESCALA);
+    const anchoLosa = TAM_TEX - margenLat * 2;
+    const grad = ctx.createLinearGradient(0, grosor, 0, TAM_TEX);
+    grad.addColorStop(0, 'rgba(55,55,100,0.5)');
+    grad.addColorStop(0.5, 'rgba(40,40,80,0.3)');
+    grad.addColorStop(1, 'rgba(30,30,65,0.08)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(margenLat, grosor, anchoLosa, TAM_TEX - grosor);
+
+    // Bordes laterales del cuerpo (sombra sutil)
+    ctx.fillStyle = 'rgba(0,0,0,0.08)';
+    ctx.fillRect(margenLat, grosor, Math.round(ESCALA), TAM_TEX - grosor);
+    ctx.fillRect(
+        margenLat + anchoLosa - Math.round(ESCALA),
+        grosor,
+        Math.round(ESCALA),
+        TAM_TEX - grosor
+    );
+
+    // Ruido en toda la textura (via ImageData)
     aplicarRuido(ctx, seed, 0.12);
 
     // Highlight superior brillante
@@ -164,7 +185,7 @@ function generarPlataforma(variante) {
     ctx.fillStyle = 'rgba(140,140,220,0.15)';
     ctx.fillRect(0, Math.round(ESCALA), TAM_TEX, Math.round(ESCALA));
 
-    // Borde inferior difuminado
+    // Borde inferior de la superficie
     ctx.fillStyle = 'rgba(60,60,120,0.3)';
     ctx.fillRect(0, grosor - Math.round(ESCALA), TAM_TEX, Math.round(ESCALA));
 

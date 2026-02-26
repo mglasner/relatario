@@ -130,7 +130,7 @@ function procesarMovimientoX() {
     }
 
     if (inputX !== 0) direccion = inputX;
-    x = resolverColisionX(x, y, ancho, alto, vx);
+    x = resolverColisionX(x, y, ancho, alto, vx, estaEnSuelo);
     return inputX;
 }
 

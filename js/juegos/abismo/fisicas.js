@@ -64,7 +64,8 @@ export function enSuelo(x, y, ancho, alto) {
 }
 
 // Resolver colisión horizontal
-export function resolverColisionX(x, y, ancho, alto, dx) {
+// estaEnSuelo: si true, plataformas también bloquean lateralmente
+export function resolverColisionX(x, y, ancho, alto, dx, estaEnSuelo) {
     if (dx === 0) return x;
 
     const nuevaX = x + dx;
@@ -84,6 +85,23 @@ export function resolverColisionX(x, y, ancho, alto, dx) {
             }
             const col = Math.floor(borde / TAM);
             return (col + 1) * TAM;
+        }
+        // Semi-sólido: plataformas bloquean X solo si la entidad está en el suelo
+        // y sus pies están al nivel de la superficie de la plataforma (no debajo)
+        if (estaEnSuelo) {
+            const fila = Math.floor(puntos[i] / TAM);
+            const col = Math.floor(borde / TAM);
+            if (fila >= 0 && fila < obtenerFilas() && col >= 0 && col < obtenerColumnas()) {
+                if (tileEsPlataforma(obtenerTile(fila, col))) {
+                    const pieY = y + alto;
+                    const topePlat = fila * TAM;
+                    // Solo bloquear si los pies están al nivel de la plataforma
+                    if (pieY <= topePlat + 2) {
+                        if (dx > 0) return col * TAM - ancho;
+                        return (col + 1) * TAM;
+                    }
+                }
+            }
         }
     }
 

@@ -155,8 +155,9 @@ export function actualizarEnemigos() {
 
         e.vx = vel * e.direccion;
 
-        // Colision horizontal
-        const nuevaX = resolverColisionX(e.x, e.y, e.ancho, e.alto, e.vx);
+        // Colision horizontal (plataformas bloquean X si el enemigo está en el suelo)
+        const enPiso = enSuelo(e.x, e.y, e.ancho, e.alto);
+        const nuevaX = resolverColisionX(e.x, e.y, e.ancho, e.alto, e.vx, enPiso);
         if (nuevaX === e.x && e.vx !== 0) {
             // Choco con pared: girar
             e.direccion *= -1;
