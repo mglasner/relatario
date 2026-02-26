@@ -288,9 +288,9 @@ function emitirClima3D(estacion, jugadorX, jugadorY) {
                 p.tipo = 'petalo-3d';
                 // Pétalos multicolores
                 const pIdx = Math.floor(Math.random() * 8);
-                p.r = [230, 220, 200, 245, 80,  255, 160, 240][pIdx];
-                p.g = [80,  60,  80,  160, 180, 220, 220, 130][pIdx];
-                p.b = [130, 110, 200, 60,  220, 60,  80,  180][pIdx];
+                p.r = [230, 220, 200, 245, 80, 255, 160, 240][pIdx];
+                p.g = [80, 60, 80, 160, 180, 220, 220, 130][pIdx];
+                p.b = [130, 110, 200, 60, 220, 60, 80, 180][pIdx];
                 p.alpha = 0.85;
                 p.tamano = 3 + Math.random() * 1.5;
             }
@@ -537,6 +537,32 @@ export function renderizarParticulas(ctx, zBuffer, jugadorX, jugadorY, angulo) {
             ctx.arc(screenX, screenY, tamano, 0, Math.PI * 2);
             ctx.fill();
             ctx.restore();
+            _lastColorKey = -1; // restore() revierte fillStyle
+        } else if (p.tipo === 'petalo-3d') {
+            // Pétalo 3D: elipse alargada con rotación en pantalla
+            const angP = climaFrame3D * 0.03 + p.vidaMax * 0.73;
+            ctx.save();
+            ctx.translate(screenX, screenY);
+            ctx.rotate(angP);
+            ctx.beginPath();
+            ctx.ellipse(0, 0, tamano * 1.4, tamano * 0.55, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+            _lastColorKey = -1; // restore() revierte fillStyle
+        } else if (p.tipo === 'hoja-3d') {
+            // Hoja 3D: óvalo puntiagudo con bezier
+            const angH = climaFrame3D * 0.025 + p.vidaMax * 0.51;
+            const rh3 = tamano;
+            ctx.save();
+            ctx.translate(screenX, screenY);
+            ctx.rotate(angH);
+            ctx.beginPath();
+            ctx.moveTo(0, -rh3 * 1.6);
+            ctx.bezierCurveTo(rh3 * 0.85, -rh3 * 0.6, rh3 * 0.85, rh3 * 0.6, 0, rh3 * 1.6);
+            ctx.bezierCurveTo(-rh3 * 0.85, rh3 * 0.6, -rh3 * 0.85, -rh3 * 0.6, 0, -rh3 * 1.6);
+            ctx.fill();
+            ctx.restore();
+            _lastColorKey = -1; // restore() revierte fillStyle
         } else {
             ctx.fillRect(screenX - tamano / 2, screenY - tamano / 2, tamano, tamano);
         }

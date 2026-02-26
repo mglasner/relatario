@@ -441,14 +441,14 @@ export function emitirClima(estacion, anchoCanvas, camaraX, camaraY) {
         // Pétalos: cada 4 frames — colores saturados rosados/fucsia, tamaño mayor
         if (frameCount % 4 === 0) {
             const paletas = [
-                [230, 80, 130],   // rosa fucsia
-                [220, 60, 110],   // cerezo
-                [200, 80, 200],   // violeta
-                [245, 160, 60],   // naranja durazno
-                [80, 180, 220],   // celeste
-                [255, 220, 60],   // amarillo pollito
-                [160, 220, 80],   // verde lima
-                [240, 130, 180],  // rosa claro
+                [230, 80, 130], // rosa fucsia
+                [220, 60, 110], // cerezo
+                [200, 80, 200], // violeta
+                [245, 160, 60], // naranja durazno
+                [80, 180, 220], // celeste
+                [255, 220, 60], // amarillo pollito
+                [160, 220, 80], // verde lima
+                [240, 130, 180], // rosa claro
             ];
             const c = paletas[Math.floor(Math.random() * paletas.length)];
             // vidaMax variable sirve como semilla de fase para la oscilación
@@ -668,14 +668,35 @@ export function renderizarParticulas(ctx, camaraX, camaraY, anchoCanvas, altoCan
             p.tipo === 'aura' ||
             p.tipo === 'afterimage' ||
             p.tipo === 'burbuja' ||
-            p.tipo === 'petalo' ||
-            p.tipo === 'hoja' ||
             p.tipo === 'destello-clima'
         ) {
             // Circulos para efecto suave
             ctx.beginPath();
             ctx.arc(px, py, p.tamano, 0, TAU);
             ctx.fill();
+        } else if (p.tipo === 'petalo') {
+            // Pétalo: elipse alargada rotada según dirección de movimiento
+            const angPetalo = Math.atan2(p.vy, p.vx);
+            ctx.save();
+            ctx.translate(px, py);
+            ctx.rotate(angPetalo);
+            ctx.beginPath();
+            ctx.ellipse(0, 0, p.tamano * 1.4, p.tamano * 0.55, 0, 0, TAU);
+            ctx.fill();
+            ctx.restore();
+        } else if (p.tipo === 'hoja') {
+            // Hoja: óvalo puntiagudo con bezier, orientado según movimiento
+            const angHoja = Math.atan2(p.vy, p.vx) + Math.PI * 0.5;
+            const rh = p.tamano;
+            ctx.save();
+            ctx.translate(px, py);
+            ctx.rotate(angHoja);
+            ctx.beginPath();
+            ctx.moveTo(0, -rh * 1.6);
+            ctx.bezierCurveTo(rh * 0.85, -rh * 0.6, rh * 0.85, rh * 0.6, 0, rh * 1.6);
+            ctx.bezierCurveTo(-rh * 0.85, rh * 0.6, -rh * 0.85, -rh * 0.6, 0, -rh * 1.6);
+            ctx.fill();
+            ctx.restore();
         } else if (p.tipo === 'lluvia-clima') {
             // Gota de lluvia: línea vertical delgada
             ctx.fillRect(px, py, 1, 5);

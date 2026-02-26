@@ -72,14 +72,14 @@ function emitirParticulasClimaLab(ancho, alto) {
     } else if (climaEstacion === 'primavera') {
         if (climaFrame % 4 === 0) {
             const paletas = [
-                [230, 80, 130],   // rosa fucsia
-                [220, 60, 110],   // cerezo
-                [200, 80, 200],   // violeta
-                [245, 160, 60],   // naranja durazno
-                [80, 180, 220],   // celeste
-                [255, 220, 60],   // amarillo pollito
-                [160, 220, 80],   // verde lima
-                [240, 130, 180],  // rosa claro
+                [230, 80, 130], // rosa fucsia
+                [220, 60, 110], // cerezo
+                [200, 80, 200], // violeta
+                [245, 160, 60], // naranja durazno
+                [80, 180, 220], // celeste
+                [255, 220, 60], // amarillo pollito
+                [160, 220, 80], // verde lima
+                [240, 130, 180], // rosa claro
             ];
             const c = paletas[Math.floor(Math.random() * paletas.length)];
             const vidaMax = 140 + Math.floor(Math.random() * 80);
@@ -237,10 +237,33 @@ function loopClimaLab() {
             climaCtx.fillRect(p.x, p.y, 1, 5);
         } else if (p.tipo === 'lluvia-suave') {
             climaCtx.fillRect(p.x, p.y, 0.5, 3);
-        } else if (p.tipo === 'petalo' || p.tipo === 'hoja' || p.tipo === 'destello-luz') {
+        } else if (p.tipo === 'destello-luz') {
             climaCtx.beginPath();
             climaCtx.arc(p.x, p.y, p.tam, 0, Math.PI * 2);
             climaCtx.fill();
+        } else if (p.tipo === 'petalo') {
+            // Pétalo: elipse alargada rotada según dirección de movimiento
+            const angPetalo = Math.atan2(p.vy, p.vx);
+            climaCtx.save();
+            climaCtx.translate(p.x, p.y);
+            climaCtx.rotate(angPetalo);
+            climaCtx.beginPath();
+            climaCtx.ellipse(0, 0, p.tam * 1.4, p.tam * 0.55, 0, 0, Math.PI * 2);
+            climaCtx.fill();
+            climaCtx.restore();
+        } else if (p.tipo === 'hoja') {
+            // Hoja: óvalo puntiagudo con bezier, orientado según movimiento
+            const angHoja = Math.atan2(p.vy, p.vx) + Math.PI * 0.5;
+            const rh = p.tam;
+            climaCtx.save();
+            climaCtx.translate(p.x, p.y);
+            climaCtx.rotate(angHoja);
+            climaCtx.beginPath();
+            climaCtx.moveTo(0, -rh * 1.6);
+            climaCtx.bezierCurveTo(rh * 0.85, -rh * 0.6, rh * 0.85, rh * 0.6, 0, rh * 1.6);
+            climaCtx.bezierCurveTo(-rh * 0.85, rh * 0.6, -rh * 0.85, -rh * 0.6, 0, -rh * 1.6);
+            climaCtx.fill();
+            climaCtx.restore();
         } else {
             // mota
             const mitad = p.tam / 2;
