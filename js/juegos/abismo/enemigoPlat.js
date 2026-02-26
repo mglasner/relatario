@@ -89,6 +89,7 @@ function crearEnemigo(col, fila, esBossFlag, datos, patron) {
         cooldownAtaque: 0,
         invulStomp: 0,
         stunFrames: 0,
+        timerBloqueoInversion: 0,
         frameAnim: 0,
         contadorAnim: 0,
         patron: esBossFlag ? 'patrullero' : patron || 'patrullero',
@@ -142,17 +143,26 @@ export function iniciarEnemigos(spawnsEnemigos, spawnBoss) {
     }
 }
 
-// Movimiento horizontal con detección de paredes y precipicios
+// Movimiento horizontal con detección de paredes y precipicios.
+// timerBloqueoInversion evita que el enemigo oscile izquierda/derecha
+// en plataformas angostas o bordes con vacío a ambos lados.
 function moverPatrulla(e, enPiso) {
     const nuevaX = resolverColisionX(e.x, e.y, e.ancho, e.alto, e.vx, enPiso);
     if (nuevaX === e.x && e.vx !== 0) {
-        e.direccion *= -1;
+        // Chocó contra una pared: girar (con cooldown anti-oscilación)
+        if (e.timerBloqueoInversion <= 0) {
+            e.direccion *= -1;
+            e.timerBloqueoInversion = 8;
+        }
     } else {
         const bordeX = e.direccion > 0 ? nuevaX + e.ancho + 2 : nuevaX - 2;
         const pieY = e.y + e.alto + 2;
-        if (!esSolido(bordeX, pieY) && enPiso) {
+        if (!esSolido(bordeX, pieY) && enPiso && e.timerBloqueoInversion <= 0) {
+            // Precipicio adelante y cooldown libre: girar sin mover
             e.direccion *= -1;
+            e.timerBloqueoInversion = 8;
         } else {
+            // Sin precipicio, precipicio con cooldown activo, o en el aire: mover
             e.x = nuevaX;
         }
     }
@@ -175,6 +185,7 @@ export function actualizarEnemigos(jugadorPos) {
 
         if (e.cooldownAtaque > 0) e.cooldownAtaque--;
         if (e.invulStomp > 0) e.invulStomp--;
+        if (e.timerBloqueoInversion > 0) e.timerBloqueoInversion--;
         if (e.stunFrames > 0) {
             e.stunFrames--;
             // Durante stun: solo aplicar gravedad, no patrullar
