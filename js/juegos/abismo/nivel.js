@@ -212,3 +212,12 @@ export function obtenerTile(fila, col) {
     }
     return mapa[fila][col];
 }
+
+// Retorna una copia del mapa actual (para uso de powerups.js)
+export function obtenerMapaSnapshot() {
+    const snap = [];
+    for (let f = 0; f < mapa.length; f++) {
+        snap.push(mapa[f].slice());
+    }
+    return snap;
+}

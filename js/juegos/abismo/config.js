@@ -103,4 +103,33 @@ export const CFG = {
         jugadorCorrerVel: 6,
         jugadorAgacharseVel: 6,
     },
+    powerups: {
+        zonaAncho: 20,
+        respawnExtra: 600,
+        animVelocidad: 0.05,
+        animAmplitud: 2,
+        umbralParpadeo: 180,
+        periodoParpadeo: 8,
+        imgTamano: 12,
+        tipos: {
+            'anillo-viento': {
+                img: 'assets/img/tesoros/anillo-viento.webp',
+                efecto: 'doble-salto',
+                duracion: 480,
+                auraColor: [100, 200, 100],
+            },
+            'pluma-fenix': {
+                img: 'assets/img/tesoros/pluma-fenix.webp',
+                efecto: 'escudo',
+                duracionMax: 900,
+                auraColor: [255, 150, 50],
+            },
+            'brujula-estelar': {
+                img: 'assets/img/tesoros/brujula-estelar.webp',
+                efecto: 'invu-velocidad',
+                duracion: 300,
+                auraColor: [255, 220, 50],
+            },
+        },
+    },
 };

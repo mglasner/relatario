@@ -7,16 +7,26 @@ import { est, resetearEstado, timeouts } from './estado.js';
 import {
     obtenerSpawns,
     resetearMapa,
+    obtenerMapaSnapshot,
     obtenerFilas,
     obtenerColumnas,
     obtenerTile,
 } from './nivel.js';
+import {
+    iniciarPowerups,
+    actualizarPowerups,
+    renderizarPowerups,
+    verificarColisionPowerup,
+    limpiarPowerups,
+} from './powerups.js';
 import {
     crearPantalla,
     actualizarHUDJugador,
     actualizarHUDInventario,
     actualizarHUDBoss,
     ocultarHUDBoss,
+    actualizarHUDPowerup,
+    ocultarHUDPowerup,
     reescalarCanvas,
     obtenerDPR,
     limpiarDOM,
@@ -41,6 +51,7 @@ import {
     renderizarIndicadorBoss,
     renderizarEfectoClima,
     reiniciarEstadoClima,
+    renderizarAuraPowerup,
     limpiarRenderer,
     tipoAbismo,
 } from './renderer.js';
@@ -54,6 +65,8 @@ import {
     caerAlAbismo,
     recibirDano,
     aplicarStompRebote,
+    aplicarPowerup,
+    obtenerPowerupActivo,
     detectarMetaTile,
     acabaDeAterrizar,
     obtenerColor,
@@ -98,6 +111,7 @@ import {
     emitirEstelaBoss,
     emitirTelegrafo,
     emitirProyectilEstela,
+    emitirRecogerPowerup,
     emitirClima,
     actualizarParticulas,
     renderizarParticulas,
@@ -115,6 +129,22 @@ const TAM = CFG.tiles.tamano;
 
 // Estación climática activa para esta partida (null = sin clima)
 let estacionActiva = null;
+
+// Descripción corta de cada efecto para el toast y el HUD
+const DESC_POWERUP = {
+    'doble-salto': '¡Doble salto!',
+    escudo: '¡Próximo golpe absorbido!',
+    'invu-velocidad': '¡Invencible y veloz!',
+};
+
+// Mapa precalculado efecto → config del tipo (evita búsqueda O(n) cada frame)
+const TIPO_POR_EFECTO = {};
+for (const [id, cfg] of Object.entries(CFG.powerups.tipos)) {
+    TIPO_POR_EFECTO[cfg.efecto] = { id, ...cfg };
+}
+
+// Color del aura del power-up activo (para renderizarAuraPowerup)
+let auraColorActiva = null;
 
 // --- Crear DOM (delegado a domPlat.js) ---
 
@@ -425,6 +455,25 @@ const gameLoop4 = crearGameLoop(function (_tiempo, _dt) {
         verificarColisionesEnemigos();
         verificarColisionesAtaques();
         verificarAbismo();
+
+        // Power-ups
+        actualizarPowerups(obtenerFrameCount());
+        let pwInfo = obtenerPowerupActivo();
+        const hitPw = verificarColisionPowerup(
+            { x: jugPos.x, y: jugPos.y, ancho: jugPos.ancho, alto: jugPos.alto },
+            pwInfo.framesRestantes
+        );
+        if (hitPw) {
+            aplicarPowerup(hitPw.efecto, hitPw.duracion);
+            auraColorActiva = hitPw.auraColor;
+            const centro = { x: jugPos.x + jugPos.ancho / 2, y: jugPos.y + jugPos.alto / 2 };
+            emitirRecogerPowerup(centro.x, centro.y, ...hitPw.auraColor);
+            lanzarToast(hitPw.nombre + ' — ' + DESC_POWERUP[hitPw.efecto], '\u2728', 'info');
+            pwInfo = obtenerPowerupActivo();
+        }
+        // Limpiar color si el buff expiró
+        if (pwInfo.tipo === null) auraColorActiva = null;
+
         verificarVictoria();
     }
 
@@ -462,10 +511,26 @@ function renderFrame() {
     // Particulas detras de personajes (niebla, aura)
     renderizarParticulas(est.ctx, camX, camY, est.anchoCanvas, est.altoCanvas);
 
+    // Power-ups en el mapa (antes de personajes para quedar detrás)
+    renderizarPowerups(est.ctx, camX, camY, est.anchoCanvas, est.altoCanvas);
+
     // Enemigos, ataques y jugador
     renderizarEnemigos(est.ctx, camX, camY);
     renderizarAtaques(est.ctx, camX, camY);
     renderizarJugador(est.ctx, camX, camY);
+
+    // Aura del power-up activo (encima del jugador)
+    const pwActivo = obtenerPowerupActivo();
+    if (pwActivo.tipo !== null && auraColorActiva) {
+        const jugPosAura = obtenerPosicion();
+        renderizarAuraPowerup(
+            est.ctx,
+            { ...jugPosAura, camaraX: camX, camaraY: camY },
+            pwActivo,
+            obtenerFrameCount(),
+            auraColorActiva
+        );
+    }
 
     // Vineta
     renderizarVineta(est.ctx);
@@ -500,6 +565,21 @@ function renderFrame() {
         );
     } else {
         ocultarHUDBoss();
+    }
+
+    // HUD power-up activo (reutiliza pwActivo ya leído arriba)
+    if (pwActivo.tipo !== null && auraColorActiva) {
+        const tipoCfg = TIPO_POR_EFECTO[pwActivo.tipo];
+        const duracionMax = tipoCfg.duracion ?? tipoCfg.duracionMax ?? 480;
+        actualizarHUDPowerup({
+            desc: DESC_POWERUP[pwActivo.tipo],
+            framesRestantes: pwActivo.framesRestantes,
+            duracionMax,
+            auraColor: auraColorActiva,
+            imgSrc: tipoCfg.img,
+        });
+    } else {
+        ocultarHUDPowerup();
     }
 }
 
@@ -568,6 +648,8 @@ export function iniciarAbismo(jugadorRef, callback, dpadArgumento) {
     iniciarCamara(est.anchoCanvas, est.altoCanvas);
     iniciarJugador(jugadorRef, est.teclasRef);
     iniciarEnemigos(spawns.enemigos, spawns.boss);
+    iniciarPowerups(obtenerMapaSnapshot(), obtenerFilas(), obtenerColumnas());
+    auraColorActiva = null;
 
     // Toast de inicio
     lanzarToast('El Abismo: \u00a1Cuidado con las ca\u00eddas!', '\ud83c\udf0a', 'estado');
@@ -638,6 +720,7 @@ export function limpiarAbismo() {
 
     limpiarEnemigos();
     limpiarAtaques();
+    limpiarPowerups();
     limpiarParticulas();
     limpiarParallax();
     limpiarTexturas();
@@ -654,5 +737,6 @@ export function limpiarAbismo() {
     if (juegoEl) juegoEl.classList.remove('juego-inmersivo');
 
     estacionActiva = null;
+    auraColorActiva = null;
     resetearEstado();
 }

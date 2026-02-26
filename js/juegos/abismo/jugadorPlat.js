@@ -56,6 +56,15 @@ let saltoCortado = false;
 // Escala del jugador (para stomp proporcional)
 let escalaJugador = 1;
 
+// Velocidad base sin modificadores (para restaurar tras buff)
+let velocidadBase = FIS.velocidadJugador;
+
+// Power-up activo
+let powerupActivo = null; // 'doble-salto' | 'escudo' | 'invu-velocidad' | null
+let powerupFrames = 0; // frames restantes del buff
+let doblesSaltoDisp = 0; // 0 o 1 (recarga al aterrizar)
+let escudoActivo = false;
+
 export function iniciarJugador(jugador, teclas) {
     jugadorRef = jugador;
     teclasRef = teclas;
@@ -72,6 +81,7 @@ export function iniciarJugador(jugador, teclas) {
     spriteDrawW = sd.ancho;
     spriteDrawH = sd.alto;
     velocidadMov = calcularVelocidadPlat(jugador.velocidad);
+    velocidadBase = velocidadMov;
     fuerzaSaltoActual = calcularFuerzaSalto(esc);
 
     const spawn = obtenerSpawnJugador();
@@ -92,6 +102,10 @@ export function iniciarJugador(jugador, teclas) {
     contadorAnim = 0;
     estabaSuelo = true;
     yAnterior = y;
+    powerupActivo = null;
+    powerupFrames = 0;
+    doblesSaltoDisp = 0;
+    escudoActivo = false;
 }
 
 // --- Sub-funciones de actualizacion ---
@@ -135,7 +149,8 @@ function procesarMovimientoX() {
 }
 
 function procesarSalto() {
-    if (!estaAgachado && teclasRef['ArrowUp']) {
+    const quiereSubir = !estaAgachado && teclasRef['ArrowUp'];
+    if (quiereSubir) {
         jumpBufferFrames = FIS.jumpBuffer;
     } else if (jumpBufferFrames > 0) {
         jumpBufferFrames--;
@@ -143,6 +158,8 @@ function procesarSalto() {
 
     if (estaEnSuelo) {
         coyoteFrames = FIS.coyoteTime;
+        // Recargar doble salto al aterrizar
+        if (powerupActivo === 'doble-salto') doblesSaltoDisp = 1;
     } else if (coyoteFrames > 0) {
         coyoteFrames--;
     }
@@ -152,6 +169,18 @@ function procesarSalto() {
         jumpBufferFrames = 0;
         coyoteFrames = 0;
         saltoCortado = false;
+    } else if (
+        powerupActivo === 'doble-salto' &&
+        doblesSaltoDisp > 0 &&
+        !estaEnSuelo &&
+        quiereSubir &&
+        vy >= 0
+    ) {
+        // Doble salto: solo al inicio de la caída (vy >= 0) para no activar mientras sube
+        vy = fuerzaSaltoActual;
+        doblesSaltoDisp--;
+        saltoCortado = false;
+        jumpBufferFrames = 0;
     }
 
     if (!saltoCortado && vy < 0 && !teclasRef['ArrowUp']) {
@@ -183,6 +212,15 @@ export function actualizarJugador() {
     aplicarGravedad();
 
     if (invulFrames > 0) invulFrames--;
+
+    // Descontar buff activo
+    if (powerupActivo !== null && powerupFrames > 0) {
+        powerupFrames--;
+        if (powerupFrames <= 0) {
+            desactivarPowerup();
+        }
+    }
+
     estabaSuelo = anteriorEnSuelo;
     actualizarEstado(inputX);
 }
@@ -241,6 +279,15 @@ export function caerAlAbismo() {
 export function recibirDano(dano, desdeX) {
     if (!jugadorRef || invulFrames > 0) return false;
 
+    // Escudo: absorber el golpe sin daño
+    if (escudoActivo) {
+        escudoActivo = false;
+        powerupActivo = null;
+        powerupFrames = 0;
+        invulFrames = FIS.invulnerabilidad;
+        return false;
+    }
+
     jugadorRef.recibirDano(dano);
     notificarVidaCambio();
 
@@ -262,6 +309,52 @@ export function aplicarStompRebote(saltandoActivo) {
     saltoCortado = false;
     // Breve invulnerabilidad post-stomp para que el rebote separe al jugador
     if (invulFrames < FIS.invulPostStomp) invulFrames = FIS.invulPostStomp;
+}
+
+function desactivarPowerup() {
+    if (powerupActivo === 'invu-velocidad') {
+        velocidadMov = velocidadBase;
+    }
+    powerupActivo = null;
+    powerupFrames = 0;
+    doblesSaltoDisp = 0;
+    escudoActivo = false;
+}
+
+/**
+ * Aplica un power-up al jugador. Si ya hay uno activo, lo reemplaza.
+ * @param {string} efecto - 'doble-salto' | 'escudo' | 'invu-velocidad'
+ * @param {number} duracion - frames de duración del buff
+ */
+export function aplicarPowerup(efecto, duracion) {
+    // Desactivar el anterior limpiando modificadores
+    if (powerupActivo === 'invu-velocidad') {
+        velocidadMov = velocidadBase;
+    }
+
+    powerupActivo = efecto;
+    powerupFrames = duracion;
+
+    if (efecto === 'doble-salto') {
+        doblesSaltoDisp = 1;
+        escudoActivo = false;
+    } else if (efecto === 'escudo') {
+        escudoActivo = true;
+        doblesSaltoDisp = 0;
+    } else if (efecto === 'invu-velocidad') {
+        invulFrames = Math.max(invulFrames, duracion);
+        velocidadMov = velocidadBase * 1.5;
+        escudoActivo = false;
+        doblesSaltoDisp = 0;
+    }
+}
+
+/**
+ * Retorna el estado actual del power-up para el renderer.
+ * @returns {{ tipo: string|null, framesRestantes: number }}
+ */
+export function obtenerPowerupActivo() {
+    return { tipo: powerupActivo, framesRestantes: powerupFrames };
 }
 
 export function obtenerEscala() {

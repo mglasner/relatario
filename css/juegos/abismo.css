@@ -149,6 +149,65 @@
     border-radius: 4px;
 }
 
+/* HUD overlay: power-up activo (esquina superior derecha del canvas) */
+.plat-hud-powerup {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgb(0 0 0 / 55%);
+    border: 1px solid var(--pw-color, rgb(255 255 255 / 25%));
+    border-radius: 6px;
+    padding: 4px 6px 4px 4px;
+    pointer-events: none;
+    z-index: 5;
+    min-width: 100px;
+}
+
+.plat-powerup-img {
+    width: 20px;
+    height: 20px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 1.5px solid var(--pw-color, rgb(255 255 255 / 30%));
+    flex-shrink: 0;
+}
+
+.plat-powerup-texto {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1;
+    min-width: 0;
+}
+
+.plat-powerup-desc {
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 0.6rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 0 1px 3px rgb(0 0 0 / 80%);
+}
+
+.plat-powerup-barra-fondo {
+    width: 100%;
+    height: 4px;
+    background: rgb(255 255 255 / 15%);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.plat-powerup-barra {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.1s linear;
+}
+
 /* --- Ajustes landscape para modo inmersivo (mobile) --- */
 
 @media (orientation: landscape) and (pointer: coarse) {

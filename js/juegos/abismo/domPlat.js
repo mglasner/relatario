@@ -13,6 +13,13 @@ let hudBossVida = null;
 let canvasRef = null;
 let canvasDPR = 1;
 
+// Referencias al HUD de power-up activo
+let hudPowerupContenedor = null;
+let hudPowerupDesc = null;
+let hudPowerupBarra = null;
+let hudPowerupImg = null;
+let hudPowerupImgSrc = '';
+
 // Referencias al HUD in-canvas (vida jugador + inventario + boton huir)
 let hudJugadorContenedor = null;
 let hudJugadorVida = null;
@@ -112,9 +119,37 @@ export function crearPantalla(esTouch, onHuir) {
     hudBossContenedor.appendChild(hudBossNombre);
     hudBossContenedor.appendChild(barraFondo);
 
+    // HUD overlay: power-up activo (esquina superior derecha)
+    hudPowerupContenedor = document.createElement('div');
+    hudPowerupContenedor.className = 'plat-hud-powerup';
+    hudPowerupContenedor.style.display = 'none';
+
+    hudPowerupImg = document.createElement('img');
+    hudPowerupImg.className = 'plat-powerup-img';
+    hudPowerupImg.alt = '';
+
+    const pwTexto = document.createElement('div');
+    pwTexto.className = 'plat-powerup-texto';
+
+    hudPowerupDesc = document.createElement('span');
+    hudPowerupDesc.className = 'plat-powerup-desc';
+
+    const pwBarraFondo = document.createElement('div');
+    pwBarraFondo.className = 'plat-powerup-barra-fondo';
+
+    hudPowerupBarra = document.createElement('div');
+    hudPowerupBarra.className = 'plat-powerup-barra';
+
+    pwBarraFondo.appendChild(hudPowerupBarra);
+    pwTexto.appendChild(hudPowerupDesc);
+    pwTexto.appendChild(pwBarraFondo);
+    hudPowerupContenedor.appendChild(hudPowerupImg);
+    hudPowerupContenedor.appendChild(pwTexto);
+
     wrapper.appendChild(canvas);
     wrapper.appendChild(hudJugadorContenedor);
     wrapper.appendChild(hudBossContenedor);
+    wrapper.appendChild(hudPowerupContenedor);
 
     pantalla.appendChild(wrapper);
 
@@ -180,6 +215,34 @@ export function ocultarHUDBoss() {
     if (hudBossContenedor) hudBossContenedor.style.display = 'none';
 }
 
+// --- API para el HUD de power-up activo ---
+
+export function actualizarHUDPowerup({ desc, framesRestantes, duracionMax, auraColor, imgSrc }) {
+    if (!hudPowerupContenedor) return;
+    hudPowerupContenedor.style.display = 'flex';
+
+    if (hudPowerupDesc) hudPowerupDesc.textContent = desc;
+
+    // Actualizar imagen solo si cambió
+    if (hudPowerupImg && imgSrc !== hudPowerupImgSrc) {
+        hudPowerupImg.src = imgSrc;
+        hudPowerupImgSrc = imgSrc;
+    }
+
+    // Barra de progreso (decrece con el tiempo)
+    if (hudPowerupBarra) {
+        const ratio = Math.max(0, framesRestantes / duracionMax);
+        hudPowerupBarra.style.width = Math.round(ratio * 100) + '%';
+        const [r, g, b] = auraColor;
+        hudPowerupBarra.style.backgroundColor = 'rgb(' + r + ',' + g + ',' + b + ')';
+        hudPowerupContenedor.style.setProperty('--pw-color', 'rgb(' + r + ',' + g + ',' + b + ')');
+    }
+}
+
+export function ocultarHUDPowerup() {
+    if (hudPowerupContenedor) hudPowerupContenedor.style.display = 'none';
+}
+
 export function reescalarCanvas() {
     if (!canvasRef) return;
     const escala = calcularEscala(canvasRef);
@@ -207,6 +270,11 @@ export function limpiarDOM() {
     hudJugadorVida = null;
     hudJugadorVidaAnterior = -1;
     hudJugadorInventario = null;
+    hudPowerupContenedor = null;
+    hudPowerupDesc = null;
+    hudPowerupBarra = null;
+    hudPowerupImg = null;
+    hudPowerupImgSrc = '';
     canvasRef = null;
     canvasDPR = 1;
 }

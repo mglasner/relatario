@@ -134,3 +134,30 @@ sprites:
     jugadorIdleVel: 30 # frames entre cada frame de idle
     jugadorCorrerVel: 6 # frames entre cada frame de correr
     jugadorAgacharseVel: 6 # frames entre cada frame de agacharse
+
+# --- Power-ups coleccionables ---
+# Objetos flotantes que reaparecen al expirar el buff
+powerups:
+    zonaAncho: 20           # columnas por zona para distribuir spawns
+    respawnExtra: 600       # frames extra post-buff antes de reaparecer
+    animVelocidad: 0.05     # rad/frame de la animación flotante
+    animAmplitud: 2         # px de desplazamiento vertical
+    umbralParpadeo: 180     # frames restantes al iniciar parpadeo del aura (3s)
+    periodoParpadeo: 8      # frames entre pulsos del parpadeo del aura
+    imgTamano: 12           # px del sprite en pantalla
+    tipos:
+        anillo-viento:
+            img: assets/img/tesoros/anillo-viento.webp
+            efecto: doble-salto
+            duracion: 480
+            auraColor: [100, 200, 100]
+        pluma-fenix:
+            img: assets/img/tesoros/pluma-fenix.webp
+            efecto: escudo
+            duracionMax: 900
+            auraColor: [255, 150, 50]
+        brujula-estelar:
+            img: assets/img/tesoros/brujula-estelar.webp
+            efecto: invu-velocidad
+            duracion: 300
+            auraColor: [255, 220, 50]

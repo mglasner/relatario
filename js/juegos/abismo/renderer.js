@@ -315,6 +315,40 @@ export function renderizarEfectoClima(ctx, estacion, anchoCanvas, altoCanvas, fr
     }
 }
 
+/**
+ * Renderiza el aura de color alrededor del jugador cuando tiene un power-up activo.
+ * Parpadea en los últimos segundos antes de expirar.
+ * @param {CanvasRenderingContext2D} ctx
+ * @param {{ x: number, y: number, ancho: number, alto: number }} jugPos
+ * @param {{ tipo: string|null, framesRestantes: number }} powerupInfo
+ * @param {number} frameCount
+ * @param {number[]} auraColor - [r, g, b] del power-up activo
+ */
+export function renderizarAuraPowerup(ctx, jugPos, powerupInfo, frameCount, auraColor) {
+    if (!powerupInfo.tipo || !auraColor) return;
+
+    const PW = CFG.powerups;
+    const { framesRestantes } = powerupInfo;
+
+    // Parpadeo en los últimos 3 segundos
+    if (framesRestantes < PW.umbralParpadeo) {
+        if (Math.floor(frameCount / PW.periodoParpadeo) % 2 === 0) return;
+    }
+
+    const cx = jugPos.x - jugPos.camaraX + jugPos.ancho / 2;
+    const cy = jugPos.y - jugPos.camaraY + jugPos.alto / 2;
+    const [r, g, b] = auraColor;
+    const radio = 20;
+
+    const grad = ctx.createRadialGradient(cx, cy, 2, cx, cy, radio);
+    grad.addColorStop(0, 'rgba(' + r + ',' + g + ',' + b + ',0.35)');
+    grad.addColorStop(1, 'rgba(' + r + ',' + g + ',' + b + ',0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, radio, 0, Math.PI * 2);
+    ctx.fill();
+}
+
 export function limpiarRenderer() {
     vinetaCanvas = null;
     relampagueoFrames = 0;

@@ -381,6 +381,29 @@ export function emitirImpactoSuelo(cx, cy, r, g, b) {
     }
 }
 
+// Burst de chispas al recoger un power-up
+export function emitirRecogerPowerup(x, y, r, g, b) {
+    const cantidad = 8 + Math.floor(Math.random() * 4);
+    for (let i = 0; i < cantidad; i++) {
+        const ang = (i / cantidad) * Math.PI * 2 + Math.random() * 0.4;
+        const vel = 1.5 + Math.random() * 2;
+        emitir({
+            x,
+            y,
+            vx: Math.cos(ang) * vel,
+            vy: Math.sin(ang) * vel,
+            vida: 20 + Math.floor(Math.random() * 15),
+            tamano: 2 + Math.random() * 1.5,
+            r,
+            g,
+            b,
+            alpha: 0.9,
+            gravedad: true,
+            tipo: 'chispa',
+        });
+    }
+}
+
 // --- Estado de clima (ráfaga de otoño) ---
 
 let rafagaCounter = 0;
