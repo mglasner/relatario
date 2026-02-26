@@ -554,8 +554,12 @@ export function iniciarAbismo(jugadorRef, callback, dpadArgumento) {
     // Mostrar llaves ya recolectadas en el HUD
     actualizarHUDInventario(est.jugador.inventario);
 
+    // Sortear estación climática (antes de iniciarParallax para pintar el fondo correcto)
+    estacionActiva = sortearEstacion();
+    reiniciarEstadoClima();
+
     // Iniciar sistemas visuales
-    iniciarParallax();
+    iniciarParallax(estacionActiva);
     iniciarTexturas();
     iniciarRenderer(est.anchoCanvas, est.altoCanvas);
     iniciarSpritesJugador(jugadorRef.nombre, jugadorRef.colorHud || '#bb86fc');
@@ -565,10 +569,6 @@ export function iniciarAbismo(jugadorRef, callback, dpadArgumento) {
     iniciarCamara(est.anchoCanvas, est.altoCanvas);
     iniciarJugador(jugadorRef, est.teclasRef);
     iniciarEnemigos(spawns.enemigos, spawns.boss);
-
-    // Sortear estación climática para esta partida
-    estacionActiva = sortearEstacion();
-    reiniciarEstadoClima();
 
     // Toast de inicio
     lanzarToast('El Abismo: \u00a1Cuidado con las ca\u00eddas!', '\ud83c\udf0a', 'estado');

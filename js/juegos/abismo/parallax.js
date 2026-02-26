@@ -13,6 +13,9 @@ let capaMontanas = null;
 let capaRiscos = null;
 let capaNiebla = null;
 
+// Indica si el fondo es de día (primavera/verano)
+let esDeDia = false;
+
 // Velocidades de parallax por capa (relativas a la camara)
 const VEL_NEBLINA = 0.05;
 const VEL_MONTANAS = 0.1;
@@ -28,9 +31,53 @@ function ruido1D(x, seed) {
     );
 }
 
+// --- Paletas de fondo por estación ---
+
+const PALETA_NOCHE = {
+    cieloTop: '#050520',
+    cieloMid: '#0a0a3e',
+    cieloBot: '#0d0d48',
+    neblinaColores: [
+        [80, 40, 120],
+        [40, 60, 130],
+        [100, 50, 100],
+    ],
+    montanas: '#12123a',
+    riscos: '#18184a',
+    nieblaColor: [100, 80, 160],
+};
+
+const PALETA_PRIMAVERA = {
+    cieloTop: '#4a9ed4',
+    cieloMid: '#7ec8e8',
+    cieloBot: '#ffe8b8',
+    neblinaColores: [
+        [255, 250, 240],
+        [230, 245, 220],
+        [200, 230, 255],
+    ],
+    montanas: '#2d6020',
+    riscos: '#224818',
+    nieblaColor: [180, 230, 160],
+};
+
+const PALETA_VERANO = {
+    cieloTop: '#1a5fa8',
+    cieloMid: '#3a8fd4',
+    cieloBot: '#e8c040',
+    neblinaColores: [
+        [255, 245, 200],
+        [255, 230, 150],
+        [240, 220, 180],
+    ],
+    montanas: '#3a5420',
+    riscos: '#2e4018',
+    nieblaColor: [255, 210, 80],
+};
+
 // --- Generadores de cada capa ---
 
-function generarCielo() {
+function generarCielo(paleta) {
     const c = document.createElement('canvas');
     c.width = ANCHO;
     c.height = ALTO;
@@ -38,45 +85,55 @@ function generarCielo() {
 
     // Gradiente de fondo
     const grad = ctx.createLinearGradient(0, 0, 0, ALTO);
-    grad.addColorStop(0, '#050520');
-    grad.addColorStop(0.6, '#0a0a3e');
-    grad.addColorStop(1, '#0d0d48');
+    grad.addColorStop(0, paleta.cieloTop);
+    grad.addColorStop(0.6, paleta.cieloMid);
+    grad.addColorStop(1, paleta.cieloBot);
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, ANCHO, ALTO);
 
-    // Estrellas (~80)
-    for (let i = 0; i < 80; i++) {
-        const sx = (i * 137 + 51) % ANCHO;
-        const sy = (i * 89 + 23) % (ALTO - 40);
-        const tamano = i % 3 === 0 ? 2 : 1;
-        const brillo = 0.4 + (i % 5) * 0.12;
-        ctx.fillStyle = 'rgba(255,255,255,' + brillo + ')';
-        ctx.fillRect(sx, sy, tamano, tamano);
+    if (paleta === PALETA_NOCHE) {
+        // Estrellas (~80) solo de noche
+        for (let i = 0; i < 80; i++) {
+            const sx = (i * 137 + 51) % ANCHO;
+            const sy = (i * 89 + 23) % (ALTO - 40);
+            const tamano = i % 3 === 0 ? 2 : 1;
+            const brillo = 0.4 + (i % 5) * 0.12;
+            ctx.fillStyle = 'rgba(255,255,255,' + brillo + ')';
+            ctx.fillRect(sx, sy, tamano, tamano);
+        }
+    } else {
+        // Sol visible de día: disco brillante en la esquina superior
+        const solX = paleta === PALETA_VERANO ? ANCHO * 0.15 : ANCHO * 0.78;
+        const solY = ALTO * 0.12;
+        const gradSol = ctx.createRadialGradient(solX, solY, 0, solX, solY, 28);
+        gradSol.addColorStop(0, 'rgba(255,255,220,0.95)');
+        gradSol.addColorStop(0.4, 'rgba(255,240,140,0.7)');
+        gradSol.addColorStop(1, 'rgba(255,220,80,0)');
+        ctx.fillStyle = gradSol;
+        ctx.fillRect(solX - 30, solY - 30, 60, 60);
     }
 
     return c;
 }
 
-function generarNeblina() {
+function generarNeblina(paleta) {
     const c = document.createElement('canvas');
     c.width = ANCHO * 2;
     c.height = ALTO;
     const ctx = c.getContext('2d');
 
-    // Circulos borrosos con blending aditivo
-    ctx.globalCompositeOperation = 'lighter';
-    const colores = [
-        [80, 40, 120], // violeta
-        [40, 60, 130], // azul
-        [100, 50, 100], // magenta
-    ];
+    if (paleta === PALETA_NOCHE) {
+        // Círculos borrosos con blending aditivo (aurora nocturna)
+        ctx.globalCompositeOperation = 'lighter';
+    }
 
     for (let i = 0; i < 12; i++) {
         const cx = (i * 97 + 30) % (ANCHO * 2);
         const cy = ALTO * 0.3 + ruido1D(i, 5.3) * ALTO * 0.3;
         const radio = 40 + (i % 4) * 25;
-        const col = colores[i % colores.length];
-        const alpha = 0.04 + (i % 3) * 0.015;
+        const col = paleta.neblinaColores[i % paleta.neblinaColores.length];
+        // Nubes de día más visibles, aurora nocturna más sutil
+        const alpha = paleta === PALETA_NOCHE ? 0.04 + (i % 3) * 0.015 : 0.06 + (i % 3) * 0.025;
 
         const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radio);
         grad.addColorStop(0, 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',' + alpha + ')');
@@ -85,19 +142,20 @@ function generarNeblina() {
         ctx.fillRect(cx - radio, cy - radio, radio * 2, radio * 2);
     }
 
-    ctx.globalCompositeOperation = 'source-over';
+    if (paleta === PALETA_NOCHE) {
+        ctx.globalCompositeOperation = 'source-over';
+    }
     return c;
 }
 
-function generarMontanas() {
+function generarMontanas(paleta) {
     const anchoTotal = ANCHO * 2;
     const c = document.createElement('canvas');
     c.width = anchoTotal;
     c.height = ALTO;
     const ctx = c.getContext('2d');
 
-    // Silueta de montanas lejanas
-    ctx.fillStyle = '#12123a';
+    ctx.fillStyle = paleta.montanas;
     ctx.beginPath();
     ctx.moveTo(0, ALTO);
 
@@ -114,15 +172,14 @@ function generarMontanas() {
     return c;
 }
 
-function generarRiscos() {
+function generarRiscos(paleta) {
     const anchoTotal = ANCHO * 2;
     const c = document.createElement('canvas');
     c.width = anchoTotal;
     c.height = ALTO;
     const ctx = c.getContext('2d');
 
-    // Silueta de riscos con picos pronunciados
-    ctx.fillStyle = '#18184a';
+    ctx.fillStyle = paleta.riscos;
     ctx.beginPath();
     ctx.moveTo(0, ALTO);
 
@@ -141,12 +198,14 @@ function generarRiscos() {
     return c;
 }
 
-function generarNiebla() {
+function generarNiebla(paleta) {
     const anchoTotal = ANCHO * 2;
     const c = document.createElement('canvas');
     c.width = anchoTotal;
     c.height = ALTO;
     const ctx = c.getContext('2d');
+
+    const [nr, ng, nb] = paleta.nieblaColor;
 
     // Franjas horizontales de niebla baja
     for (let i = 0; i < 6; i++) {
@@ -157,8 +216,8 @@ function generarNiebla() {
         const alpha = 0.06 + (i % 3) * 0.02;
 
         const grad = ctx.createLinearGradient(fx, fy, fx, fy + fh);
-        grad.addColorStop(0, 'rgba(100,80,160,' + alpha + ')');
-        grad.addColorStop(1, 'rgba(100,80,160,0)');
+        grad.addColorStop(0, 'rgba(' + nr + ',' + ng + ',' + nb + ',' + alpha + ')');
+        grad.addColorStop(1, 'rgba(' + nr + ',' + ng + ',' + nb + ',0)');
         ctx.fillStyle = grad;
         ctx.fillRect(fx, fy, fw, fh);
     }
@@ -168,34 +227,49 @@ function generarNiebla() {
 
 // --- API publica ---
 
-export function iniciarParallax() {
-    capaCielo = generarCielo();
-    capaNeblina = generarNeblina();
-    capaMontanas = generarMontanas();
-    capaRiscos = generarRiscos();
-    capaNiebla = generarNiebla();
+/**
+ * @param {string|null} estacion - Estación climática activa (null = noche por defecto)
+ */
+export function iniciarParallax(estacion) {
+    let paleta = PALETA_NOCHE;
+    if (estacion === 'primavera') paleta = PALETA_PRIMAVERA;
+    else if (estacion === 'verano') paleta = PALETA_VERANO;
+
+    esDeDia = paleta !== PALETA_NOCHE;
+
+    capaCielo = generarCielo(paleta);
+    capaNeblina = generarNeblina(paleta);
+    capaMontanas = generarMontanas(paleta);
+    capaRiscos = generarRiscos(paleta);
+    capaNiebla = generarNiebla(paleta);
 }
 
 export function renderizarParallax(ctx, camaraX, tiempo) {
     if (!capaCielo) return;
 
-    // Capa 0: Cielo fijo con estrellas parpadeantes
+    // Capa 0: Cielo fijo
     ctx.drawImage(capaCielo, 0, 0);
 
-    // Parpadeo de estrellas via globalAlpha sutil
-    const parpadeo = 0.85 + Math.sin(tiempo * 0.003) * 0.15;
-    ctx.globalAlpha = parpadeo;
-    // Dibujar unas pocas estrellas extra con parpadeo
-    ctx.fillStyle = 'rgba(200,220,255,0.6)';
-    for (let i = 0; i < 8; i++) {
-        const sx = (i * 53 + 17) % ANCHO;
-        const sy = (i * 41 + 7) % (ALTO / 2);
-        const t = Math.sin(tiempo * 0.005 + i * 1.7);
-        if (t > 0.3) {
-            ctx.fillRect(sx, sy, 1, 1);
+    if (esDeDia) {
+        // De día: brillo suave del sol (pulsante)
+        const brillo = 0.06 + Math.sin(tiempo * 0.002) * 0.03;
+        ctx.fillStyle = 'rgba(255,240,180,' + brillo.toFixed(3) + ')';
+        ctx.fillRect(0, 0, ANCHO, ALTO * 0.5);
+    } else {
+        // De noche: parpadeo de estrellas via globalAlpha sutil
+        const parpadeo = 0.85 + Math.sin(tiempo * 0.003) * 0.15;
+        ctx.globalAlpha = parpadeo;
+        ctx.fillStyle = 'rgba(200,220,255,0.6)';
+        for (let i = 0; i < 8; i++) {
+            const sx = (i * 53 + 17) % ANCHO;
+            const sy = (i * 41 + 7) % (ALTO / 2);
+            const t = Math.sin(tiempo * 0.005 + i * 1.7);
+            if (t > 0.3) {
+                ctx.fillRect(sx, sy, 1, 1);
+            }
         }
+        ctx.globalAlpha = 1;
     }
-    ctx.globalAlpha = 1;
 
     // Capa 1: Neblina/aurora (se desplaza lento)
     const offNeblina = (camaraX * VEL_NEBLINA) % capaNeblina.width;
@@ -225,4 +299,5 @@ export function limpiarParallax() {
     capaMontanas = null;
     capaRiscos = null;
     capaNiebla = null;
+    esDeDia = false;
 }
