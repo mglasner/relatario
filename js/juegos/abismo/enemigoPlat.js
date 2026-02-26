@@ -21,6 +21,7 @@ import {
 const TAM = CFG.tiles.tamano;
 const BOSS = CFG.boss;
 const COL = CFG.render;
+const PAT = CFG.patrones;
 
 // --- Pool de esbirros disponibles ---
 
@@ -33,7 +34,7 @@ const ELITES = Object.values(ENEMIGOS).filter(function (e) {
 
 // --- Clase Enemigo Platformer ---
 
-function crearEnemigo(col, fila, esBossFlag, datos) {
+function crearEnemigo(col, fila, esBossFlag, datos, patron) {
     const vidaMax = esBossFlag ? (datos ? datos.vidaMax : 100) : 1;
 
     // Determinar nombre legible
@@ -83,6 +84,15 @@ function crearEnemigo(col, fila, esBossFlag, datos) {
         stunFrames: 0,
         frameAnim: 0,
         contadorAnim: 0,
+        patron: esBossFlag ? 'patrullero' : patron || 'patrullero',
+        saltarinTimer:
+            patron === 'saltarin' ? Math.floor(Math.random() * PAT.saltarinIntervalo) : 0,
+        centinelaEstado: 'marcha',
+        centinelaTimer:
+            patron === 'centinela'
+                ? PAT.centinelaMarchaMin +
+                  Math.floor(Math.random() * (PAT.centinelaMarchaMax - PAT.centinelaMarchaMin))
+                : 0,
     };
 }
 
@@ -102,16 +112,41 @@ export function iniciarEnemigos(spawnsEnemigos, spawnBoss) {
             esbirrosDisponibles[i],
         ];
     }
+
+    // Barajar patrones de patrulla (uno distinto por esbirro, cíclico si hay más de 3)
+    const patronesBase = ['patrullero', 'saltarin', 'centinela'];
+    for (let i = patronesBase.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [patronesBase[i], patronesBase[j]] = [patronesBase[j], patronesBase[i]];
+    }
+
     const totalEsbirros = Math.min(spawnsEnemigos.length, esbirrosDisponibles.length);
     for (let i = 0; i < totalEsbirros; i++) {
         const spawn = spawnsEnemigos[i];
-        enemigos.push(crearEnemigo(spawn.col, spawn.fila, false, esbirrosDisponibles[i]));
+        const patron = patronesBase[i % patronesBase.length];
+        enemigos.push(crearEnemigo(spawn.col, spawn.fila, false, esbirrosDisponibles[i], patron));
     }
 
     // Crear boss: elegir un elite aleatorio
     if (spawnBoss) {
         const bossData = ELITES[Math.floor(Math.random() * ELITES.length)];
         enemigos.push(crearEnemigo(spawnBoss.col, spawnBoss.fila, true, bossData));
+    }
+}
+
+// Movimiento horizontal con detección de paredes y precipicios
+function moverPatrulla(e, enPiso) {
+    const nuevaX = resolverColisionX(e.x, e.y, e.ancho, e.alto, e.vx, enPiso);
+    if (nuevaX === e.x && e.vx !== 0) {
+        e.direccion *= -1;
+    } else {
+        const bordeX = e.direccion > 0 ? nuevaX + e.ancho + 2 : nuevaX - 2;
+        const pieY = e.y + e.alto + 2;
+        if (!esSolido(bordeX, pieY) && enPiso) {
+            e.direccion *= -1;
+        } else {
+            e.x = nuevaX;
+        }
     }
 }
 
@@ -140,10 +175,8 @@ export function actualizarEnemigos() {
             continue;
         }
 
-        // Movimiento de patrulla
+        // Velocidad base (con fases del boss)
         let vel = e.velocidad;
-
-        // Boss: aumentar velocidad segun fase
         if (e.esBoss && e.vidaMax > 0) {
             const ratio = e.vidaActual / e.vidaMax;
             if (ratio <= BOSS.fasesCambio[1]) {
@@ -153,24 +186,51 @@ export function actualizarEnemigos() {
             }
         }
 
-        e.vx = vel * e.direccion;
-
-        // Colision horizontal (plataformas bloquean X si el enemigo está en el suelo)
+        // Movimiento segun patron
         const enPiso = enSuelo(e.x, e.y, e.ancho, e.alto);
-        const nuevaX = resolverColisionX(e.x, e.y, e.ancho, e.alto, e.vx, enPiso);
-        if (nuevaX === e.x && e.vx !== 0) {
-            // Choco con pared: girar
-            e.direccion *= -1;
-        } else {
-            // Verificar precipicio adelante
-            const bordeX = e.direccion > 0 ? nuevaX + e.ancho + 2 : nuevaX - 2;
-            const pieY = e.y + e.alto + 2;
-            if (!esSolido(bordeX, pieY) && enSuelo(e.x, e.y, e.ancho, e.alto)) {
-                // Precipicio: girar
-                e.direccion *= -1;
+
+        if (e.patron === 'centinela') {
+            // Centinela: alterna entre marcha y pausa, elige dirección al azar
+            if (e.centinelaEstado === 'pausa') {
+                e.vx = 0;
+                e.centinelaTimer--;
+                if (e.centinelaTimer <= 0) {
+                    e.centinelaEstado = 'marcha';
+                    e.direccion = Math.random() < 0.5 ? 1 : -1;
+                    e.centinelaTimer =
+                        PAT.centinelaMarchaMin +
+                        Math.floor(
+                            Math.random() * (PAT.centinelaMarchaMax - PAT.centinelaMarchaMin)
+                        );
+                }
             } else {
-                e.x = nuevaX;
+                e.vx = vel * e.direccion;
+                moverPatrulla(e, enPiso);
+                e.centinelaTimer--;
+                if (e.centinelaTimer <= 0) {
+                    e.centinelaEstado = 'pausa';
+                    e.centinelaTimer =
+                        PAT.centinelaPausaMin +
+                        Math.floor(Math.random() * (PAT.centinelaPausaMax - PAT.centinelaPausaMin));
+                }
             }
+        } else if (e.patron === 'saltarin') {
+            // Saltarín: camina en el suelo, salta vertical en el lugar
+            if (enPiso) {
+                e.vx = vel * e.direccion;
+                moverPatrulla(e, enPiso);
+                e.saltarinTimer--;
+                if (e.saltarinTimer <= 0) {
+                    e.vy = PAT.saltarinSalto;
+                    e.saltarinTimer = PAT.saltarinIntervalo;
+                }
+            } else {
+                e.vx = 0;
+            }
+        } else {
+            // Patrullero: movimiento continuo
+            e.vx = vel * e.direccion;
+            moverPatrulla(e, enPiso);
         }
 
         // Gravedad

@@ -53,6 +53,16 @@ enemigos:
     invulStomp: 30 # frames de invulnerabilidad del boss tras recibir stomp
     stunStomp: 10 # frames de stun del boss tras recibir stomp
 
+# --- Patrones de esbirros ---
+# Cada esbirro recibe un patrón aleatorio: patrullero, saltarín o centinela
+patrones:
+    saltarinSalto: -6.5 # fuerza de salto del saltarín
+    saltarinIntervalo: 90 # frames entre saltos (~1.5s)
+    centinelaPausaMin: 60 # frames mínimos de pausa
+    centinelaPausaMax: 120 # frames máximos de pausa
+    centinelaMarchaMin: 90 # frames mínimos de marcha
+    centinelaMarchaMax: 150 # frames máximos de marcha
+
 # --- Boss ---
 boss:
     fasesCambio: [0.66, 0.33] # umbrales de vida (%) para cambio de fase
@@ -87,7 +97,7 @@ escalado:
     spriteBaseH: 60 # alto base del sprite visual (px)
     velAttrMin: 3 # atributo velocidad mínimo
     velAttrMax: 9 # atributo velocidad máximo
-    velPlatMin: 1.0 # px/frame para vel=3 (ratio 3x con velPlatMax)
+    velPlatMin: 1.5 # px/frame para vel=3 — NO bajar: con 1.0 los personajes lentos (DonBu, PandaJuro) no alcanzan los abismos de 2 tiles
     velPlatMax: 3.0 # px/frame para vel=9
     fuerzaSaltoBase: -7.5 # fuerza de salto base
     fuerzaSaltoFactor: 0.3 # cuánto se ajusta por escala

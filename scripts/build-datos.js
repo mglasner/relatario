@@ -330,6 +330,7 @@ const SCHEMA_ABISMO = {
         'knockbackX',
         'knockbackY',
         'jumpCutFactor',
+        'invulPostStomp',
     ],
     enemigos: [
         'stompMargenRatio',
@@ -338,6 +339,14 @@ const SCHEMA_ABISMO = {
         'cooldownAtaque',
         'invulStomp',
         'stunStomp',
+    ],
+    patrones: [
+        'saltarinSalto',
+        'saltarinIntervalo',
+        'centinelaPausaMin',
+        'centinelaPausaMax',
+        'centinelaMarchaMin',
+        'centinelaMarchaMax',
     ],
     boss: ['fasesCambio', 'velocidadFases'],
     render: ['colorSuelo', 'colorPlataforma', 'colorEnemigo', 'colorBoss'],
@@ -415,6 +424,26 @@ function validarJuego(datos, archivo, schema) {
     }
 }
 
+// Valida que la distancia mínima de salto permita cruzar abismos de 2 tiles
+function validarAbismoFisicas(datos) {
+    const { gravedad } = datos.fisicas;
+    const { velPlatMin, fuerzaSaltoBase } = datos.escalado;
+    const tamTile = datos.tiles.tamano;
+    const tiempoAire = (2 * Math.abs(fuerzaSaltoBase)) / gravedad;
+    const distTiles = (velPlatMin * tiempoAire) / tamTile;
+    const MIN_TILES = 2.5;
+
+    if (distTiles < MIN_TILES) {
+        throw new Error(
+            `abismo.yaml: distancia mínima de salto insuficiente ` +
+                `(${distTiles.toFixed(1)} tiles < ${MIN_TILES} tiles)\n` +
+                `  Con velPlatMin=${velPlatMin} y fuerzaSaltoBase=${fuerzaSaltoBase}, ` +
+                `los personajes lentos no pueden cruzar abismos de 2 tiles.\n` +
+                `  Sube velPlatMin o fuerzaSaltoBase.`
+        );
+    }
+}
+
 // Genera JS de config para un juego (objeto plano exportado)
 function generarConfigJS(datos) {
     return `${CABECERA}\nexport const CFG = ${JSON.stringify(datos, null, 4)};\n`;
@@ -459,6 +488,7 @@ async function main() {
 
         const datos = yaml.load(readFileSync(archivo, 'utf-8'));
         validarJuego(datos, `${slug}.yaml`, schema);
+        if (slug === 'abismo') validarAbismoFisicas(datos);
         const salida = `js/juegos/${slug}/config.js`;
         const formateado = await prettier.format(generarConfigJS(datos), configPrettier);
         writeFileSync(salida, formateado);

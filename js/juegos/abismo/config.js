@@ -46,6 +46,14 @@ export const CFG = {
         invulStomp: 30,
         stunStomp: 10,
     },
+    patrones: {
+        saltarinSalto: -6.5,
+        saltarinIntervalo: 90,
+        centinelaPausaMin: 60,
+        centinelaPausaMax: 120,
+        centinelaMarchaMin: 90,
+        centinelaMarchaMax: 150,
+    },
     boss: {
         fasesCambio: [0.66, 0.33],
         velocidadFases: [1, 1.4],
@@ -66,7 +74,7 @@ export const CFG = {
         spriteBaseH: 60,
         velAttrMin: 3,
         velAttrMax: 9,
-        velPlatMin: 1,
+        velPlatMin: 1.5,
         velPlatMax: 3,
         fuerzaSaltoBase: -7.5,
         fuerzaSaltoFactor: 0.3,

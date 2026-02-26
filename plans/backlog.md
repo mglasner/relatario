@@ -21,7 +21,7 @@
 | 15 | [Fix deteccion de stomp en El Abismo](#15-fix-deteccion-de-stomp-en-el-abismo) | Baja | [x] |
 | 16 | [Particulas con colision al suelo en El Abismo](#16-particulas-con-colision-al-suelo-en-el-abismo) | Baja | [x] |
 | 17 | [Salto variable (jump cut) en El Abismo](#17-salto-variable-jump-cut-en-el-abismo) | Media-Baja | [x] |
-| 18 | [Esbirros con patron diferenciado en El Abismo](#18-esbirros-con-patron-diferenciado-en-el-abismo) | Media-Baja | [ ] |
+| 18 | [Esbirros con patron diferenciado en El Abismo](#18-esbirros-con-patron-diferenciado-en-el-abismo) | Media-Baja | [x] |
 | 19 | [Rediseno del mapa con rutas alternativas en El Abismo](#19-rediseno-del-mapa-con-rutas-alternativas-en-el-abismo) | Media-Baja | [x] |
 | 20 | [Boss con patrones de ataque en El Abismo](#20-boss-con-patrones-de-ataque-en-el-abismo) | Media | [ ] |
 | 21 | [Generacion procedural de secciones en El Abismo](#21-generacion-procedural-de-secciones-en-el-abismo) | Media | [ ] |
