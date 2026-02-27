@@ -63,7 +63,11 @@ export function actualizarIA(ia, rival, dt) {
                 timerDecision = IA.reaccionMin + Math.random() * (IA.reaccionMax - IA.reaccionMin);
 
                 // Decidir siguiente acción
-                if (distancia > IA.distanciaOptima * 1.5) {
+                // A larga distancia con proyectil: atacar directamente
+                const tieneProyectil = ia.ataquesDatos.some((a) => a.arquetipo === 'proyectil');
+                if (tieneProyectil && distancia > IA.distanciaOptima * 1.5) {
+                    estadoIA = ESTADOS_IA.ATACAR;
+                } else if (distancia > IA.distanciaOptima * 1.5) {
                     estadoIA = ESTADOS_IA.ACERCAR;
                 } else if (distancia <= IA.distanciaOptima) {
                     // Cerca: atacar o bloquear
@@ -107,11 +111,17 @@ export function actualizarIA(ia, rival, dt) {
             ia.agachado = false;
 
             if (ia.cooldownAtaque <= 0 && ia.estado !== 'atacando' && ia.estado !== 'golpeado') {
-                // Elegir tipo de ataque
-                const tipo = Math.random() < 0.6 ? 'rapido' : 'fuerte';
-                ia.ataqueAereo = !ia.enSuelo;
-                procesarAtaque(ia, rival, tipo);
-                if (ia.ataqueAereo) ia.cooldownAtaque = MEC.aereoCooldown;
+                // Si tiene proyectil y está lejos, preferir ataque a distancia
+                const idxProy = ia.ataquesDatos.findIndex((a) => a.arquetipo === 'proyectil');
+                if (idxProy >= 0 && distancia > IA.distanciaOptima * 0.8) {
+                    const tipo = idxProy === 0 ? 'rapido' : 'fuerte';
+                    procesarAtaque(ia, rival, tipo);
+                } else {
+                    const tipo = Math.random() < 0.6 ? 'rapido' : 'fuerte';
+                    ia.ataqueAereo = !ia.enSuelo;
+                    procesarAtaque(ia, rival, tipo);
+                    if (ia.ataqueAereo) ia.cooldownAtaque = MEC.aereoCooldown;
+                }
             }
 
             // Después de atacar, volver a decidir

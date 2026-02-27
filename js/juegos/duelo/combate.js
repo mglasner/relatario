@@ -57,14 +57,14 @@ function zonaAtaque(l) {
 /**
  * Colisión AABB simple
  */
-function aabb(a, b) {
+export function aabb(a, b) {
     return a.x < b.x + b.ancho && a.x + a.ancho > b.x && a.y < b.y + b.alto && a.y + a.alto > b.y;
 }
 
 /**
  * Calcula el daño base según el tipo de ataque y los ataques del luchador
  */
-function calcularDano(atacante) {
+export function calcularDano(atacante) {
     const esRapido = atacante.tipoAtaque === 'rapido';
     const danoBase = esRapido ? CMB.ataqueRapidoDanoBase : CMB.ataqueFuerteDanoBase;
 
@@ -107,6 +107,9 @@ export function verificarColisiones(l1, l2) {
 }
 
 function verificarAtaque(atacante, defensor) {
+    // Los ataques de proyectil no usan zona melee — el proyectil real maneja la colisión
+    if (atacante.esProyectil) return null;
+
     // Solo verificar si está atacando y no ha conectado aún
     if (atacante.estado !== 'atacando' || atacante.ataqueConecto) return null;
 
@@ -208,4 +211,53 @@ function verificarAtaque(atacante, defensor) {
         g,
         b,
     };
+}
+
+/**
+ * Aplica daño de un proyectil al defensor.
+ * Maneja bloqueo, quiebre de guardia e impacto directo.
+ * No permite parry (requiere timing melee, no a distancia).
+ * @param {boolean} esFuerte - si el ataque original fue fuerte (almacenado en el proyectil)
+ * @returns {{ tipo: string, x: number, y: number, r?: number, g?: number, b?: number, atacante?: Object }} resultado para partículas/toast
+ */
+export function aplicarDanoProyectil(atacante, defensor, dano, esFuerte, impactoX, impactoY) {
+    if (defensor.invulFrames > 0) return null;
+
+    // Bloqueo (sin parry — no se puede parry a distancia)
+    if (defensor.bloqueando && !defensor.guardiaRota) {
+        const costo = esFuerte ? MEC.guardiaCostoFuerte : MEC.guardiaCostoRapido;
+        defensor.guardiaHP -= costo;
+
+        if (defensor.guardiaHP <= 0) {
+            // ¡Guardia rota!
+            defensor.guardiaHP = 0;
+            defensor.guardiaRota = true;
+            defensor.bloqueando = false;
+            defensor.estado = 'golpeado';
+            defensor.invulFrames = MEC.guardiaRotaStun;
+            aplicarRetroceso(defensor, atacante.x + atacante.ancho / 2, true);
+            defensor.vidaActual = Math.max(0, defensor.vidaActual - dano);
+            atacante.comboCount++;
+            atacante.comboTimer = MEC.comboTimer;
+            const { r, g, b } = hexARgb(defensor.colorHud);
+            return { tipo: 'guardiaRota', x: impactoX, y: impactoY, r, g, b };
+        }
+
+        // Bloqueo normal — daño reducido
+        const danoReducido = Math.round(dano * CMB.bloqueoReduccion);
+        defensor.vidaActual = Math.max(0, defensor.vidaActual - danoReducido);
+        defensor.invulFrames = CMB.invulnerabilidad * 0.3;
+        atacante.comboCount = 0;
+        return { tipo: 'bloqueo', x: impactoX, y: impactoY };
+    }
+
+    // Impacto directo
+    defensor.vidaActual = Math.max(0, defensor.vidaActual - dano);
+    defensor.invulFrames = CMB.invulnerabilidad;
+    aplicarRetroceso(defensor, atacante.x + atacante.ancho / 2, esFuerte);
+    atacante.comboCount++;
+    atacante.comboTimer = MEC.comboTimer;
+
+    const { r, g, b } = hexARgb(atacante.colorHud);
+    return { tipo: 'impacto', fuerte: esFuerte, atacante, x: impactoX, y: impactoY, r, g, b };
 }

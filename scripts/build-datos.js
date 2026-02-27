@@ -565,6 +565,9 @@ const SCHEMA_DUELO = {
         'ataqueFuerteAlcance',
         'ataqueAltoOffset',
         'ataqueAltoAlcanceY',
+        'proyectilVel',
+        'proyectilTamano',
+        'proyectilVida',
     ],
     ia: [
         'reaccionMin',

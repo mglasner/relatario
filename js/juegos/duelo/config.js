@@ -52,6 +52,9 @@ export const CFG = {
         ataqueFuerteAlcance: 40,
         ataqueAltoOffset: 0.2,
         ataqueAltoAlcanceY: 0.5,
+        proyectilVel: 3.5,
+        proyectilTamano: 5,
+        proyectilVida: 90,
     },
     mecanicas: {
         parryVentana: 8,

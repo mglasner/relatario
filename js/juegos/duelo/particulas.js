@@ -6,6 +6,8 @@
 import { CFG } from './config.js';
 import { PALETAS_PETALO, PALETAS_HOJA, PARTICULAS_2D } from '../clima.js';
 import { hexARgb } from './utilsDuelo.js';
+import { obtenerHitbox } from './luchador.js';
+import { aabb } from './combate.js';
 
 const SUELO_Y = CFG.arena.sueloY;
 const MAX_PARTICULAS = 350;
@@ -557,37 +559,49 @@ export function renderizarParticulas(ctx, est = _defecto) {
 const proyectiles = [];
 
 /**
- * Lanza un proyectil visual desde el atacante hacia el defensor.
- * Solo se emite si el ataque actual es de arquetipo 'proyectil'.
+ * Lanza un proyectil real desde el atacante hacia el defensor.
+ * El proyectil viaja con velocidad constante, colisiona con el defensor
+ * y es esquivable con salto o agacharse.
+ * @param {Object} atacante - luchador que lanza
+ * @param {Object} defensor - luchador objetivo (para calcular dirección)
+ * @param {number} dano - daño pre-calculado que inflige al impactar
  */
-export function emitirProyectil(atacante, defensor) {
+export function emitirProyectil(atacante, defensor, dano) {
     const esRapido = atacante.tipoAtaque === 'rapido';
     const idx = esRapido ? 0 : Math.min(1, atacante.ataquesDatos.length - 1);
     const ataque = atacante.ataquesDatos[idx];
     if (!ataque || ataque.arquetipo !== 'proyectil') return;
 
     const { r, g, b } = hexARgb(ataque.color || atacante.colorHud);
+    const cmb = CFG.combate;
 
-    // Inicio: frente del atacante
+    // Origen: frente del atacante
     const sx = atacante.direccion > 0 ? atacante.x + atacante.ancho + 2 : atacante.x - 2;
     const sy = atacante.y + atacante.alto * 0.4;
 
-    // Destino: centro del defensor
+    // Dirección: vector unitario hacia centro del defensor
     const tx = defensor.x + defensor.ancho / 2;
-    const duracion = esRapido ? CFG.combate.ataqueRapidoDuracion : CFG.combate.ataqueFuerteDuracion;
-    const dist = tx - sx;
-    const vx = dist / (duracion * 0.55);
+    const ty = defensor.y + defensor.alto * 0.4;
+    const dx = tx - sx;
+    const dy = ty - sy;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    const vel = cmb.proyectilVel;
 
     proyectiles.push({
         x: sx,
         y: sy,
-        vx,
+        vx: (dx / dist) * vel,
+        vy: (dy / dist) * vel,
         r,
         g,
         b,
         radio: esRapido ? 3 : 4.5,
-        vida: duracion * 0.7,
-        vidaMax: duracion * 0.7,
+        vida: cmb.proyectilVida,
+        vidaMax: cmb.proyectilVida,
+        dano,
+        esFuerte: !esRapido,
+        atacante,
+        conectado: false,
     });
 }
 
@@ -598,6 +612,7 @@ export function actualizarProyectiles(dt) {
     for (let i = proyectiles.length - 1; i >= 0; i--) {
         const p = proyectiles[i];
         p.x += p.vx * dt;
+        p.y += (p.vy || 0) * dt;
         p.vida -= dt;
 
         // Estela de partículas
@@ -655,6 +670,40 @@ export function renderizarProyectiles(ctx) {
         ctx.arc(px, py, p.radio * 0.4, 0, Math.PI * 2);
         ctx.fill();
     }
+}
+
+/**
+ * Verifica colisión de proyectiles contra luchadores.
+ * Retorna info del primer impacto encontrado, o null.
+ */
+export function colisionProyectiles(l1, l2) {
+    const pr = CFG.combate.proyectilTamano; // radio del hitbox
+    for (let i = proyectiles.length - 1; i >= 0; i--) {
+        const p = proyectiles[i];
+        if (p.conectado) continue;
+        // El defensor es quien NO lanzó el proyectil
+        const defensor = p.atacante === l1 ? l2 : l1;
+        const hitbox = obtenerHitbox(defensor);
+        // AABB: proyectil circular aprox como rectángulo
+        const pRect = { x: p.x - pr, y: p.y - pr, ancho: pr * 2, alto: pr * 2 };
+        if (aabb(pRect, hitbox)) {
+            p.conectado = true;
+            p.vida = 0;
+            return {
+                tipo: 'impactoProyectil',
+                dano: p.dano,
+                esFuerte: p.esFuerte,
+                defensor,
+                atacante: p.atacante,
+                x: p.x,
+                y: p.y,
+                r: p.r,
+                g: p.g,
+                b: p.b,
+            };
+        }
+    }
+    return null;
 }
 
 export function limpiarParticulas() {

@@ -18,7 +18,12 @@ import { crearGameLoop } from '../../utils.js';
 import { notificarVictoria, notificarJugadorMuerto } from '../../eventos.js';
 import { crearLuchador, actualizarLuchador, aplicarGravedad } from './luchador.js';
 import { renderizarEscena, reiniciarClimaRenderer } from './renderer.js';
-import { procesarAtaque, verificarColisiones } from './combate.js';
+import {
+    procesarAtaque,
+    verificarColisiones,
+    calcularDano,
+    aplicarDanoProyectil,
+} from './combate.js';
 import { actualizarIA, resetearIA } from './ia.js';
 import {
     emitirAura,
@@ -29,6 +34,7 @@ import {
     emitirParry,
     emitirGuardiaRota,
     emitirProyectil,
+    colisionProyectiles,
     actualizarParticulas,
     actualizarProyectiles,
     renderizarParticulas,
@@ -239,17 +245,17 @@ function actualizar(_tiempo, dt) {
         // Partículas de clima
         if (est.estacion) emitirClima(est.estacion, ANCHO);
 
-        // Emitir proyectiles al iniciar ataque a distancia
+        // Emitir proyectiles al iniciar ataque a distancia (con daño pre-calculado)
         if (l1.estado === 'atacando' && l1.esProyectil && !l1.proyectilEmitido) {
-            emitirProyectil(l1, l2);
+            emitirProyectil(l1, l2, calcularDano(l1));
             l1.proyectilEmitido = true;
         }
         if (l2.estado === 'atacando' && l2.esProyectil && !l2.proyectilEmitido) {
-            emitirProyectil(l2, l1);
+            emitirProyectil(l2, l1, calcularDano(l2));
             l2.proyectilEmitido = true;
         }
 
-        // Colisiones ataque → daño
+        // Colisiones melee → daño
         const resultado = verificarColisiones(l1, l2);
         if (resultado) {
             if (resultado.tipo === 'parry') {
@@ -272,6 +278,50 @@ function actualizar(_tiempo, dt) {
                 }
             } else if (resultado.tipo === 'bloqueo') {
                 emitirBloqueo(resultado.x, resultado.y);
+            }
+        }
+
+        // Colisiones proyectil → daño
+        const resP = colisionProyectiles(l1, l2);
+        if (resP) {
+            const resImpacto = aplicarDanoProyectil(
+                resP.atacante,
+                resP.defensor,
+                resP.dano,
+                resP.esFuerte,
+                resP.x,
+                resP.y
+            );
+            if (resImpacto) {
+                if (resImpacto.tipo === 'guardiaRota') {
+                    emitirGuardiaRota(
+                        resImpacto.x,
+                        resImpacto.y,
+                        resImpacto.r,
+                        resImpacto.g,
+                        resImpacto.b
+                    );
+                    est.flashAlpha = 0.35;
+                    lanzarToast('¡Guardia rota!', '💥', 'dano');
+                } else if (resImpacto.tipo === 'impacto') {
+                    emitirImpacto(
+                        resImpacto.x,
+                        resImpacto.y,
+                        resImpacto.r,
+                        resImpacto.g,
+                        resImpacto.b
+                    );
+                    est.flashAlpha = resImpacto.fuerte ? 0.4 : 0.25;
+                    if (resImpacto.atacante && resImpacto.atacante.comboCount >= 3) {
+                        lanzarToast(
+                            '¡Combo x' + resImpacto.atacante.comboCount + '!',
+                            '🔥',
+                            'exito'
+                        );
+                    }
+                } else if (resImpacto.tipo === 'bloqueo') {
+                    emitirBloqueo(resImpacto.x, resImpacto.y);
+                }
             }
         }
 

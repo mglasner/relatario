@@ -62,6 +62,10 @@ combate:
     ataqueFuerteAlcance: 40 # alcance horizontal del ataque fuerte (px)
     ataqueAltoOffset: 0.2 # fracción superior del hitbox donde conecta ataque alto
     ataqueAltoAlcanceY: 0.5 # fracción del hitbox cubierta por ataque alto
+    # Proyectiles (orbes de energía esquivables)
+    proyectilVel: 3.5        # px/frame velocidad del proyectil
+    proyectilTamano: 5       # px radio del hitbox circular
+    proyectilVida: 90        # frames máximos de vida (~1.5 seg)
 
 # --- Mecánicas de habilidad ---
 mecanicas:
