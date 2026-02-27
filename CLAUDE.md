@@ -5,133 +5,101 @@ Plataforma narrativa interactiva — un compendio de relatos, héroes y desafío
 ## Estructura del proyecto
 
 ```text
-mansion-de-aventuras/
-├── assets/
-│   └── img/
-│       ├── personajes/       # Avatares (.webp) de los personajes jugables
-│       ├── enemigos/         # Avatares (.webp) de los enemigos
-│       ├── sprites-plat/     # Sprite sheets PNG para el platformer
-│       ├── juegos/           # Ilustraciones de juegos para el Libro de Juegos
-│       ├── biblioteca/       # Fondo e imágenes de la homepage (sala-fondo, lomos)
-│       └── icons/            # Favicon e iconos PWA
-├── css/                      # Estilos modulares (@import desde estilos.css)
-│   ├── base.css              # Variables, fuentes, reset, dark mode, .oculto
-│   ├── componentes/
-│   │   ├── modales.css       # Modal salir + modal derrota
-│   │   ├── barra-superior.css # HUD del jugador
-│   │   ├── transiciones.css  # Fade, wipe, iris
-│   │   ├── dpad.css          # D-pad virtual + split
-│   │   ├── overlay-rotar.css # "Gira tu dispositivo"
-│   │   └── toast.css         # Notificaciones flotantes
-│   ├── libros/
-│   │   ├── entidades.css     # Colores personajes/villanos, stats, tiers
-│   │   ├── comun.css         # Libro layout, tabs, paneles, prólogo, modal
-│   │   ├── heroario.css      # Estilos específicos del heroario
-│   │   ├── villanario.css    # Página de rangos
-│   │   ├── libroJuegos.css   # Páginas de juegos, selector héroe, modal héroe
-│   │   └── cuento.css        # Tipografía narrativa para libros de cuentos
-│   ├── juegos/
-│   │   ├── comun.css         # Paletas .juego-*, cabecera, btn-huir
-│   │   ├── laberinto.css     # El Laberinto (laberinto 2D)
-│   │   ├── laberinto3d.css   # El Laberinto 3D (raycasting)
-│   │   ├── memorice.css      # El Memorice (memoria)
-│   │   └── abismo.css        # El Abismo (platformer)
-│   └── biblioteca/
-│       └── biblioteca.css    # Estante homepage
-├── cuentos/                  # Libros de cuentos (markdown + yaml)
-│   └── {slug}/               # Cada cuento en su directorio
-│       ├── libro.yaml        # Metadata: titulo, color, publicado, capitulos
-│       ├── *.md              # Capítulos en markdown
-│       └── assets/           # Lomo, portada e ilustraciones
-├── datos/                    # Fuente de verdad en YAML (genera JS via build-datos)
-│   ├── personajes.yaml       # Personajes jugables: stats, colores, descripciones
-│   ├── enemigos.yaml         # Enemigos organizados en tiers
-│   ├── laberinto.yaml        # Config del laberinto 2D
-│   ├── laberinto3d.yaml      # Config del laberinto 3D
-│   ├── memorice.yaml         # Config del memorice
-│   └── abismo.yaml           # Config del platformer
+relatario/
+├── assets/img/
+│   ├── personajes/        # Avatares (.webp) de personajes jugables
+│   ├── enemigos/          # Avatares (.webp) de enemigos
+│   ├── sprites-plat/      # Sprite sheets PNG para juegos en canvas
+│   ├── juegos/            # Ilustraciones para el Libro de Juegos
+│   ├── tesoros/            # Imágenes de tesoros coleccionables
+│   ├── biblioteca/        # Fondo e imágenes de la homepage
+│   └── icons/             # Favicon e iconos PWA
+├── css/                   # Estilos modulares (@import desde estilos.css)
+│   ├── base.css           # Variables, fuentes, reset, dark mode
+│   ├── componentes/       # Modales, HUD, d-pad, transiciones, toast, etc.
+│   ├── libros/            # Estilos de cada tipo de libro
+│   ├── juegos/            # Estilos por juego + comun.css (paletas)
+│   └── biblioteca/        # Estante homepage
+├── cuentos/               # Libros de cuentos (markdown + yaml)
+│   └── {slug}/            # Cada cuento en su directorio
+├── datos/                 # Fuente de verdad en YAML (genera JS via build-datos)
+│   ├── personajes.yaml    # Personajes jugables
+│   ├── enemigos.yaml      # Enemigos organizados en tiers
+│   ├── tesoros.yaml       # Tesoros coleccionables
+│   └── {juego}.yaml       # Config de cada juego (uno por juego)
 ├── js/
-│   ├── entidades.js          # Clases base: Entidad, Personaje, Enemigo
-│   ├── personajes.js         # ⚙️ Generado desde datos/personajes.yaml
-│   ├── enemigos.js           # ⚙️ Generado desde datos/enemigos.yaml
-│   ├── juego.js              # State machine central: BIBLIOTECA → LIBRO → JUEGO
-│   ├── laberinto.js          # Generador procedural de laberintos
-│   ├── eventos.js            # Nombres de eventos custom centralizados
-│   ├── utils.js              # Utilidades compartidas
-│   ├── cuentos/
-│   │   └── registro.js       # ⚙️ Generado desde cuentos/ (build-cuentos)
-│   ├── componentes/          # Componentes UI (crean su propio HTML desde JS)
-│   │   ├── estante.js        # Homepage: mueble con lomos de libros
-│   │   ├── libroJuegos.js    # Libro de Juegos con selector de héroe
-│   │   ├── libroCuento.js    # Adapta cuento → crearLibro() genérico
-│   │   ├── modalLibro.js     # Modal reutilizable para mostrar libros
-│   │   ├── libro.js          # Motor genérico de libro (índice + detalle)
-│   │   ├── libroHeroes.js    # Heroario (contenido y páginas)
-│   │   ├── libroVillanos.js  # Villanario (contenido y páginas)
-│   │   └── ...               # barraSuperior, modalSalir, modalDerrota, etc.
-│   ├── juegos/               # 4 juegos autocontenidos
-│   │   ├── laberinto/        # El Laberinto (laberinto 2D)
-│   │   ├── laberinto3d/      # El Laberinto 3D (raycasting)
-│   │   ├── memorice/         # El Memorice (memoria)
-│   │   └── abismo/           # El Abismo (platformer 2D)
-│   └── motor3d/              # Motor raycasting estilo Doom para El Laberinto 3D
-├── scripts/
-│   ├── build-datos.js        # YAML → JS (personajes, enemigos, configs)
-│   ├── build-cuentos.js      # cuentos/ → js/cuentos/registro.js
-│   ├── nuevo-cuento.js       # CLI: crea estructura de cuento nuevo
-│   ├── build-html.js         # Reescribe rutas para producción
-│   ├── dev.js                # BrowserSync + watcher de YAML
-│   ├── watch-datos.js        # Vigila cambios en datos/*.yaml y cuentos/
-│   ├── optimizar-imagenes.js # Optimización de imágenes
-│   ├── procesar-sprites.cjs  # Extrae frames de sprite sheets IA
-│   └── ensamblar-sprites.cjs # Ensambla strip final de sprites
-├── index.html                # Estructura mínima: #juego > #biblioteca
-├── estilos.css               # Estilos visuales y animaciones
-├── sw.js                     # Service Worker (cache strategies)
-├── manifest.webmanifest      # Manifest PWA
-└── CLAUDE.md
+│   ├── juego.js           # State machine central
+│   ├── entidades.js       # Clases base: Entidad, Personaje, Enemigo
+│   ├── personajes.js      # ⚙️ Generado desde datos/personajes.yaml
+│   ├── enemigos.js        # ⚙️ Generado desde datos/enemigos.yaml
+│   ├── tesoros.js         # ⚙️ Generado desde datos/tesoros.yaml
+│   ├── audio.js           # Sonidos sintetizados con Web Audio API
+│   ├── laberinto.js       # Generador procedural de laberintos
+│   ├── eventos.js         # Nombres de eventos custom centralizados
+│   ├── utils.js           # Utilidades compartidas
+│   ├── componentes/       # Componentes UI (libros, modales, HUD, etc.)
+│   ├── juegos/            # Juegos autocontenidos, uno por directorio
+│   │   ├── clima.js       # Módulo compartido: clima estacional
+│   │   └── {juego}/       # Cada juego en su directorio
+│   ├── motor3d/           # Motor raycasting estilo Doom
+│   ├── cuentos/           # ⚙️ Generado desde cuentos/ (build-cuentos)
+│   ├── changelog/         # ⚙️ Generado desde git log (build-changelog)
+│   └── dev/               # Herramientas de desarrollo (showcases, sync)
+├── scripts/               # Build scripts (YAML→JS, cuentos, changelog, etc.)
+├── index.html             # Estructura mínima: #juego > #biblioteca
+├── vitrina.html           # Página de desarrollo (showcases visuales)
+├── estilos.css            # Punto de entrada CSS (@import de todo)
+├── sw.js                  # Service Worker (cache strategies)
+└── manifest.webmanifest   # Manifest PWA
 ```
 
 ## Stack
 
 - HTML, CSS y JavaScript puro (ES modules)
 - Build de producción: esbuild (bundle + minificación)
-- Deploy: GitHub Actions → GitHub Pages
+- Deploy: GitHub Actions → GitHub Pages → https://relatario.cl/
 
 ## Flujo de navegación
 
 ```text
 Estante (homepage) → Libro abierto (modal)
                          ↓ (Libro de Juegos)
-                    Elegir héroe + Jugar → Juego (fullscreen)
+                    Elegir héroe/config + Jugar → Juego (fullscreen)
                          ↑ (ganar/perder/huir)
 ```
 
 **Estados de la state machine** (`js/juego.js`):
-- **BIBLIOTECA**: Homepage con estante de madera y lomos de libros (3 fijos + cuentos publicados)
-- **LIBRO**: Libro abierto en modal (Heroario, Villanario, Libro de Juegos, o cuentos)
-- **JUEGO**: Juego en pantalla completa (los 4 desafíos)
+- **BIBLIOTECA**: Homepage con estante de madera (dos repisas: libros fijos arriba, novedades + cuentos abajo)
+- **LIBRO**: Libro abierto en modal (Heroario, Villanario, Libro de Juegos, Tesorario, Novedades, o cuentos)
+- **JUEGO**: Juego en pantalla completa
 
-La selección de héroe ocurre dentro del Libro de Juegos (cada página de juego tiene un selector de avatares + botón "Jugar"). Los juegos son independientes, sin llaves secuenciales.
+La selección de héroe/configuración ocurre dentro del Libro de Juegos (cada página de juego tiene su propio modal de selección). Los juegos son independientes, sin llaves secuenciales.
 
 ## Personajes y enemigos
 
-Definidos en `datos/personajes.yaml` y `datos/enemigos.yaml` respectivamente. El script `build-datos` genera los archivos JS a partir de estos YAML.
+Definidos en `datos/personajes.yaml` y `datos/enemigos.yaml`. El script `build-datos` genera los archivos JS correspondientes.
 
 Cada personaje tiene: nombre, edad, vida, velocidad, estatura, clase CSS (`jugador-{nombre}`), color HUD, descripción y avatar `.webp` en `assets/img/personajes/`.
 
 Cada enemigo tiene: nombre, tier (`esbirro`/`elite`/`pesadilla`), vida, ataques, descripción y avatar `.webp` en `assets/img/enemigos/`.
 
-## Los 4 juegos (desafíos)
+## Juegos (desafíos)
 
-1. **El Laberinto** — Laberinto 2D procedural (17×17) con trampas, esbirros y villano elite
-2. **El Laberinto 3D** — Laberinto en primera persona (raycasting estilo Doom, 13×13) con trampas de fuego
-3. **El Memorice** — Juego de memoria 4×5, emparejar héroes con villanos en 30 intentos
-4. **El Abismo** — Platformer 2D side-scrolling en canvas 480×270, con esbirros y boss final
+Cada juego vive en `js/juegos/{nombre}/` como módulo autocontenido. Se registra en el mapa `juegos` de `js/juego.js` y tiene su descripción en `JUEGOS` de `js/componentes/libroJuegos.js`. Su configuración se define en `datos/{nombre}.yaml` y se genera a `config.js` en build-time.
+
+Para ver la lista completa de juegos disponibles, consultar `js/juego.js` (mapa `juegos`) o `js/componentes/libroJuegos.js` (objeto `JUEGOS`).
+
+Algunos juegos comparten módulos (ej: `ajedrez-comun/` entre variantes de ajedrez, `clima.js` para clima estacional entre varios juegos).
+
+**Agregar un nuevo juego**: usar la skill `/crear-juego` que sigue todos los patrones arquitectónicos existentes.
+
+## Sistema de tesoros
+
+Los jugadores ganan tesoros al completar juegos. Definidos en `datos/tesoros.yaml` con tiers (común, raro, épico, legendario). El Tesorario (`js/componentes/libroTesorario.js`) muestra la colección. Los tesoros se persisten en `localStorage`.
 
 ## Libros de cuentos
 
-Sistema para agregar libros narrativos (cuentos, historias) al estante. Los cuentos se escriben en markdown y se convierten a HTML en build-time.
+Sistema para agregar libros narrativos al estante. Los cuentos se escriben en markdown y se convierten a HTML en build-time.
 
 ### Crear un cuento nuevo
 
@@ -147,7 +115,6 @@ Genera la estructura en `cuentos/{slug}/` con `libro.yaml` (publicado: false), `
 cuentos/{slug}/
 ├── libro.yaml          # Metadata (titulo, subtitulo, color, portada, lomo, publicado, capitulos)
 ├── cap-01.md           # Capítulos en markdown
-├── cap-02.md
 └── assets/
     ├── lomo.webp       # Imagen del lomo para el estante
     └── portada.webp    # Imagen de portada del libro
@@ -160,11 +127,22 @@ cuentos/{slug}/
 
 ### Pipeline
 
-`build-cuentos.js` escanea `cuentos/*/libro.yaml`, filtra por `publicado: true`, convierte cada `.md` a HTML con `marked`, y genera `js/cuentos/registro.js`. Los cuentos se registran dinámicamente en `LIBROS_ESTANTE` y `fabricaModales` de `juego.js`.
+`build-cuentos.js` escanea `cuentos/*/libro.yaml`, filtra por `publicado: true`, convierte `.md` a HTML con `marked`, y genera `js/cuentos/registro.js`.
 
 ### Lomo e imágenes
 
 Crear lomo con la skill `/disenar-libro`. Guardar en `cuentos/{slug}/assets/lomo.webp`. Referenciar en `libro.yaml` como `lomo: assets/lomo.webp`.
+
+## Libro de Novedades (changelog)
+
+`build-changelog.js` genera `js/changelog/registro.js` desde `git log`. Solo muestra commits `feat` y `fix` (los que son relevantes para el jugador). Se visualiza como el "Libro de Novedades" en el estante.
+
+## Sprites
+
+Personajes y enemigos usan sprite sheets PNG (strips horizontales), con fallback a sprites procedurales si no existe la imagen.
+
+- **Sprite sheets**: `assets/img/sprites-plat/{nombre}.png`
+- **Creación de nuevos sprites**: ver skill `/crear-personaje` → `references/sprites-plat.md`
 
 ## Tono y contenido (apto para niños)
 
@@ -177,7 +155,7 @@ El juego es apto para niños desde 7 años. Todo el contenido debe seguir estas 
 
 ## Linting y formateo
 
-El proyecto usa ESLint v9 (flat config), Prettier y Stylelint. Todas son devDependencies en `package.json`.
+El proyecto usa ESLint v9 (flat config), Prettier y Stylelint. Todas son devDependencies.
 
 | Comando                | Qué hace                            |
 | ---------------------- | ----------------------------------- |
@@ -209,7 +187,7 @@ Primero los linters (que pueden cambiar lógica como `let` → `const`), luego P
 BrowserSync sirve los archivos fuente directamente (hot-reload en http://localhost:3000). No hay build de JS/CSS, se usan los ES modules originales:
 
 - `index.html` carga `estilos.css` y `js/juego.js`
-- Los ~50 módulos JS se cargan individualmente por el navegador
+- Los módulos JS se cargan individualmente por el navegador
 - `watch-datos.js` vigila cambios en `datos/*.yaml` y `cuentos/**/*.{md,yaml}`, regenera los JS correspondientes
 - Editar cualquier archivo recarga el navegador automáticamente
 
@@ -217,58 +195,45 @@ BrowserSync sirve los archivos fuente directamente (hot-reload en http://localho
 
 esbuild genera la carpeta `dist/` con todo optimizado:
 
-| Paso          | Entrada                           | Salida                                                             |
-| ------------- | --------------------------------- | ------------------------------------------------------------------ |
-| `build:datos`   | `datos/*.yaml`                    | `js/personajes.js`, `js/enemigos.js`, `js/juegos/*/config.js`       |
-| `build:cuentos` | `cuentos/*/libro.yaml` + `*.md`   | `js/cuentos/registro.js`                                            |
-| `build:changelog` | `git log`                       | `js/changelog/registro.js`                                          |
-| `build:js`      | `js/juego.js` + todos sus imports | `dist/juego.min.js` (1 archivo)                                     |
-| `build:css`     | `estilos.css`                     | `dist/estilos.min.css`                                              |
-| `build:html`    | `index.html`, `assets/`, `sw.js`  | `dist/index.html` (rutas reescritas), `dist/assets/`, `dist/sw.js`  |
+| Paso               | Entrada                           | Salida                            |
+| ------------------ | --------------------------------- | --------------------------------- |
+| `build:datos`      | `datos/*.yaml`                    | `js/personajes.js`, `js/enemigos.js`, `js/tesoros.js`, `js/juegos/*/config.js` |
+| `build:cuentos`    | `cuentos/*/libro.yaml` + `*.md`   | `js/cuentos/registro.js`          |
+| `build:changelog`  | `git log`                         | `js/changelog/registro.js`        |
+| `build:js`         | `js/juego.js` + todos sus imports | `dist/juego.min.js`               |
+| `build:css`        | `estilos.css`                     | `dist/estilos.min.css`            |
+| `build:html`       | `index.html`, `assets/`, `sw.js`  | `dist/` (rutas reescritas)        |
 
 La carpeta `dist/` está en `.gitignore` — nunca se commitea.
 
 ### Deploy (GitHub Actions → GitHub Pages)
-
-Archivo: `.github/workflows/deploy.yml`
 
 ```text
 Push a main → GitHub Actions ejecuta npm run build → dist/ se despliega a GitHub Pages
 ```
 
 - **URL**: https://relatario.cl/
-- **Repo público**: requerido por GitHub Pages en plan gratuito
 
 ### Service Worker (`sw.js`)
 
-Estrategias diferenciadas de cache para segunda visita instantánea:
+Estrategias diferenciadas de cache:
 
 - **Assets estáticos** (JS, CSS, fuentes, imágenes): cache-first
 - **HTML** (navegación): network-first con fallback a cache
-- **`/api/**`** (futuro backend): network-only, nunca cachear
 
 Incrementar `CACHE_NAME` en `sw.js` para invalidar el cache en actualizaciones.
-
-## Sprites del platformer (El Abismo)
-
-El Abismo es un platformer 2D en canvas 480×270. Personajes y enemigos usan sprite sheets PNG (strips horizontales de 48×60 px por frame), con fallback a sprites procedurales.
-
-- **Sprite sheets**: `assets/img/sprites-plat/{nombre}.png`
-- **Layouts**: 9 frames (sin ataques) o 15 frames (con ataques). El valor de `frames` en `SPRITE_SHEETS` de `spritesPlat.js` determina el layout automáticamente
-- **Renderizado**: sprite 48×60 centrado sobre hitbox de 12×14 (pies alineados abajo)
-- **Creación de nuevos sprites**: ver skill `/crear-personaje` → `references/sprites-plat.md`
 
 ## Convenciones
 
 - Archivos e IDs en español (ej: `estilos.css`, `#biblioteca`)
 - Comentarios en español
-- Cada personaje tiene su clase CSS propia (`jugador-{nombre}`) con colores y animaciones individuales; cada enemigo tiene `.villano-{nombre}`
-- Imágenes: personajes en `assets/img/personajes/`, enemigos en `assets/img/enemigos/`, sprites en `assets/img/sprites-plat/` (todas `.webp` excepto sprites que son `.png`)
+- Cada personaje tiene su clase CSS propia (`jugador-{nombre}`); cada enemigo tiene `.villano-{nombre}`
+- Imágenes `.webp` excepto sprites que son `.png`
 - Código simple y comentado para fines educativos
 - **Componentes**: Módulos JS que crean su propio HTML con DOM API, exportan una función `crear*(contenedor)` que retorna un objeto con métodos (mostrar, ocultar, actualizar, etc.)
-- **Juegos**: Módulos autocontenidos que crean/destruyen su pantalla al entrar/salir. Se comunican con juego.js mediante callbacks y eventos custom (`document.dispatchEvent`)
-- **Libro de Juegos ↔ Juegos**: El Libro de Juegos (`js/componentes/libroJuegos.js`) contiene descripciones de cada juego en `JUEGOS`. Al modificar la mecánica o contenido de un juego, verificar que las descripciones del Libro de Juegos sigan siendo consistentes
-- **Revisión pre-commit**: Después de escribir o refactorizar código, ejecutar primero los linters (`npm run lint:fix && npm run lint:css:fix && npm run format`) y luego la skill `/review-code` antes de hacer commit
+- **Juegos**: Módulos autocontenidos en `js/juegos/{nombre}/` que crean/destruyen su pantalla al entrar/salir. Se comunican con `juego.js` mediante callbacks y eventos custom. Config parametrizada desde `datos/{nombre}.yaml`
+- **Libro de Juegos ↔ Juegos**: `libroJuegos.js` contiene descripciones de cada juego en `JUEGOS`. Al modificar la mecánica o contenido de un juego, verificar que las descripciones sigan siendo consistentes
+- **Revisión pre-commit**: Ejecutar primero `npm run lint:fix && npm run lint:css:fix && npm run format` y luego `/review-code` antes de hacer commit
 
 ## Convención de commits
 
