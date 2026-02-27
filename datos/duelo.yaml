@@ -1,0 +1,109 @@
+# ============================================
+# Configuración de El Duelo
+# Juego de peleas 1v1 en canvas: héroe vs villano
+# con combate en tiempo real, bloqueo y esquiva
+# ============================================
+
+# --- Información general ---
+meta:
+    titulo: 'El Duelo'
+    timeoutExito: 1500 # ms antes de volver al libro tras ganar
+
+# --- Dimensiones del canvas ---
+canvas:
+    anchoBase: 480 # ancho lógico del canvas (px)
+    altoBase: 270 # alto lógico del canvas (px)
+
+# --- Arena ---
+arena:
+    sueloY: 230 # coordenada Y del suelo (px desde arriba)
+    limiteIzq: 30 # límite izquierdo de movimiento
+    limiteDer: 450 # límite derecho de movimiento
+    separacionInicial: 200 # distancia inicial entre luchadores (px)
+
+# --- Físicas ---
+fisicas:
+    gravedad: 0.55 # aceleración vertical por frame
+    velocidadMaxCaida: 8 # velocidad máxima de caída
+    fuerzaSalto: -8 # impulso vertical al saltar
+    velocidadBase: 2.5 # velocidad horizontal base (px/frame)
+    retrocesoGolpe: 4 # retroceso horizontal al recibir golpe (px)
+    retrocesoGolpeFuerte: 6 # retroceso al recibir golpe fuerte
+    retrocesoVertical: -2 # impulso vertical al recibir golpe
+
+# --- Escalado de personajes ---
+# Ajusta tamaño y velocidad según estatura del personaje
+escalado:
+    estaturaRef: 1.55 # estatura de referencia (escala 1.0)
+    escalaMin: 0.55 # escala mínima permitida
+    escalaMax: 1.35 # escala máxima permitida
+    hitboxBaseW: 28 # ancho base del hitbox (px)
+    hitboxBaseH: 48 # alto base del hitbox (px)
+    spriteBaseW: 48 # ancho base del sprite visual (px)
+    spriteBaseH: 60 # alto base del sprite visual (px)
+    velAttrMin: 3 # atributo velocidad mínimo
+    velAttrMax: 9 # atributo velocidad máximo
+    velMin: 1.5 # px/frame para vel=3
+    velMax: 3.5 # px/frame para vel=9
+
+# --- Combate ---
+combate:
+    tiempoRonda: 90 # duración de la ronda en segundos
+    bloqueoReduccion: 0.3 # daño recibido al bloquear (30%)
+    agacharsePorcentajeHitbox: 0.5 # reducción de alto al agacharse
+    invulnerabilidad: 30 # frames de invulnerabilidad tras recibir daño
+    ataqueRapidoCooldown: 20 # frames de cooldown del ataque rápido
+    ataqueFuerteCooldown: 40 # frames de cooldown del ataque fuerte
+    ataqueRapidoDuracion: 12 # frames de duración del ataque rápido
+    ataqueFuerteDuracion: 18 # frames de duración del ataque fuerte
+    ataqueRapidoDanoBase: 8 # daño base del ataque rápido
+    ataqueFuerteDanoBase: 15 # daño base del ataque fuerte
+    ataqueRapidoAlcance: 35 # alcance horizontal del ataque rápido (px)
+    ataqueFuerteAlcance: 40 # alcance horizontal del ataque fuerte (px)
+    ataqueAltoOffset: 0.2 # fracción superior del hitbox donde conecta ataque alto
+    ataqueAltoAlcanceY: 0.5 # fracción del hitbox cubierta por ataque alto
+
+# --- IA ---
+ia:
+    reaccionMin: 10 # frames mínimos de reacción
+    reaccionMax: 40 # frames máximos de reacción
+    distanciaOptima: 45 # distancia preferida de combate (px)
+    probBloqueo: 0.3 # probabilidad base de bloquear un ataque
+    probAtaque: 0.02 # probabilidad base por frame de iniciar ataque
+    probSalto: 0.005 # probabilidad base de saltar
+    agresividad: # multiplicadores por tier
+        esbirro: 0.6
+        elite: 1.0
+        pesadilla: 1.5
+
+# --- Renderizado ---
+render:
+    colorSuelo: '#2a1a3e' # color del suelo de la arena
+    colorFondo: '#0d0620' # color de fondo
+    colorArenaClaro: '#3d2560' # borde superior suelo
+    colorBarraJugador: '#5eeadb' # color barra vida jugador
+    colorBarraEnemigo: '#e94560' # color barra vida enemigo
+    colorTimer: '#f0e6d3' # color del timer
+
+# --- Sprites ---
+sprites:
+    idleVel: 20 # frames entre cada frame de idle
+    correrVel: 6 # frames entre cada frame de correr
+    ataqueVel: 6 # frames entre cada frame de ataque
+    agacharseVel: 8 # frames entre cada frame de agacharse
+    golpeadoVel: 15 # frames del estado golpeado
+
+# --- Pantallas ---
+pantallas:
+    vsSegundos: 2 # duración de la pantalla VS
+    countdownSegundos: 3 # cuenta regresiva antes de pelear
+    resultadoSegundos: 3 # duración de la pantalla de resultado
+
+# --- Textos ---
+textos:
+    vs: 'VS'
+    pelea: '¡Pelea!'
+    victoria: '¡Victoria!'
+    derrota: '¡Derrota!'
+    tiempoAgotado: '¡Tiempo!'
+    ko: '¡KO!'

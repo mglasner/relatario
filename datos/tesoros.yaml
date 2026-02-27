@@ -13,7 +13,7 @@ Cristal de Luna:
     peso: 30
     img: assets/img/tesoros/cristal-luna.webp
     clase: tesoro-cristal-luna
-    juegos: [memorice, ajedrez]
+    juegos: [memorice, ajedrez, duelo]
     descripcion: >
         Un cristal traslúcido que guarda en su interior una niebla
         plateada llena de secretos. Brilla con más fuerza en noches
@@ -35,7 +35,7 @@ Pluma del Fénix:
     peso: 15
     img: assets/img/tesoros/pluma-fenix.webp
     clase: tesoro-pluma-fenix
-    juegos: [laberinto, memorice, abismo]
+    juegos: [laberinto, memorice, abismo, duelo]
     descripcion: >
         Una pluma iridiscente que cambia de color con la luz. Quien
         la porta siente un calor reconfortante, como si el fénix
@@ -70,7 +70,7 @@ Espejo de Verdades:
     sprite: assets/img/tesoros/espejo-verdades-sprite.png
     frames: 6
     clase: tesoro-espejo-verdades
-    juegos: [laberinto, laberinto3d, memorice, abismo, ajedrez]
+    juegos: [laberinto, laberinto3d, memorice, abismo, ajedrez, duelo]
     descripcion: >
         Un espejo de plata que muestra no lo que eres, sino lo que
         podrías llegar a ser. Solo los valientes se atreven a mirar.
@@ -82,7 +82,7 @@ Mapa Viviente:
     sprite: assets/img/tesoros/mapa-viviente-sprite.png
     frames: 6
     clase: tesoro-mapa-viviente
-    juegos: [laberinto, laberinto3d, memorice, abismo, ajedrez]
+    juegos: [laberinto, laberinto3d, memorice, abismo, ajedrez, duelo]
     descripcion: >
         Un pergamino mágico que dibuja solo los caminos que recorres.
         Cada aventura deja una línea dorada que nunca se borra.
@@ -94,7 +94,7 @@ Corona de Sombras:
     sprite: assets/img/tesoros/corona-sombras-sprite.png
     frames: 8
     clase: tesoro-corona-sombras
-    juegos: [laberinto, laberinto3d, memorice, abismo, ajedrez]
+    juegos: [laberinto, laberinto3d, memorice, abismo, ajedrez, duelo]
     descripcion: >
         Una corona forjada en la oscuridad más profunda, tejida con
         hilos de sombra que danzan como llamas negras. Quien la porta
@@ -107,7 +107,7 @@ Corazón de Dragón:
     sprite: assets/img/tesoros/corazon-dragon-sprite.png
     frames: 8
     clase: tesoro-corazon-dragon
-    juegos: [laberinto, laberinto3d, memorice, abismo, ajedrez]
+    juegos: [laberinto, laberinto3d, memorice, abismo, ajedrez, duelo]
     descripcion: >
         El corazón cristalizado del último dragón, latiendo con un
         fuego eterno que nunca se apaga. Su brillo calienta el alma

@@ -6,6 +6,7 @@ import { iniciarLaberinto3d, limpiarLaberinto3d } from './juegos/laberinto3d/ind
 import { iniciarMemorice, limpiarMemorice } from './juegos/memorice/index.js';
 import { iniciarAbismo, limpiarAbismo } from './juegos/abismo/index.js';
 import { iniciarAjedrez, limpiarAjedrez } from './juegos/ajedrez/index.js';
+import { iniciarDuelo, limpiarDuelo } from './juegos/duelo/index.js';
 import { crearBarraSuperior } from './componentes/barraSuperior.js';
 import { crearModalDerrota } from './componentes/modalDerrota.js';
 import { crearModalSalir } from './componentes/modalSalir.js';
@@ -46,6 +47,7 @@ const juegos = {
     memorice: { iniciar: iniciarMemorice, limpiar: limpiarMemorice },
     abismo: { iniciar: iniciarAbismo, limpiar: limpiarAbismo },
     ajedrez: { iniciar: iniciarAjedrez, limpiar: limpiarAjedrez, sinBarra: true },
+    duelo: { iniciar: iniciarDuelo, limpiar: limpiarDuelo, sinBarra: true },
 };
 
 // --- Estado del juego ---
@@ -193,14 +195,19 @@ function crearVillanarioModal() {
 function crearJuegosModal() {
     const libJuegos = crearLibroJuegos(
         contenedorJuego,
-        function (juegoId, nombrePersonaje, dificultad) {
+        function (juegoId, nombrePersonaje, dificultad, opciones) {
             // Desactivar onCerrar antes de cerrar para que no corrompa el estado
             const modalJuegos = librosCache['juegos'];
             if (modalJuegos) {
                 modalJuegos.onCerrar(null);
                 modalJuegos.cerrar();
             }
-            cambiarEstado(ESTADOS.JUEGO, { juegoId, personaje: nombrePersonaje, dificultad });
+            cambiarEstado(ESTADOS.JUEGO, {
+                juegoId,
+                personaje: nombrePersonaje,
+                dificultad,
+                opciones,
+            });
         }
     );
     const modal = crearModalLibro(libJuegos.libro, libJuegos.manejarTecladoLibro);
@@ -360,7 +367,8 @@ function ejecutarCambioEstado(anterior, nuevo, datos) {
 
         estado.juegoActual = datos.juegoId;
         // Copia que preserva métodos del prototipo (recibirDano, estaVivo, curar)
-        const original = PERSONAJES[datos.personaje];
+        const original = PERSONAJES[datos.personaje] || ENEMIGOS[datos.personaje];
+        if (!original) return;
         estado.jugadorActual = Object.assign(
             Object.create(Object.getPrototypeOf(original)),
             original
@@ -391,7 +399,7 @@ function ejecutarCambioEstado(anterior, nuevo, datos) {
                 }
             },
             dpad,
-            { dificultad: datos.dificultad || null }
+            { dificultad: datos.dificultad || null, ...(datos.opciones || {}) }
         );
     }
 }

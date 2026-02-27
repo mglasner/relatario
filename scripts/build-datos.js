@@ -416,6 +416,70 @@ const SCHEMA_AJEDREZ = {
     curacion: ['victoriaMin', 'victoriaMax'],
 };
 
+const SCHEMA_DUELO = {
+    meta: ['titulo', 'timeoutExito'],
+    canvas: ['anchoBase', 'altoBase'],
+    arena: ['sueloY', 'limiteIzq', 'limiteDer', 'separacionInicial'],
+    fisicas: [
+        'gravedad',
+        'velocidadMaxCaida',
+        'fuerzaSalto',
+        'velocidadBase',
+        'retrocesoGolpe',
+        'retrocesoGolpeFuerte',
+        'retrocesoVertical',
+    ],
+    escalado: [
+        'estaturaRef',
+        'escalaMin',
+        'escalaMax',
+        'hitboxBaseW',
+        'hitboxBaseH',
+        'spriteBaseW',
+        'spriteBaseH',
+        'velAttrMin',
+        'velAttrMax',
+        'velMin',
+        'velMax',
+    ],
+    combate: [
+        'tiempoRonda',
+        'bloqueoReduccion',
+        'agacharsePorcentajeHitbox',
+        'invulnerabilidad',
+        'ataqueRapidoCooldown',
+        'ataqueFuerteCooldown',
+        'ataqueRapidoDuracion',
+        'ataqueFuerteDuracion',
+        'ataqueRapidoDanoBase',
+        'ataqueFuerteDanoBase',
+        'ataqueRapidoAlcance',
+        'ataqueFuerteAlcance',
+        'ataqueAltoOffset',
+        'ataqueAltoAlcanceY',
+    ],
+    ia: [
+        'reaccionMin',
+        'reaccionMax',
+        'distanciaOptima',
+        'probBloqueo',
+        'probAtaque',
+        'probSalto',
+        'agresividad',
+    ],
+    render: [
+        'colorSuelo',
+        'colorFondo',
+        'colorArenaClaro',
+        'colorBarraJugador',
+        'colorBarraEnemigo',
+        'colorTimer',
+    ],
+    sprites: ['idleVel', 'correrVel', 'ataqueVel', 'agacharseVel', 'golpeadoVel'],
+    pantallas: ['vsSegundos', 'countdownSegundos', 'resultadoSegundos'],
+    textos: ['vs', 'pelea', 'victoria', 'derrota', 'tiempoAgotado', 'ko'],
+};
+
 // Tabla de juegos: slug → schema de validación
 const JUEGOS = [
     { slug: 'laberinto', schema: SCHEMA_LABERINTO },
@@ -423,6 +487,7 @@ const JUEGOS = [
     { slug: 'memorice', schema: SCHEMA_MEMORICE },
     { slug: 'abismo', schema: SCHEMA_ABISMO },
     { slug: 'ajedrez', schema: SCHEMA_AJEDREZ },
+    { slug: 'duelo', schema: SCHEMA_DUELO },
 ];
 
 // Valida un juego contra su schema

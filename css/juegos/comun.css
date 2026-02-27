@@ -42,6 +42,14 @@
     --juego-accent: #f0a030;
 }
 
+.juego-duelo {
+    --juego-pared: #2a1a3e;
+    --juego-pared-medio: #1a0d2a;
+    --juego-pared-oscuro: #0d0620;
+    --juego-borde: rgb(160 80 220 / 25%);
+    --juego-accent: #a050dc;
+}
+
 /* Cabecera: botón huir + título en una sola fila */
 .cabecera-juego {
     display: flex;

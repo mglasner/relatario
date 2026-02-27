@@ -18,7 +18,7 @@ const TESOROS = {
         clase: 'tesoro-cristal-luna',
         descripcion:
             'Un cristal traslúcido que guarda en su interior una niebla plateada llena de secretos. Brilla con más fuerza en noches de luna llena.\n',
-        juegos: ['memorice', 'ajedrez'],
+        juegos: ['memorice', 'ajedrez', 'duelo'],
     },
 
     'Anillo del Viento': {
@@ -38,7 +38,7 @@ const TESOROS = {
         clase: 'tesoro-pluma-fenix',
         descripcion:
             'Una pluma iridiscente que cambia de color con la luz. Quien la porta siente un calor reconfortante, como si el fénix velara por su viaje.\n',
-        juegos: ['laberinto', 'memorice', 'abismo'],
+        juegos: ['laberinto', 'memorice', 'abismo', 'duelo'],
     },
 
     'Reloj de Arena Infinito': {
@@ -70,7 +70,7 @@ const TESOROS = {
             'Un espejo de plata que muestra no lo que eres, sino lo que podrías llegar a ser. Solo los valientes se atreven a mirar.\n',
         sprite: 'assets/img/tesoros/espejo-verdades-sprite.png',
         frames: 6,
-        juegos: ['laberinto', 'laberinto3d', 'memorice', 'abismo', 'ajedrez'],
+        juegos: ['laberinto', 'laberinto3d', 'memorice', 'abismo', 'ajedrez', 'duelo'],
     },
 
     'Mapa Viviente': {
@@ -82,7 +82,7 @@ const TESOROS = {
             'Un pergamino mágico que dibuja solo los caminos que recorres. Cada aventura deja una línea dorada que nunca se borra.\n',
         sprite: 'assets/img/tesoros/mapa-viviente-sprite.png',
         frames: 6,
-        juegos: ['laberinto', 'laberinto3d', 'memorice', 'abismo', 'ajedrez'],
+        juegos: ['laberinto', 'laberinto3d', 'memorice', 'abismo', 'ajedrez', 'duelo'],
     },
 
     'Corona de Sombras': {
@@ -94,7 +94,7 @@ const TESOROS = {
             'Una corona forjada en la oscuridad más profunda, tejida con hilos de sombra que danzan como llamas negras. Quien la porta puede ver lo invisible y caminar entre las penumbras.\n',
         sprite: 'assets/img/tesoros/corona-sombras-sprite.png',
         frames: 8,
-        juegos: ['laberinto', 'laberinto3d', 'memorice', 'abismo', 'ajedrez'],
+        juegos: ['laberinto', 'laberinto3d', 'memorice', 'abismo', 'ajedrez', 'duelo'],
     },
 
     'Corazón de Dragón': {
@@ -106,7 +106,7 @@ const TESOROS = {
             'El corazón cristalizado del último dragón, latiendo con un fuego eterno que nunca se apaga. Su brillo calienta el alma de quien lo encuentra y le otorga un coraje sin igual.\n',
         sprite: 'assets/img/tesoros/corazon-dragon-sprite.png',
         frames: 8,
-        juegos: ['laberinto', 'laberinto3d', 'memorice', 'abismo', 'ajedrez'],
+        juegos: ['laberinto', 'laberinto3d', 'memorice', 'abismo', 'ajedrez', 'duelo'],
     },
 };
 

@@ -12,6 +12,7 @@ export const NOMBRES_JUEGOS = {
     memorice: 'El Memorice',
     abismo: 'El Abismo',
     ajedrez: 'El Ajedrez',
+    duelo: 'El Duelo',
 };
 
 // Orden: curioso → raro → épico → legendario → mítico
