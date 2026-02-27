@@ -326,7 +326,7 @@ export function crearLibro(opciones) {
     // Page curl — puntita inferior derecha
     paginaDer.appendChild(crearElemento('div', 'libro-page-curl'));
 
-    const detalleWrap = crearElemento('div', 'libro-detalle-wrap');
+    const detalleWrap = crearElemento('div', 'libro-detalle-wrap scroll-dorado');
     detalleWrap.appendChild(getDetallePorIndice(0));
     paginaDer.appendChild(detalleWrap);
 

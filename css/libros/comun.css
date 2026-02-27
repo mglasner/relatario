@@ -239,8 +239,6 @@
     flex-direction: column;
     perspective: 1200px;
     overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: rgb(255 215 0 / 25%) transparent;
 }
 
 .libro-detalle-contenido {
@@ -387,25 +385,6 @@
     white-space: pre-line;
     flex: 1;
     overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: rgb(255 215 0 / 25%) transparent;
-}
-
-.libro-descripcion-grande::-webkit-scrollbar {
-    width: 4px;
-}
-
-.libro-descripcion-grande::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.libro-descripcion-grande::-webkit-scrollbar-thumb {
-    background: rgb(255 215 0 / 25%);
-    border-radius: 2px;
-}
-
-.libro-descripcion-grande::-webkit-scrollbar-thumb:hover {
-    background: rgb(255 215 0 / 40%);
 }
 
 .libro-detalle-contenido .stats {

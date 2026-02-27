@@ -62,7 +62,7 @@ export function generarDetalleVillano(nombre, tabInicial) {
 
     panelPerfil.appendChild(crearElemento('div', 'libro-ornamento'));
     panelPerfil.appendChild(
-        crearElemento('p', 'descripcion libro-descripcion-grande', datos.descripcion)
+        crearElemento('p', 'descripcion libro-descripcion-grande scroll-dorado', datos.descripcion)
     );
     contenido.appendChild(panelPerfil);
 

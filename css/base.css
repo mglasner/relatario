@@ -119,6 +119,28 @@ h1 {
     display: none !important;
 }
 
+.scroll-dorado {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(255 215 0 / 25%) transparent;
+}
+
+.scroll-dorado::-webkit-scrollbar {
+    width: 4px;
+}
+
+.scroll-dorado::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.scroll-dorado::-webkit-scrollbar-thumb {
+    background: rgb(255 215 0 / 25%);
+    border-radius: 2px;
+}
+
+.scroll-dorado::-webkit-scrollbar-thumb:hover {
+    background: rgb(255 215 0 / 40%);
+}
+
 /* Skip-link para accesibilidad: visible solo con foco de teclado */
 .skip-link {
     position: absolute;
