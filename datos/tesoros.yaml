@@ -13,7 +13,7 @@ Cristal de Luna:
     peso: 30
     img: assets/img/tesoros/cristal-luna.webp
     clase: tesoro-cristal-luna
-    juegos: [memorice, ajedrez, duelo]
+    juegos: [memorice, ajedrez, dueloAjedrez, duelo]
     descripcion: >
         Un cristal traslúcido que guarda en su interior una niebla
         plateada llena de secretos. Brilla con más fuerza en noches
@@ -46,7 +46,7 @@ Reloj de Arena Infinito:
     peso: 15
     img: assets/img/tesoros/reloj-arena.webp
     clase: tesoro-reloj-arena
-    juegos: [laberinto3d, ajedrez, memorice]
+    juegos: [laberinto3d, ajedrez, dueloAjedrez, memorice]
     descripcion: >
         Un diminuto reloj de arena que nunca termina de vaciarse. Se
         dice que quien lo observa con paciencia puede ver destellos
@@ -57,7 +57,7 @@ Llave de los Sueños:
     peso: 15
     img: assets/img/tesoros/llave-suenos.webp
     clase: tesoro-llave-suenos
-    juegos: [abismo, laberinto3d, ajedrez]
+    juegos: [abismo, laberinto3d, ajedrez, dueloAjedrez]
     descripcion: >
         Una llave de cristal azul que abre puertas que solo existen
         en los sueños. Quien duerme con ella bajo la almohada viaja
@@ -70,7 +70,7 @@ Espejo de Verdades:
     sprite: assets/img/tesoros/espejo-verdades-sprite.png
     frames: 6
     clase: tesoro-espejo-verdades
-    juegos: [laberinto, laberinto3d, memorice, abismo, ajedrez, duelo]
+    juegos: [laberinto, laberinto3d, memorice, abismo, ajedrez, dueloAjedrez, duelo]
     descripcion: >
         Un espejo de plata que muestra no lo que eres, sino lo que
         podrías llegar a ser. Solo los valientes se atreven a mirar.
@@ -82,7 +82,7 @@ Mapa Viviente:
     sprite: assets/img/tesoros/mapa-viviente-sprite.png
     frames: 6
     clase: tesoro-mapa-viviente
-    juegos: [laberinto, laberinto3d, memorice, abismo, ajedrez, duelo]
+    juegos: [laberinto, laberinto3d, memorice, abismo, ajedrez, dueloAjedrez, duelo]
     descripcion: >
         Un pergamino mágico que dibuja solo los caminos que recorres.
         Cada aventura deja una línea dorada que nunca se borra.
@@ -94,7 +94,7 @@ Corona de Sombras:
     sprite: assets/img/tesoros/corona-sombras-sprite.png
     frames: 8
     clase: tesoro-corona-sombras
-    juegos: [laberinto, laberinto3d, memorice, abismo, ajedrez, duelo]
+    juegos: [laberinto, laberinto3d, memorice, abismo, ajedrez, dueloAjedrez, duelo]
     descripcion: >
         Una corona forjada en la oscuridad más profunda, tejida con
         hilos de sombra que danzan como llamas negras. Quien la porta
@@ -107,7 +107,7 @@ Corazón de Dragón:
     sprite: assets/img/tesoros/corazon-dragon-sprite.png
     frames: 8
     clase: tesoro-corazon-dragon
-    juegos: [laberinto, laberinto3d, memorice, abismo, ajedrez, duelo]
+    juegos: [laberinto, laberinto3d, memorice, abismo, ajedrez, dueloAjedrez, duelo]
     descripcion: >
         El corazón cristalizado del último dragón, latiendo con un
         fuego eterno que nunca se apaga. Su brillo calienta el alma

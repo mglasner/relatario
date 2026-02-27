@@ -76,21 +76,38 @@ const JUEGOS = {
         accent: '#f0a030',
         parrafos: [
             'Un tablero de ajedrez mágico donde un ejército aleatorio de villanos cobra vida como piezas enemigas.',
+            'Elige la dificultad, tu color y arma tu ejército de héroes. Los villanos serán controlados por la máquina.',
             'Mueve tus piezas con estrategia para dar jaque mate. Cada pieza enemiga es un villano con su propio avatar.',
         ],
         modos: [
             {
-                icono: '\uD83E\uDD16',
-                nombre: 'vs IA',
-                desc: 'Enfrenta al ejército de villanos controlado por la máquina. Elige dificultad y color.',
+                icono: '\uD83D\uDE0A',
+                nombre: 'Fácil',
+                desc: 'La IA piensa poco. Ideal para aprender los movimientos.',
             },
             {
-                icono: '\uD83E\uDD1D',
-                nombre: 'vs Humano',
-                desc: 'Dos jugadores en el mismo dispositivo. Uno controla a los héroes y el otro a los villanos.',
+                icono: '\uD83E\uDD14',
+                nombre: 'Normal',
+                desc: 'Un desafío equilibrado. La IA busca buenas jugadas.',
+            },
+            {
+                icono: '\uD83D\uDD25',
+                nombre: 'Difícil',
+                desc: 'La IA calcula varias jugadas adelante. ¡Solo para valientes!',
             },
         ],
         tip: 'Piensa antes de mover. Protege a tu rey y busca debilidades en el rival.',
+    },
+    dueloAjedrez: {
+        nombre: 'El Duelo de Ajedrez',
+        img: 'assets/img/juegos/dueloAjedrez.webp',
+        accent: '#e06040',
+        parrafos: [
+            '¡Un duelo de ajedrez entre dos jugadores en el mismo dispositivo! Uno controla a los héroes y el otro a los villanos.',
+            'Cada bando arma su propio ejército eligiendo qué personaje ocupa cada pieza. Luego, ¡a batallar sobre el tablero!',
+            'Las coordenadas aparecen en ambos lados y las piezas del rival se ven de frente. Cualquier jugador puede ofrecer tablas en cualquier momento.',
+        ],
+        tip: 'Comunícate con tu rival: ¡las tablas son una opción honrosa!',
     },
     duelo: {
         nombre: 'El Duelo',
@@ -105,6 +122,13 @@ const JUEGOS = {
     },
 };
 
+// Convierte camelCase a kebab-case para clases CSS
+function aKebab(str) {
+    return str.replace(/[A-Z]/g, function (c) {
+        return '-' + c.toLowerCase();
+    });
+}
+
 // Adaptador: convierte JUEGOS a formato de entidades para crearLibro
 function adaptarJuegos() {
     const entidades = {};
@@ -112,7 +136,7 @@ function adaptarJuegos() {
         const j = JUEGOS[juegoId];
         entidades[j.nombre] = {
             img: j.img,
-            clase: 'juego-' + juegoId,
+            clase: 'juego-' + aKebab(juegoId),
             juegoId: juegoId,
             accent: j.accent,
         };
@@ -266,7 +290,7 @@ function crearModalHeroe(onConfirmar) {
 }
 
 // Juegos que no usan el modal de selección de héroe
-const JUEGOS_SIN_MODAL_HEROE = { ajedrez: true, duelo: true, memorice: true };
+const JUEGOS_SIN_MODAL_HEROE = { ajedrez: true, dueloAjedrez: true, duelo: true, memorice: true };
 
 // --- Modal de selección de dificultad (sin héroe) ---
 

@@ -42,6 +42,14 @@
     --juego-accent: #f0a030;
 }
 
+.juego-duelo-ajedrez {
+    --juego-pared: #3e1a10;
+    --juego-pared-medio: #2e1008;
+    --juego-pared-oscuro: #1e0805;
+    --juego-borde: rgb(224 96 64 / 20%);
+    --juego-accent: #e06040;
+}
+
 .juego-duelo {
     --juego-pared: #2a1a3e;
     --juego-pared-medio: #1a0d2a;

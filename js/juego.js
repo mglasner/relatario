@@ -6,6 +6,7 @@ import { iniciarLaberinto3d, limpiarLaberinto3d } from './juegos/laberinto3d/ind
 import { iniciarMemorice, limpiarMemorice } from './juegos/memorice/index.js';
 import { iniciarAbismo, limpiarAbismo } from './juegos/abismo/index.js';
 import { iniciarAjedrez, limpiarAjedrez } from './juegos/ajedrez/index.js';
+import { iniciarDueloAjedrez, limpiarDueloAjedrez } from './juegos/dueloAjedrez/index.js';
 import { iniciarDuelo, limpiarDuelo } from './juegos/duelo/index.js';
 import { crearBarraSuperior } from './componentes/barraSuperior.js';
 import { crearModalDerrota } from './componentes/modalDerrota.js';
@@ -47,6 +48,7 @@ const juegos = {
     memorice: { iniciar: iniciarMemorice, limpiar: limpiarMemorice },
     abismo: { iniciar: iniciarAbismo, limpiar: limpiarAbismo },
     ajedrez: { iniciar: iniciarAjedrez, limpiar: limpiarAjedrez, sinBarra: true },
+    dueloAjedrez: { iniciar: iniciarDueloAjedrez, limpiar: limpiarDueloAjedrez, sinBarra: true },
     duelo: { iniciar: iniciarDuelo, limpiar: limpiarDuelo, sinBarra: true },
 };
 

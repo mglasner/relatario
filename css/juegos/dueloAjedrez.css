@@ -1,0 +1,234 @@
+/* El Duelo de Ajedrez (HvH) — estilos específicos del modo humano vs humano */
+
+/* --- Pantalla --- */
+
+#pantalla-duelo-ajedrez {
+    --tam-celda: 60px;
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 8px;
+}
+
+#pantalla-duelo-ajedrez .cabecera-juego {
+    width: 100%;
+    max-width: calc(var(--tam-celda) * 8 + 50px);
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+#pantalla-duelo-ajedrez .titulo-juego {
+    display: none;
+}
+
+/* --- HvH: coordenadas para ambos jugadores --- */
+
+.ajedrez-tablero-hvh {
+    grid-template-columns: auto auto auto;
+}
+
+/* Coords invertidas: cada caracter girado 180 para el jugador de enfrente */
+.ajedrez-coords-invertida span {
+    transform: rotate(180deg);
+}
+
+/* Coords superiores (letras) */
+.ajedrez-coords-col-arriba {
+    grid-row: 2;
+}
+
+/* Coords derecha (numeros) */
+.ajedrez-coords-fila-der {
+    grid-column: 3;
+}
+
+/* Desplazar filas compartidas para hacer espacio al row 2 (coords arriba) */
+.ajedrez-tablero-hvh .ajedrez-coords-fila {
+    grid-row: 3;
+}
+
+.ajedrez-tablero-hvh .ajedrez-grilla {
+    grid-row: 3;
+}
+
+.ajedrez-tablero-hvh .ajedrez-coords-col {
+    grid-row: 4;
+}
+
+/* Top coords: override del row 4 que hereda de .ajedrez-coords-col */
+.ajedrez-tablero-hvh .ajedrez-coords-col-arriba {
+    grid-row: 2;
+}
+
+.ajedrez-tablero-hvh .ajedrez-capturas-abajo {
+    grid-row: 5;
+}
+
+/* HvH mobile: piezas negras (arriba) giradas para el jugador enfrente */
+@media (pointer: coarse) {
+    .ajedrez-pieza-invertida {
+        transform: rotate(180deg);
+    }
+}
+
+/* --- Grupo de botones HvH (tablas + rendirse) --- */
+
+.ajedrez-grupo-btns {
+    position: absolute;
+    display: flex;
+    gap: 6px;
+    z-index: 5;
+}
+
+.ajedrez-grupo-btns-villanos {
+    top: 28px;
+    left: 8px;
+}
+
+.ajedrez-grupo-btns-heroes {
+    bottom: 36px;
+    right: 8px;
+}
+
+@media (pointer: coarse) {
+    .ajedrez-grupo-btns-villanos {
+        top: 36px;
+        transform: rotate(180deg);
+    }
+
+    .ajedrez-grupo-btns-heroes {
+        bottom: 44px;
+    }
+}
+
+/* Boton circular compartido (tablas y rendirse) */
+.ajedrez-btn-accion-hvh {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 2px solid rgb(240 165 0 / 30%);
+    border-radius: 50%;
+    cursor: pointer;
+    background-color: rgb(240 165 0 / 8%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: rgb(255 255 255 / 60%);
+    transition:
+        border-color 0.3s,
+        background-color 0.3s,
+        transform 0.15s;
+}
+
+.ajedrez-btn-accion-hvh:hover {
+    border-color: rgb(240 165 0 / 60%);
+    background-color: rgb(240 165 0 / 15%);
+    transform: scale(1.08);
+}
+
+.ajedrez-btn-accion-hvh:active {
+    transform: scale(0.95);
+}
+
+/* Rendirse: tono rojizo */
+.ajedrez-btn-rendirse {
+    border-color: rgb(200 60 60 / 30%);
+    background-color: rgb(200 60 60 / 8%);
+    font-size: 0.95rem;
+}
+
+.ajedrez-btn-rendirse:hover {
+    border-color: rgb(200 60 60 / 60%);
+    background-color: rgb(200 60 60 / 15%);
+}
+
+/* --- Modal ofrecer tablas --- */
+
+.ajedrez-modal-tablas-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(0 0 0 / 60%);
+    z-index: 20;
+    animation: ajedrez-modal-fade-in 0.2s ease;
+}
+
+.ajedrez-modal-tablas {
+    background-color: var(--juego-pared-medio, #2e1e08);
+    border: 2px solid var(--juego-borde, rgb(240 160 48 / 20%));
+    border-radius: var(--radio-tarjeta, 12px);
+    padding: 24px 32px;
+    text-align: center;
+}
+
+.ajedrez-modal-tablas-icono {
+    font-size: 2rem;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 8px;
+    color: var(--juego-accent, #f0a030);
+}
+
+.ajedrez-modal-tablas-texto {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: var(--color-texto-secundario, #b0b0c0);
+    margin: 0 0 20px;
+}
+
+.ajedrez-modal-tablas-acciones {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.ajedrez-modal-tablas-acciones .ajedrez-btn-iniciar {
+    margin-top: 0;
+    padding: 8px 24px;
+    font-size: 0.95rem;
+}
+
+.ajedrez-btn-rechazar {
+    background: linear-gradient(180deg, #6b6b6b, #555);
+    border-color: rgb(150 150 150 / 40%);
+    color: #eee;
+}
+
+@keyframes ajedrez-modal-fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* --- Responsive --- */
+
+@media (width <= 540px) {
+    #pantalla-duelo-ajedrez {
+        --tam-celda: calc((100vw - 60px) / 8);
+    }
+}
+
+@media (width <= 400px) {
+    #pantalla-duelo-ajedrez {
+        --tam-celda: calc((100vw - 52px) / 8);
+    }
+}
+
+@media (width >= 541px) and (width <= 768px) {
+    #pantalla-duelo-ajedrez {
+        --tam-celda: 56px;
+    }
+}
