@@ -26,6 +26,8 @@ import {
     emitirImpacto,
     emitirBloqueo,
     emitirKO,
+    emitirParry,
+    emitirGuardiaRota,
     emitirProyectil,
     actualizarParticulas,
     actualizarProyectiles,
@@ -41,6 +43,7 @@ import { lanzarToast } from '../../componentes/toast.js';
 
 const ANCHO = CFG.canvas.anchoBase;
 const ALTO = CFG.canvas.altoBase;
+const MEC = CFG.mecanicas;
 
 let gameLoop = null;
 let timerInterval = null;
@@ -114,20 +117,31 @@ function procesarInput(l, _dt) {
     // Agacharse
     l.agachado = !!teclas.ArrowDown && l.enSuelo;
 
-    // Bloqueo: mantener dirección opuesta al rival
+    // Bloqueo: mantener dirección opuesta al rival (no puede si guardia rota)
     const rivalAlaDerecha = rival.x > l.x;
+    const estabaBloqueando = l.bloqueando;
     l.bloqueando =
         l.enSuelo &&
         l.estado !== 'atacando' &&
+        !l.guardiaRota &&
         ((rivalAlaDerecha && teclas.ArrowLeft) || (!rivalAlaDerecha && teclas.ArrowRight));
+
+    // Parry window: al empezar a bloquear
+    if (l.bloqueando && !estabaBloqueando) {
+        l.parryVentana = MEC.parryVentana;
+    }
 
     // Ataques
     if (teclas.a && l.cooldownAtaque <= 0 && l.estado !== 'atacando' && l.estado !== 'golpeado') {
+        l.ataqueAereo = !l.enSuelo;
         procesarAtaque(l, rival, 'rapido');
+        if (l.ataqueAereo) l.cooldownAtaque = MEC.aereoCooldown;
         teclas.a = false;
     }
     if (teclas.s && l.cooldownAtaque <= 0 && l.estado !== 'atacando' && l.estado !== 'golpeado') {
+        l.ataqueAereo = !l.enSuelo;
         procesarAtaque(l, rival, 'fuerte');
+        if (l.ataqueAereo) l.cooldownAtaque = MEC.aereoCooldown;
         teclas.s = false;
     }
 }
@@ -238,9 +252,24 @@ function actualizar(_tiempo, dt) {
         // Colisiones ataque → daño
         const resultado = verificarColisiones(l1, l2);
         if (resultado) {
-            if (resultado.tipo === 'impacto') {
+            if (resultado.tipo === 'parry') {
+                emitirParry(resultado.x, resultado.y);
+                est.flashAlpha = 0.3;
+                lanzarToast('¡Parada!', '⚔️', 'exito');
+            } else if (resultado.tipo === 'guardiaRota') {
+                emitirGuardiaRota(resultado.x, resultado.y, resultado.r, resultado.g, resultado.b);
+                est.flashAlpha = 0.35;
+                lanzarToast('¡Guardia rota!', '💥', 'dano');
+            } else if (resultado.tipo === 'impacto') {
                 emitirImpacto(resultado.x, resultado.y, resultado.r, resultado.g, resultado.b);
                 est.flashAlpha = resultado.fuerte ? 0.4 : 0.25;
+                if (resultado.aereo) {
+                    lanzarToast('¡Ataque aéreo!', '🦅', 'exito');
+                }
+                // Toast de combo
+                if (resultado.atacante.comboCount >= 3) {
+                    lanzarToast('¡Combo x' + resultado.atacante.comboCount + '!', '🔥', 'exito');
+                }
             } else if (resultado.tipo === 'bloqueo') {
                 emitirBloqueo(resultado.x, resultado.y);
             }

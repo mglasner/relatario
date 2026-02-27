@@ -9,6 +9,7 @@ import { hexARgb } from './utilsDuelo.js';
 
 const RND = CFG.render;
 const ARENA = CFG.arena;
+const MEC = CFG.mecanicas;
 
 // --- Paletas de fondo por estación (día vs noche) ---
 
@@ -179,6 +180,57 @@ function renderizarEscudo(ctx, l) {
     ctx.restore();
 }
 
+// --- Indicadores de mecánicas de habilidad ---
+
+function renderizarComboCounter(ctx, l) {
+    if (l.comboCount < 2) return;
+    const cx = l.x + l.ancho / 2;
+    const tamFuente = Math.min(10 + l.comboCount, 18);
+    ctx.save();
+    ctx.font = 'bold ' + tamFuente + 'px sans-serif';
+    ctx.fillStyle = '#ffd700';
+    ctx.textAlign = 'center';
+    ctx.globalAlpha = 0.9;
+    ctx.fillText('x' + l.comboCount, cx, l.y - 8);
+    ctx.restore();
+}
+
+function renderizarBarraGuardia(ctx, l) {
+    if (l.guardiaHP >= MEC.guardiaMax) return;
+    const ancho = l.ancho + 4;
+    const alto = 2;
+    const x = l.x - 2;
+    const y = l.y - 5;
+    const ratio = l.guardiaHP / MEC.guardiaMax;
+
+    // Fondo oscuro
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    ctx.fillRect(x, y, ancho, alto);
+
+    // Barra de guardia (verde → rojo)
+    const r = Math.round(255 * (1 - ratio));
+    const g = Math.round(200 * ratio);
+    ctx.fillStyle = 'rgb(' + r + ',' + g + ',40)';
+    ctx.fillRect(x, y, ancho * ratio, alto);
+}
+
+function renderizarBoostGlow(ctx, l) {
+    if (l.boostTimer <= 0) return;
+    const cx = l.x + l.ancho / 2;
+    const cy = l.y + l.alto * 0.5;
+    const pulso = 1 + 0.2 * Math.sin(Date.now() * 0.008);
+    const radio = l.alto * 0.55 * pulso;
+    const alpha = 0.18 * Math.min(1, l.boostTimer / 30);
+
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radio);
+    grad.addColorStop(0, 'rgba(255,215,0,' + alpha + ')');
+    grad.addColorStop(1, 'rgba(255,180,0,0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, radio, 0, Math.PI * 2);
+    ctx.fill();
+}
+
 // --- Luchador ---
 
 function renderizarLuchador(ctx, l) {
@@ -250,6 +302,11 @@ function renderizarLuchador(ctx, l) {
     ctx.beginPath();
     ctx.ellipse(cx, ARENA.sueloY + 2, sombra / 2, 3, 0, 0, Math.PI * 2);
     ctx.fill();
+
+    // Indicadores de mecánicas (sin flip, posición absoluta)
+    renderizarBoostGlow(ctx, l);
+    renderizarComboCounter(ctx, l);
+    renderizarBarraGuardia(ctx, l);
 }
 
 // --- Countdown ---

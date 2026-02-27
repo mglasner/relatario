@@ -135,6 +135,82 @@ export function emitirImpacto(x, y, r, g, b) {
 }
 
 /**
+ * Emite partículas de parry (explosión dorada/blanca)
+ */
+export function emitirParry(x, y) {
+    // Chispas doradas
+    emitir(x, y, 15, {
+        r: 255,
+        g: 215,
+        b: 0,
+        velMin: 2,
+        velMax: 5,
+        vidaMin: 10,
+        vidaMax: 25,
+        tamMin: 1.5,
+        tamMax: 3.5,
+        uplift: 1.5,
+        spread: 6,
+        gravedad: 0.06,
+        friccion: 0.93,
+        tipo: 'chispa',
+    });
+    // Aura blanca
+    emitir(x, y, 8, {
+        r: 255,
+        g: 255,
+        b: 255,
+        velMin: 1,
+        velMax: 3,
+        vidaMin: 8,
+        vidaMax: 18,
+        tamMin: 2,
+        tamMax: 3.5,
+        spread: 5,
+        friccion: 0.95,
+        tipo: 'aura',
+    });
+}
+
+/**
+ * Emite partículas de guardia rota (fragmentos del escudo)
+ */
+export function emitirGuardiaRota(x, y, r, g, b) {
+    // Fragmentos del color del defensor
+    emitir(x, y, 12, {
+        r,
+        g,
+        b,
+        velMin: 2,
+        velMax: 5,
+        vidaMin: 15,
+        vidaMax: 35,
+        tamMin: 2,
+        tamMax: 4,
+        uplift: 0.5,
+        spread: 8,
+        gravedad: 0.1,
+        friccion: 0.94,
+        tipo: 'cuadrado',
+    });
+    // Chispas blancas de impacto
+    emitir(x, y, 6, {
+        r: 255,
+        g: 255,
+        b: 255,
+        velMin: 3,
+        velMax: 6,
+        vidaMin: 5,
+        vidaMax: 12,
+        tamMin: 1,
+        tamMax: 2,
+        spread: 4,
+        friccion: 0.92,
+        tipo: 'chispa',
+    });
+}
+
+/**
  * Emite partículas de bloqueo (escudo)
  */
 export function emitirBloqueo(x, y) {

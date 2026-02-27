@@ -118,7 +118,7 @@ const JUEGOS = {
             'Puedes jugar como h\u00e9roe o como villano. Elige tu bando, escoge a tu luchador favorito y desaf\u00eda a un oponente del bando contrario.',
             'Cada luchador tiene sus propias estad\u00edsticas y ataques. Los villanos m\u00e1s temibles son m\u00e1s agresivos y peligrosos. \u00bfPodr\u00e1s derrotar a un villano pesadilla?',
         ],
-        tip: 'Bloquea manteniendo la direcci\u00f3n opuesta al rival. Ag\u00e1chate para esquivar ataques altos. Alterna golpes r\u00e1pidos y fuertes.',
+        tip: 'Bloquea con timing preciso para una parada que aturde al rival. Golpea desde el aire para un ataque imbloqueable. Encadena golpes rápidos para hacer combos devastadores.',
     },
 };
 

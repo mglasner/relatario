@@ -7,6 +7,7 @@ import { procesarAtaque } from './combate.js';
 
 const IA = CFG.ia;
 const FIS = CFG.fisicas;
+const MEC = CFG.mecanicas;
 
 // Estados de la IA
 const ESTADOS_IA = {
@@ -108,7 +109,9 @@ export function actualizarIA(ia, rival, dt) {
             if (ia.cooldownAtaque <= 0 && ia.estado !== 'atacando' && ia.estado !== 'golpeado') {
                 // Elegir tipo de ataque
                 const tipo = Math.random() < 0.6 ? 'rapido' : 'fuerte';
+                ia.ataqueAereo = !ia.enSuelo;
                 procesarAtaque(ia, rival, tipo);
+                if (ia.ataqueAereo) ia.cooldownAtaque = MEC.aereoCooldown;
             }
 
             // Después de atacar, volver a decidir
@@ -131,8 +134,23 @@ export function actualizarIA(ia, rival, dt) {
 
         case ESTADOS_IA.BLOQUEAR: {
             ia.vx = 0;
+            // No puede bloquear con guardia rota
+            if (ia.guardiaRota) {
+                ia.bloqueando = false;
+                estadoIA = ESTADOS_IA.RETROCEDER;
+                timerIA = 30;
+                break;
+            }
+            const estabaBloqueandoIA = ia.bloqueando;
             ia.bloqueando = true;
             ia.agachado = Math.random() < 0.3;
+
+            // Intentar parry al empezar a bloquear
+            if (ia.bloqueando && !estabaBloqueandoIA) {
+                if (Math.random() < IA.probParry * agresividad) {
+                    ia.parryVentana = MEC.parryVentana;
+                }
+            }
 
             if (timerIA <= 0) {
                 ia.bloqueando = false;
@@ -142,6 +160,25 @@ export function actualizarIA(ia, rival, dt) {
             }
             break;
         }
+    }
+
+    // Ataque aéreo: si está en el aire y cayendo cerca del rival
+    if (!ia.enSuelo && ia.vy > 0 && distancia < IA.distanciaOptima * 1.2) {
+        if (
+            ia.cooldownAtaque <= 0 &&
+            ia.estado !== 'atacando' &&
+            Math.random() < IA.probAtaqueAereo * agresividad
+        ) {
+            ia.ataqueAereo = true;
+            procesarAtaque(ia, rival, 'fuerte');
+            if (ia.ataqueAereo) ia.cooldownAtaque = MEC.aereoCooldown;
+        }
+    }
+
+    // Adaptación a guardia baja: retroceder para regenerar
+    if (ia.guardiaHP <= 1 && estadoIA !== ESTADOS_IA.RETROCEDER) {
+        estadoIA = ESTADOS_IA.RETROCEDER;
+        timerIA = 40;
     }
 
     // Reacción al ser golpeado: contraatacar rápido

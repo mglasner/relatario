@@ -6,6 +6,7 @@ import { CFG } from './config.js';
 const ESC = CFG.escalado;
 const FIS = CFG.fisicas;
 const CMB = CFG.combate;
+const MEC = CFG.mecanicas;
 
 /**
  * Calcula la escala visual de un luchador según su estatura
@@ -73,6 +74,23 @@ export function crearLuchador(cfg) {
         tipoAtaque: null, // 'rapido' | 'fuerte'
         ataqueConecto: false,
 
+        // Parry
+        parryVentana: 0,
+        boostDano: 1.0,
+        boostTimer: 0,
+
+        // Combos
+        comboCount: 0,
+        comboTimer: 0,
+
+        // Ataque aéreo
+        ataqueAereo: false,
+
+        // Guardia
+        guardiaHP: MEC.guardiaMax,
+        guardiaRota: false,
+        guardiaRegenTimer: 0,
+
         // Animación
         frameAnim: 0,
         frameTimer: 0,
@@ -115,6 +133,31 @@ export function actualizarLuchador(l, dt) {
     // Timers
     if (l.invulFrames > 0) l.invulFrames -= dt;
     if (l.cooldownAtaque > 0) l.cooldownAtaque -= dt;
+    if (l.parryVentana > 0) l.parryVentana -= dt;
+
+    // Parry boost decay
+    if (l.boostTimer > 0) {
+        l.boostTimer -= dt;
+        if (l.boostTimer <= 0) l.boostDano = 1.0;
+    }
+
+    // Combo timeout
+    if (l.comboTimer > 0) {
+        l.comboTimer -= dt;
+        if (l.comboTimer <= 0) l.comboCount = 0;
+    }
+
+    // Guardia regeneración (solo si NO está bloqueando)
+    if (!l.bloqueando && l.guardiaHP < MEC.guardiaMax) {
+        l.guardiaRegenTimer += dt;
+        if (l.guardiaRegenTimer >= MEC.guardiaRegenIntervalo) {
+            l.guardiaRegenTimer = 0;
+            l.guardiaHP = Math.min(l.guardiaHP + 1, MEC.guardiaMax);
+            if (l.guardiaHP > 0) l.guardiaRota = false;
+        }
+    } else {
+        l.guardiaRegenTimer = 0;
+    }
 
     // Estado de ataque
     if (l.ataqueTimer > 0) {

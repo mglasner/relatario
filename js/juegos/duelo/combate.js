@@ -6,6 +6,7 @@ import { obtenerHitbox, aplicarRetroceso } from './luchador.js';
 import { hexARgb } from './utilsDuelo.js';
 
 const CMB = CFG.combate;
+const MEC = CFG.mecanicas;
 
 /**
  * Inicia un ataque para un luchador
@@ -68,14 +69,29 @@ function calcularDano(atacante) {
     const danoBase = esRapido ? CMB.ataqueRapidoDanoBase : CMB.ataqueFuerteDanoBase;
 
     // Escalar con daño del primer/segundo ataque de la entidad
-    if (atacante.ataquesDatos.length === 0) return danoBase;
-    const ataqueIdx = esRapido ? 0 : Math.min(1, atacante.ataquesDatos.length - 1);
-    const ataqueDatos = atacante.ataquesDatos[ataqueIdx];
-    if (ataqueDatos && ataqueDatos.dano) {
-        return Math.round((danoBase + ataqueDatos.dano) / 2);
+    let dano = danoBase;
+    if (atacante.ataquesDatos.length > 0) {
+        const ataqueIdx = esRapido ? 0 : Math.min(1, atacante.ataquesDatos.length - 1);
+        const ataqueDatos = atacante.ataquesDatos[ataqueIdx];
+        if (ataqueDatos && ataqueDatos.dano) {
+            dano = Math.round((danoBase + ataqueDatos.dano) / 2);
+        }
     }
 
-    return danoBase;
+    // Multiplicador de combo
+    const mults = MEC.comboMultiplicadores;
+    const comboMult = mults[Math.min(atacante.comboCount, mults.length - 1)];
+    dano = Math.round(dano * comboMult);
+
+    // Multiplicador de boost (parry)
+    dano = Math.round(dano * atacante.boostDano);
+
+    // Multiplicador aéreo
+    if (atacante.ataqueAereo) {
+        dano = Math.round(dano * MEC.aereoMultDano);
+    }
+
+    return dano;
 }
 
 /**
@@ -121,32 +137,71 @@ function verificarAtaque(atacante, defensor) {
 
     const dano = calcularDano(atacante);
     const esFuerte = atacante.tipoAtaque === 'fuerte';
+    const esAereo = atacante.ataqueAereo;
 
     // Punto de impacto (para partículas)
     const impactoX = (zona.x + zona.ancho / 2 + hitbox.x + hitbox.ancho / 2) / 2;
     const impactoY = (zona.y + zona.alto / 2 + hitbox.y + hitbox.alto / 2) / 2;
 
-    // Bloqueo
-    if (defensor.bloqueando) {
+    // Ataques aéreos son imbloquéables — saltar directo al impacto
+    if (!esAereo && defensor.bloqueando && !defensor.guardiaRota) {
+        // ¿Es parry? (bloqueo con timing preciso)
+        if (defensor.parryVentana > 0) {
+            // Aturdimiento al atacante
+            atacante.estado = 'golpeado';
+            atacante.invulFrames = MEC.parryAturdimiento;
+            atacante.ataqueTimer = 0;
+            aplicarRetroceso(atacante, defensor.x + defensor.ancho / 2, true);
+            // Boost al defensor
+            defensor.boostDano = MEC.parryBoostDano;
+            defensor.boostTimer = MEC.parryBoostDuracion;
+            defensor.parryVentana = 0;
+            return { tipo: 'parry', x: impactoX, y: impactoY };
+        }
+
+        // Reducir guardia
+        const costo = esFuerte ? MEC.guardiaCostoFuerte : MEC.guardiaCostoRapido;
+        defensor.guardiaHP -= costo;
+
+        if (defensor.guardiaHP <= 0) {
+            // ¡Guardia rota!
+            defensor.guardiaHP = 0;
+            defensor.guardiaRota = true;
+            defensor.bloqueando = false;
+            defensor.estado = 'golpeado';
+            defensor.invulFrames = MEC.guardiaRotaStun;
+            aplicarRetroceso(defensor, atacante.x + atacante.ancho / 2, true);
+            defensor.vidaActual = Math.max(0, defensor.vidaActual - dano);
+            // Cuenta como combo hit
+            atacante.comboCount++;
+            atacante.comboTimer = MEC.comboTimer;
+            const { r, g, b } = hexARgb(defensor.colorHud);
+            return { tipo: 'guardiaRota', x: impactoX, y: impactoY, r, g, b };
+        }
+
+        // Bloqueo normal (guardia aguantó)
         const danoReducido = Math.round(dano * CMB.bloqueoReduccion);
         defensor.vidaActual = Math.max(0, defensor.vidaActual - danoReducido);
         defensor.invulFrames = CMB.invulnerabilidad * 0.3;
-        return {
-            tipo: 'bloqueo',
-            x: impactoX,
-            y: impactoY,
-        };
+        atacante.comboCount = 0; // El rival bloqueó, se rompe el combo
+        return { tipo: 'bloqueo', x: impactoX, y: impactoY };
     }
 
-    // Golpe directo
+    // Golpe directo (incluye aéreo imbloqueable)
     defensor.vidaActual = Math.max(0, defensor.vidaActual - dano);
     defensor.invulFrames = CMB.invulnerabilidad;
-    aplicarRetroceso(defensor, atacante.x + atacante.ancho / 2, esFuerte);
+    aplicarRetroceso(defensor, atacante.x + atacante.ancho / 2, esFuerte || esAereo);
+
+    // Combo tracking
+    atacante.comboCount++;
+    atacante.comboTimer = MEC.comboTimer;
 
     const { r, g, b } = hexARgb(atacante.colorHud);
     return {
         tipo: 'impacto',
         fuerte: esFuerte,
+        aereo: esAereo,
+        atacante,
         x: impactoX,
         y: impactoY,
         r,
