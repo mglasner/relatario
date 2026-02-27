@@ -129,5 +129,6 @@ luego hacer los pasos 5-6 una sola vez al final.
 ## Referencias
 
 - **`references/campos-yaml.md`** — Esquemas YAML completos para héroes y villanos
+- **`references/balance-duelo.md`** — Fórmula de Poder Efectivo para calibrar daño de ataques
 - **`references/paleta-css.md`** — Estructura CSS de paletas con ejemplo
 - **`references/sprites-plat.md`** — Procedimiento completo para sprite sheets del platformer

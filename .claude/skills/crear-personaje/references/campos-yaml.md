@@ -75,30 +75,58 @@ Nombre:
 | Velocidad | 5-8 | 3-6 | 3-5 | 4-7 |
 | Vel. Ataque | 5-8 | 3-5 | 4-6 | 5-7 |
 
-## Daño de ataques por tier
+## Ataques
 
-Cada villano tiene 2 ataques: uno rápido (menor daño) y uno especial (mayor daño).
+Cada personaje tiene exactamente **2 ataques**: uno asignado al slot rápido (botón A)
+y otro al slot fuerte (botón B). Cada ataque requiere:
 
-| Tier | Ataque rápido | Ataque especial | Filosofía |
-|------|--------------|-----------------|-----------|
-| Esbirro | 6-8 | 10-12 | Molestias, no amenazas reales |
-| Élite | 12-15 | 15-18 | Peligrosos, requieren cuidado |
-| Pesadilla | 20-24 | 25-30 | Jefes duros, pocos golpes bastan |
-| Leyenda | 25-32 | 35-45 | Devastadores, exigen estrategia |
+```yaml
+ataques:
+    - nombre: Nombre del Ataque
+      dano: 20                    # int — calibrado por fórmula de Poder Efectivo
+      descripcion: Descripción corta
+      arquetipo: carga            # carga | salto | aoe | proyectil
+      color: '#rrggbb'           # color principal del efecto visual
+      colorSecundario: '#rrggbb' # color secundario del efecto visual
+      radio: 3                   # solo para aoe — radio del área
+```
 
-### Criterio de balance
+### Arquetipos de ataque
 
-Los daños deben calibrarse contra la vida de los héroes. Antes de asignar
-valores, leer `datos/personajes.yaml` para revisar los HP actuales y calcular
-cuántos golpes aguantaría un héroe promedio:
+| Arquetipo | Uso visual | Riesgo | Efecto en balance |
+|-----------|-----------|--------|-------------------|
+| **carga** | Golpe cuerpo a cuerpo | Alto | Permite mayor daño raw |
+| **salto** | Gap-closer con desplazamiento | Medio-alto | Ligeramente menor daño |
+| **aoe** | Área de efecto | Medio | Menor daño (difícil de esquivar) |
+| **proyectil** | Orbe a distancia | Bajo | Requiere menor daño raw |
 
-- **Esbirro**: Un héroe aguanta ~8-12 golpes. Molestos pero no letales.
-- **Élite**: Un héroe aguanta ~5-7 golpes. Peleas tensas con criterio.
-- **Pesadilla**: Un héroe aguanta ~3-4 golpes. Cada error importa.
-- **Leyenda**: Un héroe aguanta ~2-3 golpes. Solo expertos sobreviven.
+### Calibración de daño — Poder Efectivo
 
-### Antes de crear un villano
+**No asignar valores de daño arbitrariamente.** Usar la fórmula de Poder Efectivo
+documentada en `references/balance-duelo.md` para derivar los valores de `dano`
+que equilibren al personaje con su tier.
 
-Revisar siempre los datos actuales para mantener consistencia:
-- `datos/enemigos.yaml` — villanos existentes, sus tiers y daños
-- `datos/personajes.yaml` — vida y daños de los héroes (para balance)
+Resumen rápido del procedimiento:
+1. Fijar HP, velocidad y arquetipos (identidad del personaje)
+2. Calcular `velMod`, `hpMod`, `agrMod`
+3. Derivar `DPS_adj_target = Poder_target / (velMod × hpMod × agrMod)`
+4. Buscar valores enteros de d₁ y d₂ que satisfagan el target
+5. Verificar que el Poder final caiga en la banda del tier
+
+### Rangos de daño resultantes por tier
+
+| Tier | d₁ (rápido) | d₂ (fuerte) | Poder objetivo |
+|------|-------------|-------------|----------------|
+| Esbirro | 6–9 | 10–12 | ~10 |
+| Héroe | 15–25 | 11–28 | 40 |
+| Élite | 12–22 | 13–18 | 40 |
+| Pesadilla | 14–18 | 19–24 | 75 |
+| Leyenda | 18–25 | 22–30 | 90 |
+
+Los rangos de héroes/élites son amplios porque compensan variaciones de HP y velocidad.
+
+### Antes de crear un personaje
+
+1. Leer `references/balance-duelo.md` para la fórmula completa y ejemplos
+2. Revisar `datos/enemigos.yaml` y `datos/personajes.yaml` para contexto
+3. Calcular los valores de daño con la fórmula — no copiar de personajes existentes
