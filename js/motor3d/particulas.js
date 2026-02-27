@@ -1,6 +1,7 @@
 // Motor 3D — Sistema de partículas con pool de objetos
 
 import { FOV, canvas } from './config.js';
+import { PARTICULAS_3D, PALETAS_PETALO } from '../juegos/clima.js';
 
 const POOL_SIZE = 250;
 const RADIO_CULLING = 6;
@@ -227,13 +228,6 @@ function emitirNiebla(jugadorX, jugadorY) {
 
 // --- Emisores de clima para el motor 3D ---
 
-// Paletas de colores para hojas 3D [r, g, b]
-const COLORES_HOJAS_3D = [
-    [210, 80, 30],
-    [230, 150, 40],
-    [140, 50, 20],
-];
-
 let climaFrame3D = 0;
 
 /**
@@ -246,102 +240,102 @@ function emitirClima3D(estacion, jugadorX, jugadorY) {
     climaFrame3D++;
 
     if (estacion === 'invierno') {
-        // Lluvia: gotas que caen desde el techo (z=1 → 0), tintadas azul-violeta
-        if (climaFrame3D % 2 === 0) {
+        const ll = PARTICULAS_3D.invierno.lluvia;
+        if (climaFrame3D % ll.intervalo === 0) {
             const p = obtenerLibre();
             if (p) {
                 const ang = Math.random() * Math.PI * 2;
-                const dist = 0.5 + Math.random() * 2.5;
+                const dist = ll.distBase + Math.random() * ll.distRand;
                 p.activa = true;
                 p.x = jugadorX + Math.cos(ang) * dist;
                 p.y = jugadorY + Math.sin(ang) * dist;
-                p.z = 0.95 + Math.random() * 0.05;
-                p.vx = -0.003;
+                p.z = ll.zBase + Math.random() * ll.zRand;
+                p.vx = ll.vx;
                 p.vy = 0;
-                p.vz = -0.025; // Cae rápido
-                p.vida = 40;
-                p.vidaMax = 40;
+                p.vz = ll.vz;
+                p.vida = ll.vida;
+                p.vidaMax = ll.vida;
                 p.tipo = 'lluvia-3d';
-                p.r = 170;
-                p.g = 200;
-                p.b = 255;
-                p.alpha = 0.55;
-                p.tamano = 1.5;
+                p.r = ll.color[0];
+                p.g = ll.color[1];
+                p.b = ll.color[2];
+                p.alpha = ll.alpha;
+                p.tamano = ll.tamano;
             }
         }
     } else if (estacion === 'primavera') {
-        // Pétalos: caen suavemente, oscilan
-        if (climaFrame3D % 4 === 0) {
+        const pet = PARTICULAS_3D.primavera.petalos;
+        if (climaFrame3D % pet.intervalo === 0) {
             const p = obtenerLibre();
             if (p) {
                 const ang = Math.random() * Math.PI * 2;
-                const dist = 0.5 + Math.random() * 2;
+                const dist = pet.distBase + Math.random() * pet.distRand;
                 p.activa = true;
                 p.x = jugadorX + Math.cos(ang) * dist;
                 p.y = jugadorY + Math.sin(ang) * dist;
-                p.z = 0.8 + Math.random() * 0.2;
-                p.vx = (Math.random() - 0.5) * 0.002;
-                p.vy = (Math.random() - 0.5) * 0.002;
-                p.vz = -0.004; // Cae lentamente
-                p.vida = 120 + Math.floor(Math.random() * 60);
+                p.z = pet.zBase + Math.random() * pet.zRand;
+                p.vx = (Math.random() - 0.5) * pet.vxRand;
+                p.vy = (Math.random() - 0.5) * pet.vyRand;
+                p.vz = pet.vz;
+                p.vida = pet.vidaBase + Math.floor(Math.random() * pet.vidaRand);
                 p.vidaMax = p.vida;
                 p.tipo = 'petalo-3d';
-                // Pétalos multicolores
-                const pIdx = Math.floor(Math.random() * 8);
-                p.r = [255, 255, 225, 255, 185, 255, 195, 255][pIdx];
-                p.g = [185, 175, 185, 215, 225, 240, 240, 205][pIdx];
-                p.b = [215, 200, 245, 175, 250, 175, 190, 225][pIdx];
-                p.alpha = 0.85;
-                p.tamano = 3 + Math.random() * 1.5;
+                const c = PALETAS_PETALO[Math.floor(Math.random() * PALETAS_PETALO.length)];
+                p.r = c[0];
+                p.g = c[1];
+                p.b = c[2];
+                p.alpha = pet.alpha;
+                p.tamano = pet.tamanoBase + Math.random() * pet.tamanoRand;
             }
         }
     } else if (estacion === 'verano') {
-        // Motas de polvo: flotan a media altura
-        if (climaFrame3D % 5 === 0) {
+        const mot = PARTICULAS_3D.verano.motas;
+        if (climaFrame3D % mot.intervalo === 0) {
             const p = obtenerLibre();
             if (p) {
                 const ang = Math.random() * Math.PI * 2;
-                const dist = 0.3 + Math.random() * 3;
+                const dist = mot.distBase + Math.random() * mot.distRand;
                 p.activa = true;
                 p.x = jugadorX + Math.cos(ang) * dist;
                 p.y = jugadorY + Math.sin(ang) * dist;
-                p.z = 0.2 + Math.random() * 0.5;
-                p.vx = (Math.random() - 0.5) * 0.001;
-                p.vy = (Math.random() - 0.5) * 0.001;
-                p.vz = 0.0005; // Flota levemente
-                p.vida = 200 + Math.floor(Math.random() * 100);
+                p.z = mot.zBase + Math.random() * mot.zRand;
+                p.vx = (Math.random() - 0.5) * mot.vxRand;
+                p.vy = (Math.random() - 0.5) * mot.vyRand;
+                p.vz = mot.vz;
+                p.vida = mot.vidaBase + Math.floor(Math.random() * mot.vidaRand);
                 p.vidaMax = p.vida;
                 p.tipo = 'mota-3d';
-                p.r = 220;
-                p.g = 190;
-                p.b = 100;
-                p.alpha = 0.3;
-                p.tamano = 1.5 + Math.random();
+                p.r = mot.color[0];
+                p.g = mot.color[1];
+                p.b = mot.color[2];
+                p.alpha = mot.alpha;
+                p.tamano = mot.tamanoBase + Math.random() * mot.tamanoRand;
             }
         }
     } else if (estacion === 'otono') {
-        // Hojas: caen con oscilación
-        if (climaFrame3D % 3 === 0) {
-            const c = COLORES_HOJAS_3D[Math.floor(Math.random() * 3)];
+        const hoj = PARTICULAS_3D.otono.hojas;
+        const colores = PARTICULAS_3D.coloresHojas3d;
+        if (climaFrame3D % hoj.intervalo === 0) {
+            const c = colores[Math.floor(Math.random() * colores.length)];
             const p = obtenerLibre();
             if (p) {
                 const ang = Math.random() * Math.PI * 2;
-                const dist = 0.4 + Math.random() * 2.5;
+                const dist = hoj.distBase + Math.random() * hoj.distRand;
                 p.activa = true;
                 p.x = jugadorX + Math.cos(ang) * dist;
                 p.y = jugadorY + Math.sin(ang) * dist;
-                p.z = 0.7 + Math.random() * 0.3;
-                p.vx = (Math.random() - 0.5) * 0.004;
-                p.vy = (Math.random() - 0.5) * 0.004;
-                p.vz = -0.006 - Math.random() * 0.003;
-                p.vida = 80 + Math.floor(Math.random() * 50);
+                p.z = hoj.zBase + Math.random() * hoj.zRand;
+                p.vx = (Math.random() - 0.5) * hoj.vxRand;
+                p.vy = (Math.random() - 0.5) * hoj.vyRand;
+                p.vz = hoj.vzBase - Math.random() * hoj.vzRand;
+                p.vida = hoj.vidaBase + Math.floor(Math.random() * hoj.vidaRand);
                 p.vidaMax = p.vida;
                 p.tipo = 'hoja-3d';
                 p.r = c[0];
                 p.g = c[1];
                 p.b = c[2];
-                p.alpha = 0.75;
-                p.tamano = 2 + Math.random();
+                p.alpha = hoj.alpha;
+                p.tamano = hoj.tamanoBase + Math.random() * hoj.tamanoRand;
             }
         }
     }

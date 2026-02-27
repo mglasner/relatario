@@ -24,7 +24,13 @@ import {
 import { iniciarTrasgo, actualizarTrasgo, renderizarTrasgo } from './trasgo.js';
 import { iniciarCountdown, actualizarVillanoElite, limpiarVillanoElite } from './villanoElite.js';
 import { lanzarToast } from '../../componentes/toast.js';
-import { sortearEstacion, ESTACIONES, PALETAS_PETALO, PALETAS_HOJA } from '../clima.js';
+import {
+    sortearEstacion,
+    ESTACIONES,
+    PALETAS_PETALO,
+    PALETAS_HOJA,
+    PARTICULAS_2D,
+} from '../clima.js';
 
 import { crearPantallaJuego } from '../../componentes/pantallaJuego.js';
 import { crearModoPortrait } from '../../componentes/modoPortrait.js';
@@ -40,127 +46,140 @@ let climaEstacion = null;
 let climaParticulas = [];
 let climaFrame = 0;
 let climaRafagaCounter = 0;
-let climaRafagaProx = 200 + Math.floor(Math.random() * 100);
+let climaRafagaProx = 0;
 let climaRafagaActiva = false;
 let climaRafagaFrames = 0;
 
+function resetRafagaLab() {
+    const raf = PARTICULAS_2D.otono.rafaga;
+    climaRafagaProx = raf.intervaloMin + Math.floor(Math.random() * raf.intervaloRand);
+}
+resetRafagaLab();
+
 function emitirParticulasClimaLab(ancho, alto) {
     if (climaEstacion === 'invierno') {
-        const n = 2 + Math.floor(Math.random() * 2);
+        const ll = PARTICULAS_2D.invierno.lluvia;
+        const n = ll.cantidad + Math.floor(Math.random() * ll.cantidadRand);
         for (let i = 0; i < n; i++) {
             climaParticulas.push({
                 x: Math.random() * ancho,
                 y: -5,
-                vx: -1.2,
-                vy: 5.5 + Math.random() * 2,
-                vida: 20 + Math.floor(Math.random() * 8),
-                vidaMax: 28,
-                r: 170,
-                g: 200,
-                b: 255,
-                alpha: 0.6,
+                vx: ll.vx,
+                vy: ll.vyBase + Math.random() * ll.vyRand,
+                vida: ll.vidaBase + Math.floor(Math.random() * ll.vidaRand),
+                vidaMax: ll.vidaBase + ll.vidaRand,
+                r: ll.color[0],
+                g: ll.color[1],
+                b: ll.color[2],
+                alpha: ll.alpha,
                 tipo: 'lluvia',
-                tam: 2,
+                tam: ll.tamano,
             });
         }
     } else if (climaEstacion === 'primavera') {
-        if (climaFrame % 4 === 0) {
+        const pet = PARTICULAS_2D.primavera.petalos;
+        if (climaFrame % pet.intervalo === 0) {
             const c = PALETAS_PETALO[Math.floor(Math.random() * PALETAS_PETALO.length)];
-            const vidaMax = 140 + Math.floor(Math.random() * 80);
+            const vidaMax = pet.vidaBase + Math.floor(Math.random() * pet.vidaRand);
             climaParticulas.push({
                 x: Math.random() * ancho,
                 y: -5,
-                vx: (Math.random() - 0.5) * 1.2,
-                vy: 0.5 + Math.random() * 0.5,
+                vx: (Math.random() - 0.5) * pet.vxRand,
+                vy: pet.vyBase + Math.random() * pet.vyRand,
                 vida: vidaMax,
                 vidaMax,
                 r: c[0],
                 g: c[1],
                 b: c[2],
-                alpha: 0.85,
+                alpha: pet.alpha,
                 tipo: 'petalo',
-                tam: 3.5 + Math.random() * 2.5,
+                tam: pet.tamanoBase + Math.random() * pet.tamanoRand,
             });
         }
-        if (climaFrame % 7 === 0) {
+        const dest = PARTICULAS_2D.primavera.destellos;
+        if (climaFrame % dest.intervalo === 0) {
             climaParticulas.push({
                 x: Math.random() * ancho,
                 y: Math.random() * alto * 0.7,
                 vx: 0,
                 vy: 0,
-                vida: 60 + Math.floor(Math.random() * 30),
-                vidaMax: 90,
-                r: 255,
-                g: 255,
-                b: 200,
-                alpha: 0.85,
+                vida: dest.vidaBase + Math.floor(Math.random() * dest.vidaRand),
+                vidaMax: dest.vidaBase + dest.vidaRand,
+                r: dest.color[0],
+                g: dest.color[1],
+                b: dest.color[2],
+                alpha: dest.alpha,
                 tipo: 'destello-luz',
-                tam: 2,
+                tam: 2, // Mayor que dest.tamano (1.2) porque el canvas del laberinto es más amplio
             });
         }
     } else if (climaEstacion === 'verano') {
-        if (climaFrame % 4 === 0) {
+        const pol = PARTICULAS_2D.verano.polvo;
+        if (climaFrame % pol.intervalo === 0) {
             climaParticulas.push({
                 x: Math.random() * ancho,
                 y: Math.random() * alto * 0.7,
-                vx: 0.1 + Math.random() * 0.15,
+                vx: pol.vxBase + Math.random() * pol.vxRand,
                 vy: 0,
-                vida: 250 + Math.floor(Math.random() * 100),
-                vidaMax: 350,
-                r: 220,
-                g: 190,
-                b: 100,
-                alpha: 0.25 + Math.random() * 0.2,
+                vida: pol.vidaBase + Math.floor(Math.random() * pol.vidaRand),
+                vidaMax: pol.vidaBase + pol.vidaRand,
+                r: pol.color[0],
+                g: pol.color[1],
+                b: pol.color[2],
+                alpha: pol.alphaBase + Math.random() * pol.alphaRand,
                 tipo: 'mota',
-                tam: 1 + Math.random(),
+                tam: pol.tamanoBase + Math.random() * pol.tamanoRand,
             });
         }
     } else if (climaEstacion === 'otono') {
+        const raf = PARTICULAS_2D.otono.rafaga;
         climaRafagaCounter++;
         if (climaRafagaCounter >= climaRafagaProx) {
             climaRafagaCounter = 0;
-            climaRafagaProx = 180 + Math.floor(Math.random() * 120);
+            resetRafagaLab();
             climaRafagaActiva = true;
-            climaRafagaFrames = 30;
+            climaRafagaFrames = raf.duracion;
         }
         if (climaRafagaActiva) {
             climaRafagaFrames--;
             if (climaRafagaFrames <= 0) climaRafagaActiva = false;
         }
-        if (climaFrame % 4 === 0) {
+        const hoj = PARTICULAS_2D.otono.hojas;
+        if (climaFrame % hoj.intervalo === 0) {
             const c = PALETAS_HOJA[Math.floor(Math.random() * PALETAS_HOJA.length)];
             const vxHoja = climaRafagaActiva
-                ? -2.5 - Math.random() * 0.5
-                : -0.8 - Math.random() * 1.4;
+                ? raf.vxBase - Math.random() * raf.vxRand
+                : hoj.vxBase - Math.random() * hoj.vxRand;
             climaParticulas.push({
                 x: ancho + 5,
                 y: Math.random() * alto,
                 vx: vxHoja,
-                vy: 0.4 + Math.random() * 0.8,
-                vida: 90 + Math.floor(Math.random() * 50),
-                vidaMax: 140,
+                vy: hoj.vyBase + Math.random() * hoj.vyRand,
+                vida: hoj.vidaBase + Math.floor(Math.random() * hoj.vidaRand),
+                vidaMax: hoj.vidaBase + hoj.vidaRand,
                 r: c[0],
                 g: c[1],
                 b: c[2],
-                alpha: 0.8,
+                alpha: hoj.alpha,
                 tipo: 'hoja',
-                tam: 2 + Math.random(),
+                tam: hoj.tamanoBase + Math.random() * hoj.tamanoRand,
             });
         }
-        if (climaFrame % 2 === 0) {
+        const lls = PARTICULAS_2D.otono.lluviaSuave;
+        if (climaFrame % lls.intervalo === 0) {
             climaParticulas.push({
                 x: Math.random() * ancho,
                 y: -5,
-                vx: -0.6,
-                vy: 2.5 + Math.random() * 1,
-                vida: 35 + Math.floor(Math.random() * 10),
-                vidaMax: 45,
-                r: 200,
-                g: 160,
-                b: 80,
-                alpha: 0.28,
+                vx: lls.vx,
+                vy: lls.vyBase + Math.random() * lls.vyRand,
+                vida: lls.vidaBase + Math.floor(Math.random() * lls.vidaRand),
+                vidaMax: lls.vidaBase + lls.vidaRand,
+                r: lls.color[0],
+                g: lls.color[1],
+                b: lls.color[2],
+                alpha: lls.alpha,
                 tipo: 'lluvia-suave',
-                tam: 1.5,
+                tam: lls.tamano,
             });
         }
     }
@@ -272,6 +291,7 @@ function iniciarClimaLab(estacion) {
     climaRafagaCounter = 0;
     climaRafagaActiva = false;
     climaRafagaFrames = 0;
+    resetRafagaLab();
 
     const ancho = CONFIG.COLS * CONFIG.TAM_CELDA;
     const alto = CONFIG.FILAS * CONFIG.TAM_CELDA;

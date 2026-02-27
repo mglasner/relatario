@@ -194,6 +194,109 @@ function generarJS(datos, clase, importPath) {
     ].join('\n');
 }
 
+// --- Clima: datos/clima.yaml → js/juegos/clima.js ---
+
+// Campos requeridos por sección del YAML de clima
+const ESTACIONES_REQUERIDAS = ['invierno', 'primavera', 'verano', 'otono'];
+const CAMPOS_ESTACION = ['nombre', 'tinte', 'cielo3d'];
+const CAMPOS_CIELO3D = ['cieloArriba', 'cieloAbajo', 'sueloArriba', 'sueloAbajo', 'tinte'];
+
+function validarClima(datos) {
+    const errores = [];
+
+    if (datos.probSinClima == null) errores.push('falta "probSinClima"');
+
+    // Estaciones
+    if (!datos.estaciones) {
+        errores.push('falta sección "estaciones"');
+    } else {
+        for (const est of ESTACIONES_REQUERIDAS) {
+            if (!datos.estaciones[est]) {
+                errores.push(`falta estación "${est}"`);
+                continue;
+            }
+            for (const campo of CAMPOS_ESTACION) {
+                if (datos.estaciones[est][campo] == null) {
+                    errores.push(`estaciones.${est}: falta "${campo}"`);
+                }
+            }
+            if (datos.estaciones[est].cielo3d) {
+                for (const campo of CAMPOS_CIELO3D) {
+                    if (datos.estaciones[est].cielo3d[campo] == null) {
+                        errores.push(`estaciones.${est}.cielo3d: falta "${campo}"`);
+                    }
+                }
+            }
+        }
+    }
+
+    // Paletas
+    if (!datos.paletas) {
+        errores.push('falta sección "paletas"');
+    } else {
+        if (!Array.isArray(datos.paletas.petalo) || datos.paletas.petalo.length === 0) {
+            errores.push('paletas.petalo: debe tener al menos 1 color');
+        }
+        if (!Array.isArray(datos.paletas.hoja) || datos.paletas.hoja.length === 0) {
+            errores.push('paletas.hoja: debe tener al menos 1 color');
+        }
+    }
+
+    // Partículas 2D
+    if (!datos.particulas2d) {
+        errores.push('falta sección "particulas2d"');
+    } else {
+        for (const est of ESTACIONES_REQUERIDAS) {
+            if (!datos.particulas2d[est]) {
+                errores.push(`particulas2d: falta estación "${est}"`);
+            }
+        }
+    }
+
+    // Partículas 3D
+    if (!datos.particulas3d) {
+        errores.push('falta sección "particulas3d"');
+    } else {
+        for (const est of ESTACIONES_REQUERIDAS) {
+            if (!datos.particulas3d[est]) {
+                errores.push(`particulas3d: falta estación "${est}"`);
+            }
+        }
+        if (!Array.isArray(datos.particulas3d.coloresHojas3d)) {
+            errores.push('particulas3d: falta "coloresHojas3d"');
+        }
+    }
+
+    if (errores.length > 0) {
+        throw new Error(`clima.yaml:\n${errores.map((e) => '  - ' + e).join('\n')}`);
+    }
+}
+
+function generarClimaJS(datos) {
+    const json = JSON.stringify(datos, null, 4);
+    return [
+        CABECERA,
+        `const CFG_CLIMA = ${json};`,
+        '',
+        'export const ESTACIONES = CFG_CLIMA.estaciones;',
+        'export const PALETAS_PETALO = CFG_CLIMA.paletas.petalo;',
+        'export const PALETAS_HOJA = CFG_CLIMA.paletas.hoja;',
+        'export const PARTICULAS_2D = CFG_CLIMA.particulas2d;',
+        'export const PARTICULAS_3D = CFG_CLIMA.particulas3d;',
+        '',
+        '/**',
+        ' * Sortea una estación aleatoria.',
+        " * @returns {string|null} Clave de estación ('invierno'|'primavera'|'verano'|'otono') o null",
+        ' */',
+        'export function sortearEstacion() {',
+        '    if (Math.random() < CFG_CLIMA.probSinClima) return null;',
+        '    const keys = Object.keys(ESTACIONES);',
+        '    return keys[Math.floor(Math.random() * keys.length)];',
+        '}',
+        '',
+    ].join('\n');
+}
+
 // --- Juegos: YAML → config.js ---
 
 // Schema de validación: sección → campos requeridos
@@ -573,6 +676,15 @@ async function main() {
     const tesorosFmt = await prettier.format(tesorosJS, configPrettier);
     writeFileSync('js/tesoros.js', tesorosFmt);
     console.log('js/tesoros.js generado');
+
+    // Clima
+    const climaYaml = readFileSync('datos/clima.yaml', 'utf-8');
+    const climaData = yaml.load(climaYaml);
+    validarClima(climaData);
+    const climaJS = generarClimaJS(climaData);
+    const climaFmt = await prettier.format(climaJS, configPrettier);
+    writeFileSync('js/juegos/clima.js', climaFmt);
+    console.log('js/juegos/clima.js generado');
 
     // Juegos
     for (const { slug, schema } of JUEGOS) {

@@ -3,7 +3,7 @@
 // Optimizado: puntero circular para busqueda O(1) amortizada y conteo de activas
 
 import { esSolido } from './fisicas.js';
-import { PALETAS_PETALO, PALETAS_HOJA } from '../clima.js';
+import { PALETAS_PETALO, PALETAS_HOJA, PARTICULAS_2D } from '../clima.js';
 
 const POOL_SIZE = 250;
 const GRAVEDAD_PART = 0.15;
@@ -407,17 +407,23 @@ export function emitirRecogerPowerup(x, y, r, g, b) {
 // --- Estado de clima (ráfaga de otoño) ---
 
 let rafagaCounter = 0;
-let rafagaProxFrame = 180 + Math.floor(Math.random() * 120);
+let rafagaProxFrame = 0;
 let rafagaActiva = false;
 let rafagaFramesRestantes = 0;
+
+function resetRafaga() {
+    const raf = PARTICULAS_2D.otono.rafaga;
+    rafagaProxFrame = raf.intervaloMin + Math.floor(Math.random() * raf.intervaloRand);
+}
+resetRafaga();
 
 function manejarRafagaOtono() {
     rafagaCounter++;
     if (rafagaCounter >= rafagaProxFrame) {
         rafagaCounter = 0;
-        rafagaProxFrame = 180 + Math.floor(Math.random() * 120);
+        resetRafaga();
         rafagaActiva = true;
-        rafagaFramesRestantes = 30;
+        rafagaFramesRestantes = PARTICULAS_2D.otono.rafaga.duracion;
     }
     if (rafagaActiva) {
         rafagaFramesRestantes--;
@@ -437,111 +443,112 @@ export function emitirClima(estacion, anchoCanvas, camaraX, camaraY) {
     if (!estacion) return;
 
     if (estacion === 'invierno') {
-        // Lluvia: 2-3 gotas por frame desde la parte superior visible
-        const n = 2 + Math.floor(Math.random() * 2);
+        const ll = PARTICULAS_2D.invierno.lluvia;
+        const n = ll.cantidad + Math.floor(Math.random() * ll.cantidadRand);
         for (let i = 0; i < n; i++) {
             emitir({
                 x: camaraX + Math.random() * anchoCanvas,
                 y: camaraY - 4,
-                vx: -1.2,
-                vy: 5.5 + Math.random() * 2,
-                vida: 20 + Math.floor(Math.random() * 8),
-                tamano: 2,
-                r: 170,
-                g: 200,
-                b: 255,
-                alpha: 0.6,
+                vx: ll.vx,
+                vy: ll.vyBase + Math.random() * ll.vyRand,
+                vida: ll.vidaBase + Math.floor(Math.random() * ll.vidaRand),
+                tamano: ll.tamano,
+                r: ll.color[0],
+                g: ll.color[1],
+                b: ll.color[2],
+                alpha: ll.alpha,
                 tipo: 'lluvia-clima',
             });
         }
     } else if (estacion === 'primavera') {
-        // Pétalos: cada 4 frames — colores saturados rosados/fucsia, tamaño mayor
-        if (frameCount % 4 === 0) {
+        const pet = PARTICULAS_2D.primavera.petalos;
+        if (frameCount % pet.intervalo === 0) {
             const c = PALETAS_PETALO[Math.floor(Math.random() * PALETAS_PETALO.length)];
-            // vidaMax variable sirve como semilla de fase para la oscilación
-            const vidaMax = 140 + Math.floor(Math.random() * 80);
+            const vidaMax = pet.vidaBase + Math.floor(Math.random() * pet.vidaRand);
             emitir({
                 x: camaraX + Math.random() * anchoCanvas,
                 y: camaraY - 4,
-                // Deriva lateral inicial variada: algunos van a la izquierda, otros a la derecha
-                vx: (Math.random() - 0.5) * 1.2,
-                vy: 0.5 + Math.random() * 0.5,
+                vx: (Math.random() - 0.5) * pet.vxRand,
+                vy: pet.vyBase + Math.random() * pet.vyRand,
                 vida: vidaMax,
-                tamano: 3.5 + Math.random() * 2.5,
+                tamano: pet.tamanoBase + Math.random() * pet.tamanoRand,
                 r: c[0],
                 g: c[1],
                 b: c[2],
-                alpha: 0.85,
+                alpha: pet.alpha,
                 tipo: 'petalo',
             });
         }
-        // Destellos de luz flotantes: cada 7 frames
-        if (frameCount % 7 === 0) {
+        const dest = PARTICULAS_2D.primavera.destellos;
+        if (frameCount % dest.intervalo === 0) {
             emitir({
                 x: camaraX + Math.random() * anchoCanvas,
                 y: camaraY + Math.random() * 120,
                 vx: 0,
                 vy: 0,
-                vida: 60 + Math.floor(Math.random() * 30),
-                tamano: 1.2,
-                r: 255,
-                g: 255,
-                b: 200,
-                alpha: 0.85,
+                vida: dest.vidaBase + Math.floor(Math.random() * dest.vidaRand),
+                tamano: dest.tamano,
+                r: dest.color[0],
+                g: dest.color[1],
+                b: dest.color[2],
+                alpha: dest.alpha,
                 tipo: 'destello-clima',
             });
         }
     } else if (estacion === 'verano') {
-        // Motas de polvo flotante: cada 4 frames
-        if (frameCount % 4 === 0) {
+        const pol = PARTICULAS_2D.verano.polvo;
+        if (frameCount % pol.intervalo === 0) {
             emitir({
                 x: camaraX + Math.random() * anchoCanvas,
                 y: camaraY + Math.random() * 90,
-                vx: 0.1 + Math.random() * 0.15,
+                vx: pol.vxBase + Math.random() * pol.vxRand,
                 vy: 0,
-                vida: 250 + Math.floor(Math.random() * 100),
-                tamano: 1 + Math.random(),
-                r: 220,
-                g: 190,
-                b: 100,
-                alpha: 0.25 + Math.random() * 0.2,
+                vida: pol.vidaBase + Math.floor(Math.random() * pol.vidaRand),
+                tamano: pol.tamanoBase + Math.random() * pol.tamanoRand,
+                r: pol.color[0],
+                g: pol.color[1],
+                b: pol.color[2],
+                alpha: pol.alphaBase + Math.random() * pol.alphaRand,
                 tipo: 'polvo-clima',
             });
         }
     } else if (estacion === 'otono') {
         manejarRafagaOtono();
 
-        // Hojas: cada 4 frames (vx aumentado durante ráfaga)
-        if (frameCount % 4 === 0) {
+        const hoj = PARTICULAS_2D.otono.hojas;
+        const raf = PARTICULAS_2D.otono.rafaga;
+        if (frameCount % hoj.intervalo === 0) {
             const c = PALETAS_HOJA[Math.floor(Math.random() * PALETAS_HOJA.length)];
-            const baseVx = rafagaActiva ? -2.5 - Math.random() * 0.5 : -0.8 - Math.random() * 1.4;
+            const baseVx = rafagaActiva
+                ? raf.vxBase - Math.random() * raf.vxRand
+                : hoj.vxBase - Math.random() * hoj.vxRand;
             emitir({
                 x: camaraX + Math.random() * anchoCanvas,
                 y: camaraY - 4,
                 vx: baseVx,
-                vy: 0.4 + Math.random() * 0.8,
-                vida: 90 + Math.floor(Math.random() * 50),
-                tamano: 2 + Math.random(),
+                vy: hoj.vyBase + Math.random() * hoj.vyRand,
+                vida: hoj.vidaBase + Math.floor(Math.random() * hoj.vidaRand),
+                tamano: hoj.tamanoBase + Math.random() * hoj.tamanoRand,
                 r: c[0],
                 g: c[1],
                 b: c[2],
-                alpha: 0.8,
+                alpha: hoj.alpha,
                 tipo: 'hoja',
             });
         }
-        // Lluvia suave de otoño: cada 2 frames
-        if (frameCount % 2 === 0) {
+        const lls = PARTICULAS_2D.otono.lluviaSuave;
+        if (frameCount % lls.intervalo === 0) {
             emitir({
                 x: camaraX + Math.random() * anchoCanvas,
                 y: camaraY - 4,
-                vx: -0.6,
-                vy: 2.5 + Math.random() * 1,
-                vida: 35 + Math.floor(Math.random() * 10),
-                tamano: 1.5,
-                r: 200,
-                g: 160,
-                b: 80,
-                alpha: 0.28,
+                vx: lls.vx,
+                vy: lls.vyBase + Math.random() * lls.vyRand,
+                vida: lls.vidaBase + Math.floor(Math.random() * lls.vidaRand),
+                tamano: lls.tamano,
+                r: lls.color[0],
+                g: lls.color[1],
+                b: lls.color[2],
+                alpha: lls.alpha,
                 tipo: 'lluvia-suave',
             });
         }
@@ -735,4 +742,5 @@ export function limpiarParticulas() {
     rafagaCounter = 0;
     rafagaActiva = false;
     rafagaFramesRestantes = 0;
+    resetRafaga();
 }
